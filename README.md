@@ -17,3 +17,7 @@ A fast-paced 2D endless bubble shooter game where you tap to burst bubbles befor
 
 ## 🚀 How to Build
 - hit Build from Android Studio
+
+---
+
+ This code is open-source under **MIT License**. You're free to use and learn from it. Please credit me if you build upon it! The final game product (assets, store builds) is proprietary.
