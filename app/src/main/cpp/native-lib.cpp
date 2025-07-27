@@ -1,26 +1,16 @@
 #include <GLES2/gl2.h>
 #include <android/log.h>
 #include <jni.h>
+#include <sstream>
+#include <stdio.h>
+#include "Assets.h"
+#include "ShaderParser.h"
+#include <string>
 
 #define LOG_TAG "Popple"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-const char* vertexShaderSource = R"(
-    attribute vec4 a_position;
-    void main() 
-    {
-        gl_Position = a_position;
-    }
-)";
-
-const char* fragmentShaderSource = R"(
-    precision mediump float;
-    void main() 
-    {
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-    }
-)";
 
 GLuint shaderProgram = 0;
 GLuint VBO = 0;
@@ -58,10 +48,10 @@ GLuint CompileShader(GLenum type, const char* source)
     return shader;
 }
 
-GLuint CreateShaderProgram()
+GLuint CreateShaderProgram(ShaderProgramSource source)
 {
-    GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, vertexShaderSource);
-    GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+    GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, source.VertexShaderSource);
+    GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, source.FragmentShaderSource);
 
     if (vertexShader == 0 || fragmentShader == 0)
         return 0;
@@ -92,11 +82,21 @@ GLuint CreateShaderProgram()
 }
 
 extern "C" {
-JNIEXPORT void JNICALL Java_com_example_bubbleshooter_GameRenderer_initializeOpenGL(JNIEnv* env, jobject thiz)
+JNIEXPORT void JNICALL Java_com_example_bubbleshooter_GameRenderer_initializeOpenGL(JNIEnv* env, jobject thiz, jobject assetManager)
 {
     LOGI("OpenGL Initializing...");
 
-    shaderProgram = CreateShaderProgram();
+    g_assetManager = AAssetManager_fromJava(env, assetManager);
+    if(!g_assetManager)
+    {
+        LOGE("Failed to Load Asset Manager");
+        return;
+    }
+
+    shaderProgram = CreateShaderProgram(ParseShader("Shaders/BasicShader.glsl"));
+    //WARN: possible memory leak after parse shader need to call Free
+    //will do in the abstracted class
+
     if(shaderProgram == 0)
     {
         LOGE("Failed to create shader program");

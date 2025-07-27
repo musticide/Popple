@@ -9,22 +9,25 @@ import android.opengl.GLSurfaceView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private GLSurfaceView glSurfaceView;
     // Used to load the 'bubbleshooter' library on application startup.
     static {
         System.loadLibrary("bubbleshooter");
     }
 
-    private GLSurfaceView glSurfaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        glSurfaceView = findViewById(R.id.gl_surface_view);
-
+        glSurfaceView = new GLSurfaceView(this);
         glSurfaceView.setEGLContextClientVersion(2);
-        glSurfaceView.setRenderer(new GameRenderer());
+
+        GameRenderer renderer = new GameRenderer(this);
+        glSurfaceView.setRenderer(renderer);
+
+        setContentView(glSurfaceView);
     }
 
     @Override
