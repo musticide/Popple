@@ -11,6 +11,8 @@ cmake_minimum_required(VERSION 3.22.1)
 # build script scope).
 project("bubbleshooter")
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -26,21 +28,26 @@ project("bubbleshooter")
 # used in the AndroidManifest.xml file.
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
-        native-lib.cpp)
-        # stb_image.cpp)
+        VertexBuffer.cpp
+        IndexBuffer.cpp
+        VertexArray.cpp
+        Shader.cpp
+        native-lib.cpp
+        stb_image.cpp)
+# SpriteRenderer.cpp
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
 # build script, prebuilt third-party libraries, or Android system libraries.
 find_library(log-lib log)
 find_library(android-lib android)
-find_library(gles2-lib GLESv2)
+find_library(gles3-lib GLESv3)
 find_library(egl-lib EGL)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
 # List libraries link to the target library
         ${log-lib}
         ${android-lib}
-        ${gles2-lib}
+        ${gles3-lib}
         ${egl-lib})
 
