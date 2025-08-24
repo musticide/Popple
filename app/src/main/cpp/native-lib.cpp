@@ -1,19 +1,22 @@
-#include <GLES2/gl2.h>
+#include "Assets.h"
+#include "IndexBuffer.h"
+#include "Log.h"
+#include "Shader.h"
+#include "IndexBuffer.h"
+#include "VertexBuffer.h"
+#include "VertexArray.h"
+#include "VertexBufferLayout.h"
+#include <GLES3/gl3.h>
+// #include <GLES3/gl32.h>
 #include <android/log.h>
 #include <jni.h>
 #include <sstream>
-#include <stdio.h>
-#include "Assets.h"
-#include "ShaderParser.h"
-#include <string>
 
-#define LOG_TAG "Popple"
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
+AAssetManager* g_assetManager = nullptr;
 
 GLuint shaderProgram = 0;
 GLuint VBO = 0;
+GLuint VAO = 0;
 GLint positionAttribute = -1;
 
 float triangleVertices[] = {
@@ -22,105 +25,70 @@ float triangleVertices[] = {
     0.5f, -0.5f, 0.0f // Bottom right
 };
 
-GLuint CompileShader(GLenum type, const char* source)
-{
-    GLuint shader = glCreateShader(type);
+/* float quadVertices[] = {
+    // Positions        // Texture coordinates
+    -0.5f,  0.5f, 0.0f,    0.0f, 0.0f,  // Top left
+     0.5f,  0.5f, 0.0f,    1.0f, 0.0f,  // Top right
+     0.5f, -0.5f, 0.0f,    1.0f, 1.0f,  // Bottom right
+    -0.5f, -0.5f, 0.0f,    0.0f, 1.0f   // Bottom left
+}; */
 
-    glShaderSource(shader, 1, &source, nullptr);
-    glCompileShader(shader);
+float quadVertices[] = {
+    // Positions
+    -0.5f,  0.5f, 0.0f,  // Top left
+     0.5f,  0.5f, 0.0f,  // Top right
+     0.5f, -0.5f, 0.0f,  // Bottom right
+    -0.5f, -0.5f, 0.0f,  // Bottom left
+};
 
-    GLint compiled;
+// Indices for quad (two triangles)
+unsigned int quadIndices[] = {
+    0, 1, 2,  // First triangle
+    2, 3, 0   // Second triangle
+};
 
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
-    if (!compiled) {
-        GLint infoLength = 0;
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLength);
 
-        if (infoLength > 1) {
-            char* infoLog = new char[infoLength];
-            glGetShaderInfoLog(shader, infoLength, nullptr, infoLog);
-            LOGE("Shader compile Error: %s", infoLog);
-            delete[] infoLog;
-        }
-        glDeleteShader(shader);
-        return 0;
-    }
-    return shader;
-}
+// extern Shader shader;
+// extern VertexBuffer vb;
+// extern IndexBuffer ib;
+VertexArray va;
+Shader shader = Shader();
+VertexBuffer vb = VertexBuffer();
+IndexBuffer ib = IndexBuffer();
 
-GLuint CreateShaderProgram(ShaderProgramSource source)
-{
-    GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, source.VertexShaderSource);
-    GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, source.FragmentShaderSource);
-
-    if (vertexShader == 0 || fragmentShader == 0)
-        return 0;
-
-    GLuint program = glCreateProgram();
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-    glLinkProgram(program);
-
-    GLint linked;
-    glGetProgramiv(program, GL_LINK_STATUS, &linked);
-    if (!linked) {
-        GLint infoLength = 0;
-        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLength);
-        if (infoLength > 1) {
-            char* infoLog = new char[infoLength];
-            glGetProgramInfoLog(program, infoLength, 0, infoLog);
-            LOGE("Program linking error: %s", infoLog);
-            delete[] infoLog;
-        }
-        glDeleteProgram(program);
-        return 0;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    return program;
-}
 
 extern "C" {
-JNIEXPORT void JNICALL Java_com_example_bubbleshooter_GameRenderer_initializeOpenGL(JNIEnv* env, jobject thiz, jobject assetManager)
+JNIEXPORT void JNICALL Java_com_example_bubbleshooter_GameRenderer_initializeOpenGL(
+    JNIEnv* env, jobject thiz, jobject assetManager)
 {
     LOGI("OpenGL Initializing...");
 
     g_assetManager = AAssetManager_fromJava(env, assetManager);
-    if(!g_assetManager)
-    {
+    if (!g_assetManager) {
         LOGE("Failed to Load Asset Manager");
         return;
     }
 
-    shaderProgram = CreateShaderProgram(ParseShader("Shaders/BasicShader.glsl"));
-    //WARN: possible memory leak after parse shader need to call Free
-    //will do in the abstracted class
+    shader = Shader("Shaders/BasicShader.glsl");
 
-    if(shaderProgram == 0)
-    {
-        LOGE("Failed to create shader program");
-        return;
-    }
-
-    positionAttribute = glGetAttribLocation(shaderProgram, "a_position");
-    if(positionAttribute == -1)
-    {
-        LOGE("Failed to get position attrib location");
-        return;
-    }
-
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
+    vb = VertexBuffer(triangleVertices, sizeof(triangleVertices));
+    va = VertexArray(0);
+    VertexBufferLayout layout;
+    layout.Push<float>(3);
+    va.AddBuffer(vb, layout);
+    va.Unbind();
 
 
 
-    // Set clear color to blue (R, G, B, A)
     glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
 
-    // Enable depth testing
     glEnable(GL_DEPTH_TEST);
+
+    //WARN: Check when to delete these objects
+    //  va.Delete();
+    // shader.Delete();
+
+    vb.Delete();
     LOGI("OpenGL Initialization Complete");
 }
 
@@ -136,21 +104,18 @@ JNIEXPORT void JNICALL Java_com_example_bubbleshooter_GameRenderer_renderFrame(J
     // Clear the screen with our blue color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUseProgram(shaderProgram);
+    shader.Bind();
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    glEnableVertexAttribArray(positionAttribute);
-    glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-
+    va.Bind();
     glDrawArrays(GL_TRIANGLES, 0, 3);
+    va.Unbind();
 
-    glDisableVertexAttribArray(positionAttribute);
 
     GLenum error = glGetError();
-    if(error!= GL_NO_ERROR)
-    {
+    if (error != GL_NO_ERROR) {
         LOGE("OpenGl error: 0x%x", error);
     }
+
 }
 }

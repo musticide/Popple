@@ -9,4 +9,6 @@
 #include <android/asset_manager_jni.h>
 #include "Log.h"
 
-AAssetManager* g_assetManager = nullptr;
+extern AAssetManager* g_assetManager;// = nullptr;
+
+// GLuint LoadTextureFromAssets(const char* filename);
