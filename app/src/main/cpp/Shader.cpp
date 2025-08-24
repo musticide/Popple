@@ -1,6 +1,5 @@
 #include "Shader.h"
 #include "Assets.h"
-#include "Graphics.h"
 #include "Log.h"
 
 Shader::Shader(const char* filepath)
