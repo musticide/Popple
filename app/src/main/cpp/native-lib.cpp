@@ -25,21 +25,21 @@ float triangleVertices[] = {
     0.5f, -0.5f, 0.0f // Bottom right
 };
 
-/* float quadVertices[] = {
+float quadVertices[] = {
     // Positions        // Texture coordinates
     -0.5f,  0.5f, 0.0f,    0.0f, 0.0f,  // Top left
      0.5f,  0.5f, 0.0f,    1.0f, 0.0f,  // Top right
      0.5f, -0.5f, 0.0f,    1.0f, 1.0f,  // Bottom right
     -0.5f, -0.5f, 0.0f,    0.0f, 1.0f   // Bottom left
-}; */
+};
 
-float quadVertices[] = {
+/* float quadVertices[] = {
     // Positions
     -0.5f,  0.5f, 0.0f,  // Top left
      0.5f,  0.5f, 0.0f,  // Top right
      0.5f, -0.5f, 0.0f,  // Bottom right
     -0.5f, -0.5f, 0.0f,  // Bottom left
-};
+}; */
 
 // Indices for quad (two triangles)
 unsigned int quadIndices[] = {
@@ -71,15 +71,18 @@ JNIEXPORT void JNICALL Java_com_example_bubbleshooter_GameRenderer_initializeOpe
 
     shader = Shader("Shaders/BasicShader.glsl");
 
-    vb = VertexBuffer(triangleVertices, sizeof(triangleVertices));
+    vb = VertexBuffer(quadVertices, sizeof(quadVertices));
+
     va = VertexArray(0);
     VertexBufferLayout layout;
-    layout.Push<float>(3);
+    layout.Push<float>(3);//positions
+    layout.Push<float>(2);//texCoords
+
     va.AddBuffer(vb, layout);
+
+    ib = IndexBuffer(quadIndices, 6);
+
     va.Unbind();
-
-
-
     glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
 
     glEnable(GL_DEPTH_TEST);
@@ -108,7 +111,9 @@ JNIEXPORT void JNICALL Java_com_example_bubbleshooter_GameRenderer_renderFrame(J
 
 
     va.Bind();
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    ib.Bind();
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);// nullptr cuz indices are bound at ib.Bind()
+
     va.Unbind();
 
 
