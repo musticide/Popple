@@ -8,6 +8,7 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <GLES3/gl3.h>
+#include "glm/gtc/matrix_transform.hpp"
 // #include <GLES3/gl32.h>
 
 struct ShaderProgramSource {
@@ -29,7 +30,7 @@ struct ShaderProgramSource {
     }
 };
 
-class Shader {
+class Shader : public AndroidAsset {
 public:
     Shader();
     Shader(const char* filepath);
@@ -43,12 +44,13 @@ public:
 
     //set uniforms
     void SetUniform(const char* name, glm::vec4 value);
-    static ShaderProgramSource ParseShader(const char *filepath);
-    static GLuint CompileShader(GLenum type, const char *source);
-    static GLuint CreateShaderProgram(ShaderProgramSource source);
+    void SetUniform(const char* name, glm::mat4 value);
 
 private:
     int m_RendererID;
     const char* m_Filepath;
+    ShaderProgramSource ParseShader(const char *filepath);
+    GLuint CompileShader(GLenum type, const char *source);
+    GLuint CreateShaderProgram(ShaderProgramSource source);
 
 };

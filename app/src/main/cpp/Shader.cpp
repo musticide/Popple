@@ -1,6 +1,7 @@
 #include "Shader.h"
 #include "Assets.h"
 #include "Log.h"
+#include "glm/gtc/type_ptr.hpp"
 
 Shader::Shader(const char* filepath)
     : m_Filepath(filepath)
@@ -32,23 +33,12 @@ ShaderProgramSource Shader::ParseShader(const char* filepath)
     result.VertexShaderSource = nullptr;
     result.FragmentShaderSource = nullptr;
 
-    if (!g_assetManager) {
-        LOGE("Failed to Load Shader: %s", filepath);
-        LOGE("Asset manager not initialized");
-        return result;
-    }
+    OpenAsset(filepath);
 
-    AAsset* asset = AAssetManager_open(g_assetManager, filepath, AASSET_MODE_BUFFER);
-    if (!asset) {
-        LOGE("Failed to Load Shader: %s", filepath);
-        return result;
-    }
-
-    size_t length = AAsset_getLength(asset);
-    char* buffer = (char*)malloc(length + 1);
-    AAsset_read(asset, buffer, length);
-    buffer[length] = '\0';
-    AAsset_close(asset);
+    char* buffer = (char*)malloc(GetAssetLength() + 1);
+    ReadAsset(buffer);
+    buffer[GetAssetLength()] = '\0';
+    CloseAsset();
 
     char* vertStart = strstr(buffer, "#shader vertex");
     char* fragStart = strstr(buffer, "#shader fragment");
@@ -176,12 +166,13 @@ GLuint Shader::CreateShaderProgram(ShaderProgramSource source)
 
 GLint Shader::GetUniformLocation(const char* name)
 {
-    GLint location = glGetAttribLocation(m_RendererID, name);
+    GLint location = glGetUniformLocation(m_RendererID, name);
     if (location == -1) {
-        LOGW("Failed to get %s attrib location", name);
+        LOGW("Failed to get %s uniform location", name);
     }
     return location;
 }
+
 
 void Shader::Bind() const { glUseProgram(m_RendererID); }
 
@@ -191,4 +182,9 @@ void Shader::SetUniform(const char* name, glm::vec4 value)
 {
     glUniform4f(GetUniformLocation(name), value.x, value.y, value.z, value.w);
 
+}
+
+void Shader::SetUniform(const char* name, glm::mat4 value)
+{
+    glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
