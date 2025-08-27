@@ -8,6 +8,7 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <GLES3/gl3.h>
+#include <unordered_map>
 #include "glm/gtc/matrix_transform.hpp"
 // #include <GLES3/gl32.h>
 
@@ -45,10 +46,12 @@ public:
     //set uniforms
     void SetUniform(const char* name, glm::vec4 value);
     void SetUniform(const char* name, glm::mat4 value);
+    void SetUniform(const char* name, int value);
 
 private:
     int m_RendererID;
     const char* m_Filepath;
+    std::unordered_map<const char*, int> m_UniformLocationCache;
     ShaderProgramSource ParseShader(const char *filepath);
     GLuint CompileShader(GLenum type, const char *source);
     GLuint CreateShaderProgram(ShaderProgramSource source);

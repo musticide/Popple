@@ -29,6 +29,7 @@ protected:
     void OpenAsset(const char* filepath);
     void CloseAsset();
     void ReadAsset(void* buffer);
+    const void* GetBufferFromAsset();
     size_t GetAssetLength();
 
 };

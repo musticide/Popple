@@ -29,6 +29,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         Assets.cpp
+        Texture.cpp
         VertexBuffer.cpp
         IndexBuffer.cpp
         VertexArray.cpp

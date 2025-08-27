@@ -166,10 +166,13 @@ GLuint Shader::CreateShaderProgram(ShaderProgramSource source)
 
 GLint Shader::GetUniformLocation(const char* name)
 {
+    if(m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
+        return m_UniformLocationCache[name];
     GLint location = glGetUniformLocation(m_RendererID, name);
     if (location == -1) {
         LOGW("Failed to get %s uniform location", name);
     }
+    m_UniformLocationCache[name] = location;
     return location;
 }
 
@@ -187,4 +190,9 @@ void Shader::SetUniform(const char* name, glm::vec4 value)
 void Shader::SetUniform(const char* name, glm::mat4 value)
 {
     glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::SetUniform(const char* name, int value)
+{
+    glUniform1i(GetUniformLocation(name), value);
 }

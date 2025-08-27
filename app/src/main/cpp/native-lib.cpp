@@ -1,16 +1,22 @@
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/trigonometric.hpp"
+#include <GLES3/gl3.h>
+// #include <GLES3/gl32.h>
+#include <android/log.h>
+#include <jni.h>
+#include <sstream>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
 #include "Assets.h"
-#include "IndexBuffer.h"
 #include "Log.h"
 #include "Shader.h"
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
-#include <GLES3/gl3.h>
-// #include <GLES3/gl32.h>
-#include <android/log.h>
-#include <jni.h>
-#include <sstream>
+#include "Texture.h"
 
 AAssetManager* g_assetManager = nullptr;
 
@@ -55,6 +61,7 @@ VertexArray va;
 Shader shader = Shader();
 VertexBuffer vb = VertexBuffer();
 IndexBuffer ib = IndexBuffer();
+Texture texture;
 
 
 extern "C" {
@@ -63,13 +70,20 @@ JNIEXPORT void JNICALL Java_com_example_bubbleshooter_GameRenderer_initializeOpe
 {
     LOGI("OpenGL Initializing...");
 
-    g_assetManager = AAssetManager_fromJava(env, assetManager);
-    if (!g_assetManager) {
+    // g_assetManager = AAssetManager_fromJava(env, assetManager);
+    // if (!g_assetmanager) {
+
+    if (!AndroidAsset::InitManager(env, assetManager)) {
         LOGE("Failed to Load Asset Manager");
         return;
     }
 
     shader = Shader("Shaders/BasicShader.glsl");
+
+    texture = Texture("bubble.png");
+    texture.Bind(0);
+    shader.SetUniform("u_Texture", 0);
+
 
     vb = VertexBuffer(quadVertices, sizeof(quadVertices));
 
@@ -90,6 +104,9 @@ JNIEXPORT void JNICALL Java_com_example_bubbleshooter_GameRenderer_initializeOpe
     //WARN: Check when to delete these objects
     //  va.Delete();
     // shader.Delete();
+    
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
     vb.Delete();
     LOGI("OpenGL Initialization Complete");
