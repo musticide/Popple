@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep the NativeLoader class and its methods for launching the native application.
+-keep class com.raylib.raymob.NativeLoader {
+    public <methods>;
+}

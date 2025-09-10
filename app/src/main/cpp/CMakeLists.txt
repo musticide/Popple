@@ -1,55 +1,49 @@
 # For more information about using CMake with Android Studio, read the
-# documentation: https://d.android.com/studio/projects/add-native-code.html.
-# For more examples on how to use CMake, see https://github.com/android/ndk-samples.
+# documentation: https://d.android.com/studio/projects/add-native-code.html
 
-# Sets the minimum CMake version required for this project.
+# Set the minimum required version of CMake
 cmake_minimum_required(VERSION 3.22.1)
 
-# Declares the project name. The project name can be accessed via ${ PROJECT_NAME},
-# Since this is the top level CMakeLists.txt, the project name is also accessible
-# with ${CMAKE_PROJECT_NAME} (both CMake variables are in-sync within the top level
-# build script scope).
-project("bubbleshooter")
+# Set standards for C and C++
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
-# Gradle automatically packages shared libraries with your APK.
-#
-# In this top level CMakeLists.txt, ${CMAKE_PROJECT_NAME} is used to define
-# the target library name; in the sub-module's CMakeLists.txt, ${PROJECT_NAME}
-# is preferred for the same purpose.
-#
-# In order to load a library into your app from Java/Kotlin, you must call
-# System.loadLibrary() and pass the name of the library defined here;
-# for GameActivity/NativeActivity derived applications, the same library name must be
-# used in the AndroidManifest.xml file.
-add_library(${CMAKE_PROJECT_NAME} SHARED
-        # List C/C++ source files with relative paths to this CMakeLists.txt.
-        Assets.cpp
-        Texture.cpp
-        VertexBuffer.cpp
-        IndexBuffer.cpp
-        VertexArray.cpp
-        Shader.cpp
-        native-lib.cpp
-        stb_image.cpp)
-# SpriteRenderer.cpp
+# Set the project name based on the name given on the gradle.properties
+project("${APP_LIB_NAME}")
 
-# Specifies libraries CMake should link to your target library. You
-# can link libraries from various origins, such as libraries defined in this
-# build script, prebuilt third-party libraries, or Android system libraries.
-find_library(log-lib log)
-find_library(android-lib android)
-find_library(gles3-lib GLESv3)
-find_library(egl-lib EGL)
+# Include raylib and raymob as a subdirectories
+add_subdirectory(${CMAKE_SOURCE_DIR}/deps/raylib)
+add_subdirectory(${CMAKE_SOURCE_DIR}/deps/raymob)
 
-target_link_libraries(${CMAKE_PROJECT_NAME}
-# List libraries link to the target library
-        ${log-lib}
-        ${android-lib}
-        ${gles3-lib}
-        ${egl-lib})
+# Fetch all source files for your project (recursively), excluding 'deps' source files
+file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/*.c" "${CMAKE_SOURCE_DIR}/*.cpp")
+list(FILTER SOURCES EXCLUDE REGEX "${CMAKE_SOURCE_DIR}/deps/.*")
 
+# Add headers directory for android_native_app_glue.c
+include_directories(${ANDROID_NDK}/sources/android/native_app_glue/)
+
+# Add android_native_app_glue.c to the source files
+list(APPEND SOURCES ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+
+# Create a shared library with game source files
+add_library(${APP_LIB_NAME} SHARED ${SOURCES})
+list(APPEND SOURCES
+    "${CMAKE_SOURCE_DIR}/main.cpp"
+    "${CMAKE_SOURCE_DIR}/ball.cpp"
+    "${CMAKE_SOURCE_DIR}/ball.h"
+)
+
+# Define compiler macros for the library
+target_compile_definitions(${APP_LIB_NAME} PRIVATE PLATFORM_ANDROID)
+
+# Apply flags depending on the build type
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    target_compile_definitions(${APP_LIB_NAME} PRIVATE _DEBUG DEBUG)
+endif()
+
+# Include raylib and raymob header files
+target_include_directories(${APP_LIB_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/deps/raylib")
+target_include_directories(${APP_LIB_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/deps/raymob")
+
+# Link required libraries to the native application
+target_link_libraries(${APP_LIB_NAME} raylib raymoblib)

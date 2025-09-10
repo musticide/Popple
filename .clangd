@@ -6,6 +6,9 @@ CompileFlags:
     - -IC:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\android
     # OpenGL ES headers
     - -IC:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\GLES2
+    #Project Specific headers
+    - -I.\app\src\main\cpp\deps\raylib
+    - -I.\app\src\main\cpp\deps\raymob
     # Android API level (matches your project's minSdk)
     - -DANDROID
     - -D__ANDROID_API__=24
