@@ -14,14 +14,14 @@ void Ball::Update()
 {
     x += speedX;
     y += speedY;
-    
+
     const int screenWidth = GetScreenWidth();
     const int screenHeight = GetScreenHeight();
-    
+
     if ((x + radius >= screenWidth) || (x - radius <= 0)) {
         speedX *= -1;
     }
-    
+
     if ((y + radius >= screenHeight) || (y - radius <= 0)) {
         speedY *= -1;
     }

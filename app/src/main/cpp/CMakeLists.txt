@@ -29,8 +29,8 @@ list(APPEND SOURCES ${ANDROID_NDK}/sources/android/native_app_glue/android_nativ
 add_library(${APP_LIB_NAME} SHARED ${SOURCES})
 list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/main.cpp"
-    "${CMAKE_SOURCE_DIR}/ball.cpp"
-    "${CMAKE_SOURCE_DIR}/ball.h"
+    "${CMAKE_SOURCE_DIR}/bubble.cpp"
+    "${CMAKE_SOURCE_DIR}/bubble.h"
 )
 
 # Define compiler macros for the library
