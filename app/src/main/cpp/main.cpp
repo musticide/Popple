@@ -1,6 +1,7 @@
 #include "bubble.h"
 #include "raylib.h"
 #include <raymob.h>
+#include "Log.h"
 
 #define BUBBLE_COUNT 100
 
@@ -34,6 +35,9 @@ int main()
 
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
+        Vector2 touchPos = GetTouchPosition(0);
+        touchPos.x -= screenWidth/2.0;
+        touchPos.y -= screenHeight/2.0;
 
         BeginDrawing();
 
@@ -43,8 +47,10 @@ int main()
 
         DrawRectanglePro(tower, towerCenter, towerRotation, RAYWHITE);
         for (int i = 0; i < BUBBLE_COUNT; i++) {
+            if(bubbles[i].IsPointInBubble(touchPos))
+                bubbles[i].SetActive(false);
             bubbles[i].Update();
-            DrawCircleV(bubbles[i].position, bubbles[i].radius, bubbles[i].color);
+            bubbles[i].Draw();
         }
 
         EndMode2D();
