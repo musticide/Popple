@@ -1,9 +1,12 @@
+#include "Log.h"
 #include "bubble.h"
+#include "input.h"
 #include "raylib.h"
 #include <raymob.h>
-#include "Log.h"
 
-#define BUBBLE_COUNT 100
+#define BUBBLE_COUNT 30
+
+Camera2D camera;
 
 int main()
 {
@@ -14,11 +17,13 @@ int main()
 
     const int screenWidth = GetScreenWidth(), screenHeight = GetScreenHeight();
 
-    Camera2D camera = { 0 };
+    camera = { 0 };
     camera.target = (Vector2) { 0.0f, 0.0f };
     camera.offset = (Vector2) { screenWidth / 2.0f, screenHeight / 2.0f };
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
+
+    Input::initialize(camera);
 
     Rectangle tower = { -25.0f, -25.0f, 50.0f, 50.0f };
     float towerRotation = 45.0f;
@@ -27,17 +32,11 @@ int main()
     Bubble* bubbles = new Bubble[BUBBLE_COUNT];
 
     for (int i = 0; i < BUBBLE_COUNT; i++) {
-        bubbles[i].position = (Vector2) { (float)GetRandomValue(-screenWidth, screenWidth),
-            (float)GetRandomValue(-screenHeight, screenHeight) };
-        bubbles[i].radius = GetRandomValue(40, 35);
-        bubbles[i].moveSpeed = (Vector2) { (float)GetRandomValue(1.0f, 3.0f), (float)GetRandomValue(1.0f, 3.0f) };
+        bubbles[i].Start();
     }
 
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
-        Vector2 touchPos = GetTouchPosition(0);
-        touchPos.x -= screenWidth/2.0;
-        touchPos.y -= screenHeight/2.0;
 
         BeginDrawing();
 
@@ -47,8 +46,6 @@ int main()
 
         DrawRectanglePro(tower, towerCenter, towerRotation, RAYWHITE);
         for (int i = 0; i < BUBBLE_COUNT; i++) {
-            if(bubbles[i].IsPointInBubble(touchPos))
-                bubbles[i].SetActive(false);
             bubbles[i].Update();
             bubbles[i].Draw();
         }

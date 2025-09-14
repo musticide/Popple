@@ -31,6 +31,8 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/main.cpp"
     "${CMAKE_SOURCE_DIR}/bubble.cpp"
     "${CMAKE_SOURCE_DIR}/bubble.h"
+    "${CMAKE_SOURCE_DIR}/input.h"
+    "${CMAKE_SOURCE_DIR}/input.cpp"
 )
 
 # Define compiler macros for the library

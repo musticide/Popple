@@ -2,6 +2,7 @@
 
 #include "raylib.h"
 #include <raymob.h>
+#include "input.h"
 
 class Bubble {
 public:
@@ -14,6 +15,7 @@ public:
     Color color;
     Vector2 moveSpeed;
 
+    void Start();
     void Update();
 
     void Move();
@@ -24,8 +26,9 @@ public:
 
     bool IsActive() { return m_IsActive; }
 
-    bool IsPointInBubble(Vector2 point) const;
 
 private:
     bool m_IsActive = true;
+    void Init();
+    bool IsPointInBubble(Vector2 point) const;
 };
