@@ -30,12 +30,9 @@ add_library(${APP_LIB_NAME} SHARED ${SOURCES})
 list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/main.cpp"
     "${CMAKE_SOURCE_DIR}/bubble.cpp"
-    "${CMAKE_SOURCE_DIR}/bubble.h"
-    "${CMAKE_SOURCE_DIR}/input.h"
     "${CMAKE_SOURCE_DIR}/input.cpp"
-    "${CMAKE_SOURCE_DIR}/spatialGrid.h"
     "${CMAKE_SOURCE_DIR}/spatialGrid.cpp"
-    "${CMAKE_SOURCE_DIR}/popple.h"
+    "${CMAKE_SOURCE_DIR}/score.cpp"
 )
 
 # Define compiler macros for the library

@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "raylib.h"
 #include "raymath.h"
+#include "score.h"
 #include "spatialGrid.h"
 
 Bubble::Bubble()
@@ -70,6 +71,7 @@ void Bubble::Update(float dT)
         if (IsPointInBubble(Input::Get().GetTouchPositionWS(i))) {
             // Init();
             SetActive(false);
+            Score::AddScore(5);
             LOGI("Bubble burst!");
         }
     }
@@ -77,7 +79,7 @@ void Bubble::Update(float dT)
     // INFO: Deactivate on reaching center
 
     if (Vector2Length(position) <= radius + 50) {
-        // TODO: Call health decrease function
+        Score::DecreaseHealth(10);
         SetActive(false);
         LOGI("Tower Hit!");
     }

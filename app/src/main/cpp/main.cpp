@@ -3,6 +3,7 @@
 #include "input.h"
 #include "popple.h"
 #include "raylib.h"
+#include "score.h"
 #include "spatialGrid.h"
 #include <raymob.h>
 
@@ -71,6 +72,9 @@ int main()
             bubbles[i].Update(GetFrameTime());
             bubbles[i].Draw();
         }
+
+        Score::ShowScore();
+        Score::ShowHealth();
 
         EndMode2D();
 
