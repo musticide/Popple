@@ -61,6 +61,8 @@ int main()
 
         SpatialGrid::Clear();
 
+        //---DRAWING AND UPDATE LOOP
+
         BeginDrawing();
 
         ClearBackground(BLACK);
