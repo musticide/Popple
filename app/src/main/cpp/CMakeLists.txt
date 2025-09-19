@@ -33,6 +33,9 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/bubble.h"
     "${CMAKE_SOURCE_DIR}/input.h"
     "${CMAKE_SOURCE_DIR}/input.cpp"
+    "${CMAKE_SOURCE_DIR}/spatialGrid.h"
+    "${CMAKE_SOURCE_DIR}/spatialGrid.cpp"
+    "${CMAKE_SOURCE_DIR}/popple.h"
 )
 
 # Define compiler macros for the library

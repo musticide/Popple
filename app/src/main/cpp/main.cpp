@@ -2,6 +2,7 @@
 #include "bubble.h"
 #include "input.h"
 #include "raylib.h"
+#include "spatialGrid.h"
 #include <raymob.h>
 
 #define BUBBLE_COUNT 30
@@ -10,8 +11,6 @@ Camera2D camera;
 
 int main()
 {
-    const Color darkGreen = { 20, 160, 133, 255 };
-
     InitWindow(0, 0, "Popple");
     SetTargetFPS(60);
 
@@ -25,8 +24,8 @@ int main()
 
     Input::initialize(camera);
 
-    Rectangle tower = { -25.0f, -25.0f, 50.0f, 50.0f };
-    float towerRotation = 45.0f;
+    Rectangle tower = { -50.0f, -50.0f, 100.0f, 100.0f };
+    float towerRotation = 0.0f;
     Vector2 towerCenter = { tower.x + tower.width / 2, tower.y + tower.height / 2 };
 
     Bubble* bubbles = new Bubble[BUBBLE_COUNT];
@@ -38,9 +37,11 @@ int main()
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
 
+        SpatialGrid::Clear();
+
         BeginDrawing();
 
-        ClearBackground(DARKPURPLE);
+        ClearBackground(BLACK);
 
         BeginMode2D(camera);
 
