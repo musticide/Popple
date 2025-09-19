@@ -16,7 +16,8 @@ public:
     float rotation;
     float radius;
     Color color;
-    float maxMoveSpeed = 10;
+    float maxMoveSpeed = 25;
+    float moveSpeed = 1.0;
 
     void Start();
     void Update(float dT = 1.0f);
@@ -26,6 +27,8 @@ public:
     void SetActive(bool active);
 
     void AddForce(Vector2 force);
+
+    void Spawn();
 
     // Getters
     bool IsActive() const { return m_IsActive; }

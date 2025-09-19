@@ -1,11 +1,12 @@
 #include "Log.h"
 #include "bubble.h"
 #include "input.h"
+#include "popple.h"
 #include "raylib.h"
 #include "spatialGrid.h"
 #include <raymob.h>
 
-#define BUBBLE_COUNT 30
+#define BUBBLE_COUNT 50
 
 Camera2D camera;
 
@@ -32,10 +33,30 @@ int main()
 
     for (int i = 0; i < BUBBLE_COUNT; i++) {
         bubbles[i].Start();
+        bubbles[i].SetActive(false);
     }
+
+    float spawnTimer = 0.0f;
+    float spawnInterval = 2.0f;
 
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
+
+        spawnTimer += GetFrameTime();
+
+        if (spawnTimer > spawnInterval) {
+            spawnInterval = GetRandomValue(20, 5)/10.0f;
+            spawnTimer = 0.0f;
+            for (int i = 0; i < BUBBLE_COUNT; i++) {
+                if (!bubbles[i].IsActive())
+                {
+                    LOGI("Bubble Spawned at frame: %f", GetTime());
+                    bubbles[i].SetActive(true);
+                    bubbles[i].Spawn();
+                    break;
+                }
+            }
+        }
 
         SpatialGrid::Clear();
 
@@ -45,9 +66,9 @@ int main()
 
         BeginMode2D(camera);
 
-        DrawRectanglePro(tower, towerCenter, towerRotation, RAYWHITE);
+        DrawRectanglePro(tower, towerCenter, towerRotation, BEIGE);
         for (int i = 0; i < BUBBLE_COUNT; i++) {
-            bubbles[i].Update();
+            bubbles[i].Update(GetFrameTime());
             bubbles[i].Draw();
         }
 
