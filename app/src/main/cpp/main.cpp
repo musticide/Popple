@@ -1,5 +1,6 @@
 #include "Log.h"
 #include "bubble.h"
+#include "gameParams.h"
 #include "input.h"
 #include "popple.h"
 #include "raylib.h"
@@ -46,12 +47,11 @@ int main()
         spawnTimer += GetFrameTime();
 
         if (spawnTimer > spawnInterval) {
-            spawnInterval = GetRandomValue(20, 5)/10.0f;
+            spawnInterval = GameParams::GetSpawnInterval();
             spawnTimer = 0.0f;
             for (int i = 0; i < BUBBLE_COUNT; i++) {
-                if (!bubbles[i].IsActive())
-                {
-                    LOGI("Bubble Spawned at frame: %f", GetTime());
+                if (!bubbles[i].IsActive()) {
+                    // LOGI("Bubble Spawned at frame: %f", GetTime());
                     bubbles[i].SetActive(true);
                     bubbles[i].Spawn();
                     break;
@@ -62,6 +62,7 @@ int main()
         SpatialGrid::Clear();
 
         //---DRAWING AND UPDATE LOOP
+        // will separate if needed
 
         BeginDrawing();
 

@@ -16,7 +16,7 @@ public:
     float rotation;
     float radius;
     Color color;
-    float maxMoveSpeed = 25;
+    float maxMoveSpeed = 15;
     float moveSpeed = 1.0;
 
     void Start();

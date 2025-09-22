@@ -1,5 +1,6 @@
 #include "bubble.h"
 #include "Log.h"
+#include "gameParams.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "score.h"
@@ -46,7 +47,7 @@ void Bubble::Init()
     position = GetRandomSpawnPos();
     radius = GetRandomValue(50, 60);
     AddForce(Vector2Scale(Vector2Normalize(Vector2Zero() - position), m_CenterForce));
-    LOGI("Bubble Initialized");
+    // LOGI("Bubble Initialized");
 }
 
 void Bubble::ResolveCollision(Bubble* collider)
@@ -66,27 +67,27 @@ void Bubble::Update(float dT)
     if (!m_IsActive)
         return;
 
-    // INFO: Respawn as new on touch
+    // INFO: Deactivate on touch
     for (int i = 0; i < GetTouchPointCount(); i++) {
         if (IsPointInBubble(Input::Get().GetTouchPositionWS(i))) {
             // Init();
             SetActive(false);
             Score::AddScore(5);
-            LOGI("Bubble burst!");
+            GameParams::DecreaseSpawnInterval(0.01f);
+            // LOGI("Bubble burst!");
         }
     }
 
     // INFO: Deactivate on reaching center
-
     if (Vector2Length(position) <= radius + 50) {
         Score::DecreaseHealth(10);
         SetActive(false);
-        LOGI("Tower Hit!");
+        // LOGI("Tower Hit!");
     }
 
     SpatialGrid::AddEntity(this);
 
-    // Pull towards center
+    //INFO: Pull towards center
     AddForce(Vector2Scale(Vector2Normalize(Vector2Zero() - position), m_CenterForce));
 
     ApplyForces();

@@ -33,6 +33,7 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/input.cpp"
     "${CMAKE_SOURCE_DIR}/spatialGrid.cpp"
     "${CMAKE_SOURCE_DIR}/score.cpp"
+    "${CMAKE_SOURCE_DIR}/gameParams.cpp"
 )
 
 # Define compiler macros for the library
