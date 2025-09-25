@@ -1,6 +1,7 @@
 #include "bubble.h"
 #include "Log.h"
-#include "gameParams.h"
+#include "functionLibrary.h"
+#include "gameData.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "score.h"
@@ -18,9 +19,7 @@ Bubble::~Bubble() { }
 
 void Bubble::Start()
 {
-    if (!m_IsActive)
-        return;
-    // Init();
+    SetActive(false);
 }
 
 Vector2 Bubble::GetRandomSpawnPos()
@@ -34,8 +33,6 @@ Vector2 Bubble::GetRandomSpawnPos()
 
 void Bubble::Spawn()
 {
-    if (!m_IsActive)
-        return;
     Init();
 }
 
@@ -47,6 +44,22 @@ void Bubble::Init()
     position = GetRandomSpawnPos();
     radius = GetRandomValue(50, 60);
     AddForce(Vector2Scale(Vector2Normalize(Vector2Zero() - position), m_CenterForce));
+
+    // 20% chance of a special bubble
+    // type = RollPercentage(20) ? ELECTRO_BUBBLE : DEFAULT_BUBBLE;
+    type = RollPercentage(20) ? ANEMO_BUBBLE : DEFAULT_BUBBLE;
+
+    switch (type) {
+    case DEFAULT_BUBBLE:
+        color = WHITE;
+        break;
+    case ELECTRO_BUBBLE:
+        color = PURPLE;
+        break;
+    case ANEMO_BUBBLE:
+        color = { 107, 227, 183, 255 };
+        break;
+    }
     // LOGI("Bubble Initialized");
 }
 
@@ -64,17 +77,22 @@ void Bubble::ResolveCollision(Bubble* collider)
 
 void Bubble::Update(float dT)
 {
-    if (!m_IsActive)
-        return;
-
     // INFO: Deactivate on touch
     for (int i = 0; i < GetTouchPointCount(); i++) {
         if (IsPointInBubble(Input::Get().GetTouchPositionWS(i))) {
             // Init();
             SetActive(false);
             Score::AddScore(5);
-            GameParams::DecreaseSpawnInterval(0.01f);
+            GameData::DecreaseSpawnInterval(0.01f);
+
+            OnBubblePopped();
             // LOGI("Bubble burst!");
+        }
+    }
+
+    if (GameData::ElectroShieldActive()) {
+        if (Vector2Length(position) <= radius + 200) {
+            SetActive(false);
         }
     }
 
@@ -87,7 +105,7 @@ void Bubble::Update(float dT)
 
     SpatialGrid::AddEntity(this);
 
-    //INFO: Pull towards center
+    // INFO: Pull towards center
     AddForce(Vector2Scale(Vector2Normalize(Vector2Zero() - position), m_CenterForce));
 
     ApplyForces();
@@ -102,13 +120,10 @@ void Bubble::Update(float dT)
 
 void Bubble::Draw() const
 {
-    if (!m_IsActive)
-        return;
-
     DrawCircleV(position, radius, color);
 }
 
-void Bubble::SetActive(bool active) { m_IsActive = active; }
+void Bubble::OnBubblePopped() { GameData::AddSpecialBubble(type); }
 
 bool Bubble::IsPointInBubble(Vector2 point) const { return Vector2Length(point - position) <= radius; }
 
@@ -125,4 +140,4 @@ void Bubble::ApplyForces()
 
     position += m_Velocity;
 }
-void Bubble::ClearForces() { m_Forces.clear(); }
+void Bubble::ClearForces() { }

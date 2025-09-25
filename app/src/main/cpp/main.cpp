@@ -1,6 +1,8 @@
+#include "Entity.h"
+#include "EntityManager.h"
 #include "Log.h"
 #include "bubble.h"
-#include "gameParams.h"
+#include "gameData.h"
 #include "input.h"
 #include "popple.h"
 #include "raylib.h"
@@ -22,6 +24,7 @@ int main()
     camera = { 0 };
     camera.target = (Vector2) { 0.0f, 0.0f };
     camera.offset = (Vector2) { screenWidth / 2.0f, screenHeight / 2.0f };
+
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
 
@@ -33,9 +36,14 @@ int main()
 
     Bubble* bubbles = new Bubble[BUBBLE_COUNT];
 
-    for (int i = 0; i < BUBBLE_COUNT; i++) {
-        bubbles[i].Start();
-        bubbles[i].SetActive(false);
+    /* for (int i = 0; i < BUBBLE_COUNT; i++) {
+        // bubbles[i].Start();
+        // TODO:
+        //  bubbles[i].SetActive(false);
+    } */
+
+    for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
+        EntityManager::GetEntityAt(i)->Start();
     }
 
     float spawnTimer = 0.0f;
@@ -47,7 +55,7 @@ int main()
         spawnTimer += GetFrameTime();
 
         if (spawnTimer > spawnInterval) {
-            spawnInterval = GameParams::GetSpawnInterval();
+            spawnInterval = GameData::GetSpawnInterval();
             spawnTimer = 0.0f;
             for (int i = 0; i < BUBBLE_COUNT; i++) {
                 if (!bubbles[i].IsActive()) {
@@ -64,6 +72,8 @@ int main()
         //---DRAWING AND UPDATE LOOP
         // will separate if needed
 
+        GameData::Update(GetFrameTime());
+
         BeginDrawing();
 
         ClearBackground(BLACK);
@@ -71,9 +81,20 @@ int main()
         BeginMode2D(camera);
 
         DrawRectanglePro(tower, towerCenter, towerRotation, BEIGE);
-        for (int i = 0; i < BUBBLE_COUNT; i++) {
+        /* for (int i = 0; i < BUBBLE_COUNT; i++) {
             bubbles[i].Update(GetFrameTime());
             bubbles[i].Draw();
+        } */
+        for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
+            auto e = EntityManager::GetEntityAt(i);
+            if (e != NULL && e->IsActive()) {
+                e->Update(GetFrameTime());
+                e->Draw();
+            }
+        }
+
+        if (GameData::ElectroShieldActive()) {
+            DrawCircleLinesV({ 0 }, 200, PURPLE);
         }
 
         Score::ShowScore();

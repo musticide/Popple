@@ -6,8 +6,16 @@
 #include <vector>
 
 #include "input.h"
+#include "Entity.h"
 
-class Bubble {
+enum BubbleType
+{
+    DEFAULT_BUBBLE,
+    ELECTRO_BUBBLE,
+    ANEMO_BUBBLE
+};
+
+class Bubble : public Entity{
 public:
     Bubble();
     ~Bubble();
@@ -19,31 +27,32 @@ public:
     float maxMoveSpeed = 15;
     float moveSpeed = 1.0;
 
-    void Start();
-    void Update(float dT = 1.0f);
+    void Start() override;
+    void Update(float dT = 1.0f) override;
 
-    void Draw() const;
+    void Draw() const override;
 
-    void SetActive(bool active);
+    // void SetActive(bool active);
 
     void AddForce(Vector2 force);
 
     void Spawn();
 
     // Getters
-    bool IsActive() const { return m_IsActive; }
     Vector2 GetVelocity() const { return m_Velocity; }
 
 private:
-    bool m_IsActive = true;
+    BubbleType type;
     Vector2 m_Velocity;
     constexpr static const float m_Drag = 0.1;
     constexpr static const float m_CenterForce = 0.5;
-    std::vector<Vector2> m_Forces;
+    bool m_IsActive = true;
+    // std::vector<Vector2> m_Forces;
 
     void Init();
     bool IsPointInBubble(Vector2 point) const;
 
+    void OnBubblePopped();
     Vector2 GetRandomSpawnPos();
     void ApplyForces();
     void ClearForces();
