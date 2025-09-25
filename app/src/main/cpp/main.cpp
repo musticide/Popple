@@ -2,6 +2,7 @@
 #include "EntityManager.h"
 #include "Log.h"
 #include "bubble.h"
+#include "bubbleManager.h"
 #include "gameData.h"
 #include "input.h"
 #include "popple.h"
@@ -34,13 +35,7 @@ int main()
     float towerRotation = 0.0f;
     Vector2 towerCenter = { tower.x + tower.width / 2, tower.y + tower.height / 2 };
 
-    Bubble* bubbles = new Bubble[BUBBLE_COUNT];
-
-    /* for (int i = 0; i < BUBBLE_COUNT; i++) {
-        // bubbles[i].Start();
-        // TODO:
-        //  bubbles[i].SetActive(false);
-    } */
+    BubbleManager::Init();
 
     for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
         EntityManager::GetEntityAt(i)->Start();
@@ -51,21 +46,6 @@ int main()
 
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
-
-        spawnTimer += GetFrameTime();
-
-        if (spawnTimer > spawnInterval) {
-            spawnInterval = GameData::GetSpawnInterval();
-            spawnTimer = 0.0f;
-            for (int i = 0; i < BUBBLE_COUNT; i++) {
-                if (!bubbles[i].IsActive()) {
-                    // LOGI("Bubble Spawned at frame: %f", GetTime());
-                    bubbles[i].SetActive(true);
-                    bubbles[i].Spawn();
-                    break;
-                }
-            }
-        }
 
         SpatialGrid::Clear();
 
@@ -81,10 +61,7 @@ int main()
         BeginMode2D(camera);
 
         DrawRectanglePro(tower, towerCenter, towerRotation, BEIGE);
-        /* for (int i = 0; i < BUBBLE_COUNT; i++) {
-            bubbles[i].Update(GetFrameTime());
-            bubbles[i].Draw();
-        } */
+
         for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
             auto e = EntityManager::GetEntityAt(i);
             if (e != NULL && e->IsActive()) {
