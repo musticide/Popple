@@ -1,5 +1,6 @@
 #include "bubble.h"
 #include "Log.h"
+#include "bubbleManager.h"
 #include "functionLibrary.h"
 #include "gameData.h"
 #include "raylib.h"
@@ -17,10 +18,7 @@ Bubble::Bubble()
 
 Bubble::~Bubble() { }
 
-void Bubble::Start()
-{
-    SetActive(false);
-}
+void Bubble::Start() { SetActive(false); }
 
 Vector2 Bubble::GetRandomSpawnPos()
 {
@@ -31,10 +29,7 @@ Vector2 Bubble::GetRandomSpawnPos()
     return (Vector2) { (float)cos(randAngle) * distance, (float)sin(randAngle) * distance };
 }
 
-void Bubble::Spawn()
-{
-    Init();
-}
+void Bubble::Spawn() { Init(); }
 
 void Bubble::Init()
 {
@@ -46,21 +41,13 @@ void Bubble::Init()
     AddForce(Vector2Scale(Vector2Normalize(Vector2Zero() - position), m_CenterForce));
 
     // 20% chance of a special bubble
-    // type = RollPercentage(20) ? ELECTRO_BUBBLE : DEFAULT_BUBBLE;
-    type = RollPercentage(20) ? ANEMO_BUBBLE : DEFAULT_BUBBLE;
-
-    switch (type) {
-    case DEFAULT_BUBBLE:
-        color = WHITE;
-        break;
-    case ELECTRO_BUBBLE:
-        color = PURPLE;
-        break;
-    case ANEMO_BUBBLE:
-        color = { 107, 227, 183, 255 };
-        break;
+    if (RollPercentage(40)) {
+        m_Type = RollPercentage(50) ? ANEMO_BUBBLE : ELECTRO_BUBBLE;
+    } else {
+        m_Type = DEFAULT_BUBBLE;
     }
-    // LOGI("Bubble Initialized");
+
+    SetColor(m_Type);
 }
 
 void Bubble::ResolveCollision(Bubble* collider)
@@ -77,31 +64,6 @@ void Bubble::ResolveCollision(Bubble* collider)
 
 void Bubble::Update(float dT)
 {
-    // INFO: Deactivate on touch
-    for (int i = 0; i < GetTouchPointCount(); i++) {
-        if (IsPointInBubble(Input::Get().GetTouchPositionWS(i))) {
-            // Init();
-            SetActive(false);
-            Score::AddScore(5);
-            GameData::DecreaseSpawnInterval(0.01f);
-
-            OnBubblePopped();
-            // LOGI("Bubble burst!");
-        }
-    }
-
-    if (GameData::ElectroShieldActive()) {
-        if (Vector2Length(position) <= radius + 200) {
-            SetActive(false);
-        }
-    }
-
-    // INFO: Deactivate on reaching center
-    if (Vector2Length(position) <= radius + 50) {
-        Score::DecreaseHealth(10);
-        SetActive(false);
-        // LOGI("Tower Hit!");
-    }
 
     SpatialGrid::AddEntity(this);
 
@@ -118,12 +80,7 @@ void Bubble::Update(float dT)
     }
 }
 
-void Bubble::Draw() const
-{
-    DrawCircleV(position, radius, color);
-}
-
-void Bubble::OnBubblePopped() { GameData::AddSpecialBubble(type); }
+void Bubble::Draw() const { DrawCircleV(position, radius, color); }
 
 bool Bubble::IsPointInBubble(Vector2 point) const { return Vector2Length(point - position) <= radius; }
 
@@ -141,3 +98,21 @@ void Bubble::ApplyForces()
     position += m_Velocity;
 }
 void Bubble::ClearForces() { }
+void Bubble::SetColor(BubbleType type)
+{
+    switch (m_Type) {
+    case DEFAULT_BUBBLE:
+        color = WHITE;
+        break;
+    case ELECTRO_BUBBLE:
+        color = PURPLE;
+        break;
+    case ANEMO_BUBBLE:
+        color = { 107, 227, 183, 255 };
+        break;
+    default:
+        color = WHITE;
+        break;
+    }
+}
+

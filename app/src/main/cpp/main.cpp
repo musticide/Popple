@@ -70,12 +70,23 @@ int main()
             }
         }
 
-        if (GameData::ElectroShieldActive()) {
+        switch (GameData::GetActiveElementalEffect()) {
+
+        case NO_ELEMENTAL_EFFECT:
+            break;
+        case ELECTRO:
             DrawCircleLinesV({ 0 }, 200, PURPLE);
+            break;
+        case ANEMO:
+            DrawCircleLinesV({ 0 }, 200, GREEN);
+            break;
+        case ELEMENTAL_EFFECT_COUNT:
+            break;
         }
 
         Score::ShowScore();
         Score::ShowHealth();
+        GameData::DrawComboCount();
 
         EndMode2D();
 

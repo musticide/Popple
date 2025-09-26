@@ -2,6 +2,10 @@
 
 #include "bubble.h"
 #include <vector>
+#define MAX_COMBO_LENGTH 3
+
+enum ElementalEffect { NO_ELEMENTAL_EFFECT = 0, ELECTRO, ANEMO, ELEMENTAL_EFFECT_COUNT };
+
 class GameData {
 private:
     GameData();
@@ -16,10 +20,12 @@ private:
     float m_SpawnInterval = 1.5f;
     float m_MinSpawnInterval = 0.20f;
 
-    std::vector<int> m_ComboCount = std::vector<int>(3, 0); // Indexed by BubbleType
-    bool m_ElectroShieldActive = false;
+    std::vector<int> m_ComboCount = std::vector<int>(BUBBLE_TYPES_COUNT, 0); // Indexed by BubbleType
+    // bool m_ElectroShieldActive = false;
     float m_ShieldDuration = 5.0f;
     float m_ElectroShieldTimer = 0.0f;
+
+    ElementalEffect m_ActiveElementalEffect;
 
     void UpdateInternal(float dT);
 
@@ -30,6 +36,10 @@ private:
     void AddSpecialBubbleInternal(BubbleType type);
 
     void ActivateAnemoBlast();
+
+    void DrawComboCountInternal();
+
+    Color GetElementalColorInternal(ElementalEffect type);
 
 public:
     GameData(GameData&&) = delete;
@@ -45,7 +55,13 @@ public:
 
     static void AddSpecialBubble(BubbleType type) { Get().AddSpecialBubbleInternal(type); }
 
-    static bool ElectroShieldActive() { return Get().m_ElectroShieldActive; }
+    // static bool ElectroShieldActive() { return Get().m_ElectroShieldActive; }
+
+    static ElementalEffect GetActiveElementalEffect() { return Get().m_ActiveElementalEffect; }
+
+    static void DrawComboCount() { Get().DrawComboCountInternal(); }
 
     static void Update(float dT) { Get().UpdateInternal(dT); }
+
+    static Color GetElementalColor(ElementalEffect type) { return Get().GetElementalColorInternal(type); }
 };

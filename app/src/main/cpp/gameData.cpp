@@ -1,6 +1,7 @@
 #include "gameData.h"
 #include "Log.h"
 #include "bubble.h"
+#include "raylib.h"
 
 GameData::GameData() { }
 GameData::~GameData() { }
@@ -15,40 +16,106 @@ void GameData::DecreaseSpawnIntervalInternal(float factor)
 void GameData::SetSpawnIntervalInternal(float interval) { m_SpawnInterval = interval; }
 void GameData::UpdateInternal(float dT)
 {
-    if (m_ElectroShieldActive) {
+    switch (m_ActiveElementalEffect) {
+    case NO_ELEMENTAL_EFFECT:
+        break;
+    case ELECTRO:
         m_ElectroShieldTimer += dT;
         if (m_ElectroShieldTimer >= m_ShieldDuration) {
-            m_ElectroShieldActive = false;
+            m_ActiveElementalEffect = NO_ELEMENTAL_EFFECT;
             m_ElectroShieldTimer = 0.0f;
         }
+        break;
+    case ANEMO:
+        m_ElectroShieldTimer += dT;
+        if (m_ElectroShieldTimer >= m_ShieldDuration) {
+            m_ActiveElementalEffect = NO_ELEMENTAL_EFFECT;
+            m_ElectroShieldTimer = 0.0f;
+        } else {
+            ActivateAnemoBlast();
+        }
+        break;
+    default:
+        break;
     }
 }
 
 void GameData::AddSpecialBubbleInternal(BubbleType type)
 {
-    LOGI("Anemo Combo Count: %d", m_ComboCount[ANEMO_BUBBLE]);
-    m_ComboCount[type]++;
-    switch (type) {
-    case DEFAULT_BUBBLE:
-        break;
-    case ELECTRO_BUBBLE:
-        if (m_ComboCount[ELECTRO_BUBBLE] >= 3) {
-            m_ComboCount[ELECTRO_BUBBLE] = 0;
-            m_ElectroShieldActive = true;
+    if (type != DEFAULT_BUBBLE) {
+        for (int i = 1; i < BUBBLE_TYPES_COUNT; i++) {
+            if (i == type)
+                m_ComboCount[i]++;
+            else
+                m_ComboCount[i] = 0;
+
+            LOGI("Combo Count %d = %d", i, m_ComboCount[i]);
         }
-        break;
-    case ANEMO_BUBBLE:
-        if (m_ComboCount[ANEMO_BUBBLE] >= 3) {
-            m_ComboCount[ANEMO_BUBBLE] = 0;
-            // m_AnemoBlast = true;
-            ActivateAnemoBlast();
+
+        switch (type) {
+        case ELECTRO_BUBBLE:
+            if (m_ComboCount[ELECTRO_BUBBLE] >= MAX_COMBO_LENGTH) {
+                LOGI("Electro Shield Activated");
+                m_ComboCount[ELECTRO_BUBBLE] = 0;
+                m_ActiveElementalEffect = ELECTRO;
+            }
+            break;
+        case ANEMO_BUBBLE:
+            if (m_ComboCount[ANEMO_BUBBLE] >= MAX_COMBO_LENGTH) {
+                LOGI("Anemo Activated");
+                LOGW("Anemo Blast Not implemented");
+                m_ComboCount[ANEMO_BUBBLE] = 0;
+                m_ActiveElementalEffect = ANEMO;
+            }
+            break;
+        default:
+            LOGE("Bubble Type Out of range");
+            break;
         }
-        break;
     }
 }
 
 void GameData::ActivateAnemoBlast()
 {
-    LOGI("Anemo Blast Not implemented");
-   //add force to all bubbles
+    // add force to all bubbles
+}
+
+void GameData::DrawComboCountInternal()
+{
+    for (int i = 0; i < MAX_COMBO_LENGTH; i++) {
+        Color color = GRAY;
+        float radius = 10;
+        Vector2 center = { -80, (float)-GetScreenHeight() / 2 + 200 };
+        center.x += 80 * i;
+
+        for (int j = 1; j < BUBBLE_TYPES_COUNT; j++) {
+            if (m_ComboCount[j] > 0 && i < m_ComboCount[j]) {
+                color = GetElementalColorInternal((ElementalEffect)j);
+                radius = 30;
+            }
+        }
+
+        DrawCircleV(center, radius, color);
+    }
+}
+Color GameData::GetElementalColorInternal(ElementalEffect type)
+{
+    Color result;
+
+    switch (type) {
+    case NO_ELEMENTAL_EFFECT:
+        result = WHITE;
+        break;
+    case ELECTRO:
+        result = PURPLE;
+        break;
+    case ANEMO:
+        result = { 107, 227, 183, 255 };
+        break;
+    default:
+        result = WHITE;
+        break;
+    }
+
+    return result;
 }

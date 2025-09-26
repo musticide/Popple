@@ -5,17 +5,12 @@
 #include <raymob.h>
 #include <vector>
 
-#include "input.h"
 #include "Entity.h"
+#include "input.h"
 
-enum BubbleType
-{
-    DEFAULT_BUBBLE,
-    ELECTRO_BUBBLE,
-    ANEMO_BUBBLE
-};
+enum BubbleType { DEFAULT_BUBBLE = 0, ELECTRO_BUBBLE, ANEMO_BUBBLE, BUBBLE_TYPES_COUNT };
 
-class Bubble : public Entity{
+class Bubble : public Entity {
 public:
     Bubble();
     ~Bubble();
@@ -32,17 +27,18 @@ public:
 
     void Draw() const override;
 
-    // void SetActive(bool active);
-
     void AddForce(Vector2 force);
 
     void Spawn();
 
+    bool IsPointInBubble(Vector2 point) const;
+
     // Getters
     Vector2 GetVelocity() const { return m_Velocity; }
+    BubbleType GetType() const { return m_Type; }
 
 private:
-    BubbleType type;
+    BubbleType m_Type;
     Vector2 m_Velocity;
     constexpr static const float m_Drag = 0.1;
     constexpr static const float m_CenterForce = 0.5;
@@ -50,9 +46,9 @@ private:
     // std::vector<Vector2> m_Forces;
 
     void Init();
-    bool IsPointInBubble(Vector2 point) const;
 
-    void OnBubblePopped();
+    void SetColor(BubbleType type);
+
     Vector2 GetRandomSpawnPos();
     void ApplyForces();
     void ClearForces();
