@@ -1,13 +1,22 @@
 #include "bubbleManager.h"
 #include "Log.h"
+#include "bubble.h"
 #include "gameData.h"
+#include "raylib.h"
 #include "raymath.h"
 #include "score.h"
 
 BubbleManager::BubbleManager() { LOGI("Bubble Manager Initialized"); }
 
-BubbleManager::~BubbleManager() { }
+BubbleManager::~BubbleManager() { delete[] m_Bubbles; }
 
+void BubbleManager::DoAnemoBlast(Bubble& bubble)
+{
+    LOGI("Anemo Blast Force applied");
+    Vector2 force = Vector2Normalize(bubble.position);
+    force = Vector2Scale(force, 90000000);
+    bubble.AddForce(force);
+}
 void BubbleManager::Update(float dT)
 {
     SpawnBubbleInternal();
@@ -41,13 +50,18 @@ void BubbleManager::Update(float dT)
                 break;
 
             case ANEMO:
+                DoAnemoBlast(m_Bubbles[i]);
+                //     Vector2 force = m
+                // m_Bubbles[i].AddForce(Vector2 force)
             default:
                 break;
             }
 
             if (m_Bubbles[i].IsActive()) {
                 if (Vector2Length(m_Bubbles[i].position) <= m_Bubbles[i].radius + 50) {
-                    Score::DecreaseHealth(10);
+                    if (m_Bubbles[i].GetType() == DEFAULT_BUBBLE) {
+                        Score::DecreaseHealth(10);
+                    }
                     m_Bubbles[i].SetActive(false);
                     continue;
                 }

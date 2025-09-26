@@ -1,6 +1,7 @@
 #include "gameData.h"
 #include "Log.h"
 #include "bubble.h"
+#include "bubbleManager.h"
 #include "raylib.h"
 
 GameData::GameData() { }
@@ -27,12 +28,10 @@ void GameData::UpdateInternal(float dT)
         }
         break;
     case ANEMO:
-        m_ElectroShieldTimer += dT;
-        if (m_ElectroShieldTimer >= m_ShieldDuration) {
+        m_AnemoEffectTimer += dT;
+        if (m_AnemoEffectTimer >= m_AnemoEffectDuration) {
+            m_AnemoEffectTimer = 0.0f;
             m_ActiveElementalEffect = NO_ELEMENTAL_EFFECT;
-            m_ElectroShieldTimer = 0.0f;
-        } else {
-            ActivateAnemoBlast();
         }
         break;
     default:
@@ -63,7 +62,6 @@ void GameData::AddSpecialBubbleInternal(BubbleType type)
         case ANEMO_BUBBLE:
             if (m_ComboCount[ANEMO_BUBBLE] >= MAX_COMBO_LENGTH) {
                 LOGI("Anemo Activated");
-                LOGW("Anemo Blast Not implemented");
                 m_ComboCount[ANEMO_BUBBLE] = 0;
                 m_ActiveElementalEffect = ANEMO;
             }
@@ -75,10 +73,7 @@ void GameData::AddSpecialBubbleInternal(BubbleType type)
     }
 }
 
-void GameData::ActivateAnemoBlast()
-{
-    // add force to all bubbles
-}
+void GameData::ActivateAnemoBlast() { }
 
 void GameData::DrawComboCountInternal()
 {

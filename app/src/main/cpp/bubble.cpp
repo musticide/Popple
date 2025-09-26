@@ -37,7 +37,7 @@ void Bubble::Init()
     m_Velocity = Vector2Zero();
 
     position = GetRandomSpawnPos();
-    radius = GetRandomValue(50, 60);
+    radius = GetRandomValue(85, 70);
     AddForce(Vector2Scale(Vector2Normalize(Vector2Zero() - position), m_CenterForce));
 
     // 20% chance of a special bubble

@@ -4,13 +4,9 @@
 #include "bubble.h"
 #include "gameData.h"
 
-class BubbleManager  : public Entity {
-public:
-    BubbleManager(BubbleManager&&) = delete;
-    BubbleManager(const BubbleManager&) = delete;
-    BubbleManager& operator=(BubbleManager&&) = delete;
-    BubbleManager& operator=(const BubbleManager&) = delete;
-    ~BubbleManager();
+class BubbleManager : public Entity {
+private:
+    BubbleManager();
 
     static BubbleManager& Get()
     {
@@ -18,16 +14,6 @@ public:
         return instance;
     }
 
-    void Start() override;
-
-    void Update(float dT = 1.0f) override;
-
-    static void SpawnBubble() {Get().SpawnBubbleInternal();}
-
-    static void Init();
-
-private:
-    BubbleManager();
     const int m_MaxBubbleCount = 30;
 
     Bubble* m_Bubbles = new Bubble[m_MaxBubbleCount];
@@ -35,4 +21,20 @@ private:
     float m_SpawnTimer = 0.0f;
 
     void SpawnBubbleInternal();
+    void DoAnemoBlast(Bubble& bubble);
+
+public:
+    BubbleManager(BubbleManager&&) = delete;
+    BubbleManager(const BubbleManager&) = delete;
+    BubbleManager& operator=(BubbleManager&&) = delete;
+    BubbleManager& operator=(const BubbleManager&) = delete;
+    ~BubbleManager();
+
+    void Start() override;
+
+    void Update(float dT = 1.0f) override;
+
+    static void SpawnBubble() { Get().SpawnBubbleInternal(); }
+
+    static void Init();
 };

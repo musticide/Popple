@@ -25,6 +25,8 @@ private:
     float m_ShieldDuration = 5.0f;
     float m_ElectroShieldTimer = 0.0f;
 
+    float m_AnemoEffectTimer = 0.0f;
+    float m_AnemoEffectDuration = 1.0f;
     ElementalEffect m_ActiveElementalEffect;
 
     void UpdateInternal(float dT);
