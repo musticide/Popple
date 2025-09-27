@@ -114,3 +114,17 @@ Color GameData::GetElementalColorInternal(ElementalEffect type)
 
     return result;
 }
+void GameData::ResetInternal()
+{
+    m_SpawnInterval = 1.5f;
+    m_MinSpawnInterval = 0.20f;
+
+    m_ShieldDuration = 5.0f;
+    m_ElectroShieldTimer = 0.0f;
+
+    m_AnemoEffectTimer = 0.0f;
+    m_AnemoEffectDuration = 1.0f;
+    for (int j = 1; j < BUBBLE_TYPES_COUNT; j++) {
+        m_ComboCount[j] = 0;
+    }
+}

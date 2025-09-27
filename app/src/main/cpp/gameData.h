@@ -21,13 +21,13 @@ private:
     float m_MinSpawnInterval = 0.20f;
 
     std::vector<int> m_ComboCount = std::vector<int>(BUBBLE_TYPES_COUNT, 0); // Indexed by BubbleType
-    // bool m_ElectroShieldActive = false;
+    ElementalEffect m_ActiveElementalEffect;
+
     float m_ShieldDuration = 5.0f;
     float m_ElectroShieldTimer = 0.0f;
 
     float m_AnemoEffectTimer = 0.0f;
     float m_AnemoEffectDuration = 1.0f;
-    ElementalEffect m_ActiveElementalEffect;
 
     void UpdateInternal(float dT);
 
@@ -42,6 +42,8 @@ private:
     void DrawComboCountInternal();
 
     Color GetElementalColorInternal(ElementalEffect type);
+
+    void ResetInternal();
 
 public:
     GameData(GameData&&) = delete;
@@ -66,4 +68,6 @@ public:
     static void Update(float dT) { Get().UpdateInternal(dT); }
 
     static Color GetElementalColor(ElementalEffect type) { return Get().GetElementalColorInternal(type); }
+
+    static void Reset() { Get().ResetInternal(); }
 };

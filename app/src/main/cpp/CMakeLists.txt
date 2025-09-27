@@ -37,6 +37,10 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/Entity.cpp"
     "${CMAKE_SOURCE_DIR}/EntityManager.cpp"
     "${CMAKE_SOURCE_DIR}/bubbleManager.cpp"
+    "${CMAKE_SOURCE_DIR}/GameStateManager.cpp"
+    "${CMAKE_SOURCE_DIR}/Signal.cpp"
+    "${CMAKE_SOURCE_DIR}/Button.cpp"
+
 )
 
 # Define compiler macros for the library

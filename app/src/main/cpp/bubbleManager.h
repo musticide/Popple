@@ -8,11 +8,6 @@ class BubbleManager : public Entity {
 private:
     BubbleManager();
 
-    static BubbleManager& Get()
-    {
-        static BubbleManager instance;
-        return instance;
-    }
 
     const int m_MaxBubbleCount = 30;
 
@@ -23,12 +18,20 @@ private:
     void SpawnBubbleInternal();
     void DoAnemoBlast(Bubble& bubble);
 
+    void ResetInternal();
+
 public:
     BubbleManager(BubbleManager&&) = delete;
     BubbleManager(const BubbleManager&) = delete;
     BubbleManager& operator=(BubbleManager&&) = delete;
     BubbleManager& operator=(const BubbleManager&) = delete;
     ~BubbleManager();
+
+    static BubbleManager& Get()
+    {
+        static BubbleManager instance;
+        return instance;
+    }
 
     void Start() override;
 
@@ -37,4 +40,6 @@ public:
     static void SpawnBubble() { Get().SpawnBubbleInternal(); }
 
     static void Init();
+
+    static void Reset() { Get().ResetInternal(); }
 };

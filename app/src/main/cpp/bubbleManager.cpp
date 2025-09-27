@@ -30,7 +30,7 @@ void BubbleManager::Update(float dT)
         if (m_Bubbles[i].IsActive()) {
 
             for (int j = 0; j < GetTouchPointCount(); j++) {
-                if (m_Bubbles[i].IsPointInBubble(Input::Get().GetTouchPositionWS(j))) {
+                if (m_Bubbles[i].IsPointInBubble(Input::GetTouchPositionWS(j))) {
                     Score::AddScore(5);
                     GameData::DecreaseSpawnInterval(0.01f);
                     GameData::AddSpecialBubble(m_Bubbles[i].GetType());
@@ -90,4 +90,12 @@ void BubbleManager::SpawnBubbleInternal()
 }
 
 void BubbleManager::Init() { Get(); }
-void BubbleManager::Start() { SetActive(true); }
+void BubbleManager::Start() {}
+
+void BubbleManager::ResetInternal()
+{
+
+    for (int i = 0; i < m_MaxBubbleCount; i++) {
+        m_Bubbles[i].SetActive(false);
+    }
+}
