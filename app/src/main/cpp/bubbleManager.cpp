@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "bubble.h"
 #include "gameData.h"
+#include "input.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "score.h"
@@ -13,8 +14,8 @@ BubbleManager::~BubbleManager() { delete[] m_Bubbles; }
 void BubbleManager::DoAnemoBlast(Bubble& bubble)
 {
     LOGI("Anemo Blast Force applied");
-    Vector2 force = Vector2Normalize(bubble.position);
-    force = Vector2Scale(force, 90000000);
+    Vector3 force = Vector3Normalize(bubble.position);
+    force = Vector3Scale(force, 500);
     bubble.AddForce(force);
 }
 void BubbleManager::Update(float dT)
@@ -30,6 +31,8 @@ void BubbleManager::Update(float dT)
         if (m_Bubbles[i].IsActive()) {
 
             for (int j = 0; j < GetTouchPointCount(); j++) {
+                // Vector3 touchPos = Input::GetTouchPositionWS(j);
+                // LOGI("Touch Pos: %f, %f, %f", touchPos.x, touchPos.y, touchPos.z);
                 if (m_Bubbles[i].IsPointInBubble(Input::GetTouchPositionWS(j))) {
                     Score::AddScore(5);
                     GameData::DecreaseSpawnInterval(0.01f);
@@ -44,25 +47,26 @@ void BubbleManager::Update(float dT)
                 break;
 
             case ELECTRO:
-                if (Vector2Length(m_Bubbles[i].position) <= m_Bubbles[i].radius + 200) {
+                if (Vector3Length(m_Bubbles[i].position) <= m_Bubbles[i].radius + 4) {
                     m_Bubbles[i].SetActive(false);
                 }
                 break;
 
             case ANEMO:
                 DoAnemoBlast(m_Bubbles[i]);
-                //     Vector2 force = m
-                // m_Bubbles[i].AddForce(Vector2 force)
+                //     Vector3 force = m
+                // m_Bubbles[i].AddForce(Vector3 force)
             default:
                 break;
             }
 
             if (m_Bubbles[i].IsActive()) {
-                if (Vector2Length(m_Bubbles[i].position) <= m_Bubbles[i].radius + 50) {
+                if (Vector3Length(m_Bubbles[i].position) <= m_Bubbles[i].radius + 2) {
                     if (m_Bubbles[i].GetType() == DEFAULT_BUBBLE) {
                         Score::DecreaseHealth(10);
                     }
                     m_Bubbles[i].SetActive(false);
+                    LOGI("Bubble Reset");
                     continue;
                 }
             }

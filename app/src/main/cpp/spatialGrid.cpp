@@ -11,10 +11,10 @@ void SpatialGrid::AddEntityInternal(Bubble* entity)
     m_Grid[gridIndex].push_back(entity);
 }
 
-int SpatialGrid::GetGridIndexInternal(Vector2 position) const
+int SpatialGrid::GetGridIndexInternal(Vector3 position) const
 {
     int col = (int)(position.x / GRID_SIZE);
-    int row = (int)(position.y / GRID_SIZE);
+    int row = (int)(position.z / GRID_SIZE);
 
     col = std::max(0, std::min(col, GRID_COLS - 1));
     row = std::max(0, std::min(row, GRID_ROWS - 1));
@@ -29,12 +29,12 @@ void SpatialGrid::ClearInternal()
     }
 }
 
-std::vector<Bubble*> SpatialGrid::GetNearbyEntitiesInternal(Vector2 position) const
+std::vector<Bubble*> SpatialGrid::GetNearbyEntitiesInternal(Vector3 position) const
 {
     std::vector<Bubble*> result;
 
     int centerCol = (int)(position.x / GRID_SIZE);
-    int centerRow = (int)(position.y / GRID_SIZE);
+    int centerRow = (int)(position.z / GRID_SIZE);
 
     for (int row = centerRow - 1; row <= centerRow + 1; row++) {
         for (int col = centerCol - 1; col <= centerCol + 1; col++) {

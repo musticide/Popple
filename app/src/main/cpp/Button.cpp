@@ -70,7 +70,7 @@ void Button::Draw() const
 void Button::Update(float dT)
 {
     for (int i = 0; i < GetTouchPointCount(); i++) {
-        if (CheckCollisionPointRec(Input::GetTouchPositionWS(i), m_Rectangle)) {
+        if (CheckCollisionPointRec(Input::GetTouchPositionCS(i), m_Rectangle)) {
             onClick();
             break;
         }

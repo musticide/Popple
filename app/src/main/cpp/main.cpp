@@ -7,13 +7,15 @@
 #include "gameData.h"
 #include "input.h"
 #include "raylib.h"
+#include "raymath.h"
 #include "score.h"
 #include "spatialGrid.h"
 #include <raymob.h>
 
 #define BUBBLE_COUNT 50
 
-Camera2D camera;
+Camera3D camera;
+Camera2D camera2D;
 
 void Reset()
 {
@@ -36,21 +38,32 @@ int main()
 
     const int screenWidth = GetScreenWidth(), screenHeight = GetScreenHeight();
 
+    camera2D = { 0 };
+    camera2D.target = (Vector2) { 0.0f, 0.0f };
+    camera2D.offset = (Vector2) { screenWidth / 2.0f, screenHeight / 2.0f };
+
+    camera2D.rotation = 0.0f;
+    camera2D.zoom = 1.0f;
+
     camera = { 0 };
-    camera.target = (Vector2) { 0.0f, 0.0f };
-    camera.offset = (Vector2) { screenWidth / 2.0f, screenHeight / 2.0f };
+    camera.position = (Vector3){ 0.0f, 20.0f, 0.0f };    // Camera position
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Looking at the origin
+    camera.up = (Vector3){ 0.0f, 0.0f, -1.0f };         // "Up" points toward -Z since we're looking down Y
+    camera.fovy = 80.0f;
+    camera.projection = CAMERA_ORTHOGRAPHIC;
 
-    camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
-
-    Input::initialize(camera);
+    Input::initialize(camera, camera2D);
     BubbleManager::Init();
     GameStateManager::Init();
     GameStateManager::ChangeGameState(MAIN_MENU);
 
-    Rectangle tower = { -50.0f, -50.0f, 100.0f, 100.0f };
+    // Rectangle tower = { -50.0f, -50.0f, 100.0f, 100.0f };
+    Model tower = LoadModel("models/TowerBase.glb");
+    // Vector3 towerPosition = (Vector3){17,0,40};
+    Vector3 towerPosition = (Vector3){0};
+
     float towerRotation = 0.0f;
-    Vector2 towerCenter = { tower.x + tower.width / 2, tower.y + tower.height / 2 };
+    // Vector3 towerCenter = { tower.x + tower.width / 2, tower.y + tower.height / 2 };
 
     for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
         EntityManager::GetEntityAt(i)->Start();
@@ -74,7 +87,7 @@ int main()
 
             ClearBackground(BLACK);
 
-            BeginMode2D(camera); //-----------------------------------||
+            BeginMode2D(camera2D); //-----------------------------------||
 
             playButton.Update(GetFrameTime());
             playButton.Draw();
@@ -99,9 +112,12 @@ int main()
 
             ClearBackground(BLACK);
 
-            BeginMode2D(camera); //-----------------------------------||
+            BeginMode3D(camera); //-----------------------------------||
 
-            DrawRectanglePro(tower, towerCenter, towerRotation, BEIGE);
+            // DrawRectanglePro(tower, towerCenter, towerRotation, BEIGE);
+            // DrawModelEx(tower, (Vector3){0}, Vector3Zero(), 0, Vector3One(), WHITE);
+            DrawModel(tower, towerPosition, 1.0f, WHITE);
+        
 
             for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
                 auto e = EntityManager::GetEntityAt(i);
@@ -125,11 +141,15 @@ int main()
                 break;
             }
 
-            Score::ShowScore();
-            Score::ShowHealth();
-            GameData::DrawComboCount();
 
+            EndMode3D(); //-------------------------------------------||
+
+            BeginMode2D(camera2D); //---------------------------------||
+                Score::ShowScore();
+                Score::ShowHealth();
+                GameData::DrawComboCount();
             EndMode2D(); //-------------------------------------------||
+
             EndDrawing(); //----------------------------------------------------||
 
             if (Score::GetHealth() <= 0) {
@@ -144,7 +164,7 @@ int main()
 
             ClearBackground(BLACK);
 
-            BeginMode2D(camera); //-----------------------------------||
+            BeginMode2D(camera2D); //-----------------------------------||
             Score::ShowScore();
             Score::ShowHealth();
             playButton.Update(GetFrameTime());

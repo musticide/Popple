@@ -9,24 +9,27 @@
 #include "spatialGrid.h"
 
 Bubble::Bubble()
-    : position((Vector2) { 0, 0 })
+    : position((Vector3) { 0, 0 })
     , rotation(0.0f)
     , radius(1.0f)
     , color(RAYWHITE)
 {
+    if (m_BubbleBaseModel.meshCount != 0)
+        m_BubbleBaseModel = LoadModel("models/BubbleBase.glb");
 }
 
 Bubble::~Bubble() { }
 
 void Bubble::Start() { SetActive(false); }
 
-Vector2 Bubble::GetRandomSpawnPos()
+Vector3 Bubble::GetRandomSpawnPos()
 {
     int screenSize = GetScreenWidth() > GetScreenHeight() ? GetScreenWidth() : GetScreenHeight();
     screenSize /= 2;
-    float distance = GetRandomValue(screenSize, screenSize * 1.05);
+    float distance = GetRandomValue(45, 55);
     float randAngle = GetRandomValue(0, 360);
-    return (Vector2) { (float)cos(randAngle) * distance, (float)sin(randAngle) * distance };
+    return (Vector3) { (float)cos(randAngle) * distance, 0, (float)sin(randAngle) * distance };
+    // return Vector3{10, 0, 10};
 }
 
 void Bubble::Spawn() { Init(); }
@@ -34,11 +37,11 @@ void Bubble::Spawn() { Init(); }
 void Bubble::Init()
 {
     ClearForces();
-    m_Velocity = Vector2Zero();
+    m_Velocity = Vector3Zero();
 
     position = GetRandomSpawnPos();
-    radius = GetRandomValue(85, 70);
-    AddForce(Vector2Scale(Vector2Normalize(Vector2Zero() - position), m_CenterForce));
+    radius = GetRandomValue(20, 25) / 10.0f;
+    AddForce(Vector3Scale(Vector3Normalize(Vector3Zero() - position), m_CenterForce));
 
     // 20% chance of a special bubble
     if (RollPercentage(40)) {
@@ -52,48 +55,50 @@ void Bubble::Init()
 
 void Bubble::ResolveCollision(Bubble* collider)
 {
-    Vector2 aMinusB = this->position - collider->position;
+    Vector3 aMinusB = this->position - collider->position;
     float totalRadius = this->radius + collider->radius;
-    float distance = Vector2Length(aMinusB);
+    float distance = Vector3Length(aMinusB);
     float penetration = totalRadius - distance;
 
-    Vector2 collisionNormal = Vector2Normalize(aMinusB); /// distance);
-    this->position += Vector2Scale(collisionNormal, penetration * 0.5f);
-    collider->position -= Vector2Scale(collisionNormal, penetration * 0.5f);
+    Vector3 collisionNormal = Vector3Normalize(aMinusB); /// distance);
+    this->position += Vector3Scale(collisionNormal, penetration * 0.5f);
+    collider->position -= Vector3Scale(collisionNormal, penetration * 0.5f);
 }
 
 void Bubble::Update(float dT)
 {
-
     SpatialGrid::AddEntity(this);
 
     // INFO: Pull towards center
-    AddForce(Vector2Scale(Vector2Normalize(Vector2Zero() - position), m_CenterForce));
+    AddForce(Vector3Scale(Vector3Normalize(Vector3Zero() - position), m_CenterForce));
 
     ApplyForces();
 
     // INFO: Check for collisions
     for (Bubble* nearby : SpatialGrid::GetNearbyEntities(this->position)) {
-        if (CheckCollisionCircles(this->position, this->radius, nearby->position, nearby->radius)) {
+        /* if (CheckCollisionSpheres(this->position, this->radius, nearby->position, nearby->radius)) {
             ResolveCollision(nearby);
-        }
+        } */
     }
 }
 
-void Bubble::Draw() const { DrawCircleV(position, radius, color); }
+void Bubble::Draw() const { DrawModel(m_BubbleBaseModel, position, radius, color); }
 
-bool Bubble::IsPointInBubble(Vector2 point) const { return Vector2Length(point - position) <= radius; }
+bool Bubble::IsPointInBubble(Vector3 point) const
+{
+    return Vector3Length((Vector3) { point.x, 0, point.z } - position) <= radius;
+}
 
-void Bubble::AddForce(Vector2 force) { m_Velocity += force; }
+void Bubble::AddForce(Vector3 force) { m_Velocity += force; }
 
 void Bubble::ApplyForces()
 {
     m_Velocity *= moveSpeed;
-    if (Vector2Length(m_Velocity) > maxMoveSpeed) {
-        m_Velocity = Vector2Normalize(m_Velocity) * maxMoveSpeed;
+    if (Vector3Length(m_Velocity) > maxMoveSpeed) {
+        m_Velocity = Vector3Normalize(m_Velocity) * maxMoveSpeed;
     }
 
-    m_Velocity = Vector2Lerp(m_Velocity, Vector2Zero(), m_Drag);
+    m_Velocity = Vector3Lerp(m_Velocity, Vector3Zero(), m_Drag);
 
     position += m_Velocity;
 }
@@ -115,4 +120,3 @@ void Bubble::SetColor(BubbleType type)
         break;
     }
 }
-

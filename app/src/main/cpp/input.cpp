@@ -5,13 +5,13 @@ Input* Input::instance;
 
 Input::Input(){}
 
-Input::Input(Camera2D cam)
-: m_Camera(cam){
+Input::Input(Camera3D cam3d, Camera2D cam2d)
+: m_Camera3D(cam3d), m_Camera2D(cam2d){
 
 }
 Input::~Input(){}
 
-void Input::initialize(Camera2D cam)
+void Input::initialize(Camera3D cam3d, Camera2D cam2d)
 {
-    instance = new Input(cam);
+    instance = new Input(cam3d, cam2d);
 }

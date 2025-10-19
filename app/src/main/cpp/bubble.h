@@ -15,7 +15,7 @@ public:
     Bubble();
     ~Bubble();
 
-    Vector2 position;
+    Vector3 position;
     float rotation;
     float radius;
     Color color;
@@ -27,29 +27,30 @@ public:
 
     void Draw() const override;
 
-    void AddForce(Vector2 force);
+    void AddForce(Vector3 force);
 
     void Spawn();
 
-    bool IsPointInBubble(Vector2 point) const;
+    bool IsPointInBubble(Vector3 point) const;
 
     // Getters
-    Vector2 GetVelocity() const { return m_Velocity; }
+    Vector3 GetVelocity() const { return m_Velocity; }
     BubbleType GetType() const { return m_Type; }
 
 private:
+    static Model m_BubbleBaseModel;
     BubbleType m_Type;
-    Vector2 m_Velocity;
+    Vector3 m_Velocity;
     constexpr static const float m_Drag = 0.1;
-    constexpr static const float m_CenterForce = 0.5;
+    constexpr static const float m_CenterForce = 0.01;
     bool m_IsActive = true;
-    // std::vector<Vector2> m_Forces;
+    // std::vector<Vector3> m_Forces;
 
     void Init();
 
     void SetColor(BubbleType type);
 
-    Vector2 GetRandomSpawnPos();
+    Vector3 GetRandomSpawnPos();
     void ApplyForces();
     void ClearForces();
     void ResolveCollision(Bubble* collider);

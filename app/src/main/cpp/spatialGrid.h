@@ -18,11 +18,11 @@ private:
 
     void ClearInternal();
 
-    int GetGridIndexInternal(Vector2 position) const;
+    int GetGridIndexInternal(Vector3 position) const;
 
     void AddEntityInternal(Bubble* entity);
 
-    std::vector<Bubble*> GetNearbyEntitiesInternal(Vector2 position) const;
+    std::vector<Bubble*> GetNearbyEntitiesInternal(Vector3 position) const;
 
 public:
     static SpatialGrid& GetInstance()
@@ -33,11 +33,11 @@ public:
 
     static void Clear() { GetInstance().ClearInternal(); }
 
-    static int GetGridIndex(Vector2 position) { return GetInstance().GetGridIndexInternal(position); }
+    static int GetGridIndex(Vector3 position) { return GetInstance().GetGridIndexInternal(position); }
 
     static void AddEntity(Bubble* entity) { GetInstance().AddEntityInternal(entity); }
 
-    static std::vector<Bubble*> GetNearbyEntities(Vector2 position) {
+    static std::vector<Bubble*> GetNearbyEntities(Vector3 position) {
         return GetInstance().GetNearbyEntitiesInternal(position);
     }
 };
