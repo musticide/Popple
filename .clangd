@@ -1,19 +1,35 @@
 CompileFlags:
   Add:
-    # Android NDK headers
-    - -IC:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\sysroot\usr\include
-    - -IC:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include
-    - -IC:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\android
-    # OpenGL ES headers
-    - -IC:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\GLES2
-    #Project Specific headers
+    CompileFlags:
+  Add:
+    - --query-driver=C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\bin\*
+
+    # --- Use NDK's clang toolchain headers (C++ first, then sysroot) ---
+    - -isystem
+    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\sources\cxx-stl\llvm-libc++\include
+    - -isystem
+    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\sources\cxx-stl\llvm-libc++abi\include
+    - -isystem
+    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include
+
+    # --- Android-specific headers ---
+    - -isystem
+    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\android
+    - -isystem
+    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\sysroot\usr\include
+
+    # --- OpenGL ES headers (optional but fine) ---
+    - -isystem
+    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\GLES2
+
+    # --- Project-specific headers ---
     - -I.\app\src\main\cpp\deps\raylib
     - -I.\app\src\main\cpp\deps\raymob
-    # Android API level (matches your project's minSdk)
+
+    # --- Compiler settings ---
     - -DANDROID
     - -D__ANDROID_API__=24
-    # C++ standard
     - -std=c++17
+
   Remove:
-    # Remove problematic flags
     - -W*
