@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Log.h"
 #include "raylib.h"
 #include "raymath.h"
 #include <raymob.h>
@@ -11,6 +12,21 @@
 enum BubbleType { DEFAULT_BUBBLE = 0, ELECTRO_BUBBLE, ANEMO_BUBBLE, BUBBLE_TYPES_COUNT };
 
 class Bubble : public Entity {
+private:
+    bool m_IsActive = true;
+
+    //Physics
+    BubbleType m_Type;
+    Vector3 m_Velocity;
+    constexpr static const float m_Drag = 0.1;
+    constexpr static const float m_CenterForce = 0.01;
+    // std::vector<Vector3> m_Forces;
+
+    //Rendering
+    static Model s_BubbleBaseModel;
+    static Shader s_BubbleShader;
+    Model m_BubbleBaseModel;
+
 public:
     Bubble();
     ~Bubble();
@@ -37,15 +53,18 @@ public:
     Vector3 GetVelocity() const { return m_Velocity; }
     BubbleType GetType() const { return m_Type; }
 
-private:
-    static Model m_BubbleBaseModel;
-    BubbleType m_Type;
-    Vector3 m_Velocity;
-    constexpr static const float m_Drag = 0.1;
-    constexpr static const float m_CenterForce = 0.01;
-    bool m_IsActive = true;
-    // std::vector<Vector3> m_Forces;
+    static void LoadBubbleFiles(){
+        static bool isModelLoaded = false;
+        if(!isModelLoaded)
+            s_BubbleBaseModel = LoadModel("models/BubbleBase.glb");
 
+        static bool isShaderLoaded = false;
+        if(!isShaderLoaded)
+            s_BubbleShader = LoadShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
+            // s_BubbleShader = LoadShader(TextFormat("shaders/bubbleBasic.vs", 100), TextFormat("shaders/bubbleBasic.fs", 100));
+    }
+
+private:
     void Init();
 
     void SetColor(BubbleType type);

@@ -8,19 +8,25 @@
 #include "score.h"
 #include "spatialGrid.h"
 
+Model Bubble::s_BubbleBaseModel;
+Shader Bubble::s_BubbleShader;
+
 Bubble::Bubble()
     : position((Vector3) { 0, 0 })
     , rotation(0.0f)
     , radius(1.0f)
     , color(RAYWHITE)
 {
-    if (m_BubbleBaseModel.meshCount != 0)
-        m_BubbleBaseModel = LoadModel("models/BubbleBase.glb");
 }
 
 Bubble::~Bubble() { }
 
-void Bubble::Start() { SetActive(false); }
+void Bubble::Start()
+{
+    SetActive(false);
+    m_BubbleBaseModel = s_BubbleBaseModel;
+    m_BubbleBaseModel.materials[0].shader = s_BubbleShader;
+}
 
 Vector3 Bubble::GetRandomSpawnPos()
 {
@@ -76,9 +82,9 @@ void Bubble::Update(float dT)
 
     // INFO: Check for collisions
     for (Bubble* nearby : SpatialGrid::GetNearbyEntities(this->position)) {
-        /* if (CheckCollisionSpheres(this->position, this->radius, nearby->position, nearby->radius)) {
+        if (CheckCollisionSpheres(this->position, this->radius, nearby->position, nearby->radius)) {
             ResolveCollision(nearby);
-        } */
+        }
     }
 }
 

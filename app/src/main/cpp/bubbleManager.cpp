@@ -94,7 +94,9 @@ void BubbleManager::SpawnBubbleInternal()
 }
 
 void BubbleManager::Init() { Get(); }
-void BubbleManager::Start() {}
+void BubbleManager::Start() { 
+    Bubble::LoadBubbleFiles(); 
+    }
 
 void BubbleManager::ResetInternal()
 {
