@@ -3,6 +3,7 @@
 #include "EntityManager.h"
 #include "GameStateManager.h"
 #include "Log.h"
+#include "Tower.h"
 #include "bubbleManager.h"
 #include "gameData.h"
 #include "input.h"
@@ -57,12 +58,15 @@ int main()
     GameStateManager::Init();
     GameStateManager::ChangeGameState(MAIN_MENU);
 
-    // Rectangle tower = { -50.0f, -50.0f, 100.0f, 100.0f };
-    Model tower = LoadModel("models/TowerBase.glb");
-    // Vector3 towerPosition = (Vector3){17,0,40};
-    Vector3 towerPosition = (Vector3){0};
+    Tower tower;
 
-    float towerRotation = 0.0f;
+    // Rectangle tower = { -50.0f, -50.0f, 100.0f, 100.0f };
+    // Model tower = LoadModel("models/TowerBase.glb");
+    // Vector3 towerPosition = (Vector3){17,0,40};
+    // Vector3 towerPosition = (Vector3){0};
+    // tower.materials[0].shader = LoadShader(TextFormat("shaders/bubbleBasic.vs", 100), TextFormat("shaders/bubbleBasic.fs", 100));
+
+    // float towerRotation = 0.0f;
     // Vector3 towerCenter = { tower.x + tower.width / 2, tower.y + tower.height / 2 };
 
     for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
@@ -116,7 +120,7 @@ int main()
 
             // DrawRectanglePro(tower, towerCenter, towerRotation, BEIGE);
             // DrawModelEx(tower, (Vector3){0}, Vector3Zero(), 0, Vector3One(), WHITE);
-            DrawModel(tower, towerPosition, 1.0f, WHITE);
+            // DrawModel(tower, towerPosition, 1.0f, WHITE);
         
 
             for (int i = 0; i < EntityManager::GetEntityCount(); i++) {

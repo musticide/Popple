@@ -21,11 +21,15 @@ float Fresnel(vec3 viewDir, vec3 normal, float bias, float scale, float power)
 
 void main()
 {
+    vec4 blue = vec4(.27f, .74f, .9f, 1.f);
     vec3 viewDir = normalize(-vec3(0.0, 1.0, 0.0));
-    float fresnel = Fresnel(viewDir, fragNormal, 0.0f, 1.0f, 1.0f);
+    vec3 lightPos = vec3(10, 10, -10);
+    float lambert = max(dot(lightPos, fragNormal), 0.0f);
+
     // Texel color fetching from texture sampler
     // vec4 texelColor = texture(texture0, fragTexCoord);
 
-    finalColor = fragColor * fresnel * colDiffuse;
+    // finalColor = fragColor * colDiffuse;
+    finalColor = mix(blue * .8f, blue, lambert);
     // finalColor = vec4(fragNormal, 1.0f);
 }

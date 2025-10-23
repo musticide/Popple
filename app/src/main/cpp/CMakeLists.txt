@@ -40,6 +40,7 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/GameStateManager.cpp"
     "${CMAKE_SOURCE_DIR}/Signal.cpp"
     "${CMAKE_SOURCE_DIR}/Button.cpp"
+    "${CMAKE_SOURCE_DIR}/Tower.cpp"
 
 )
 

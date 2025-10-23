@@ -61,7 +61,6 @@ public:
         static bool isShaderLoaded = false;
         if(!isShaderLoaded)
             s_BubbleShader = LoadShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
-            // s_BubbleShader = LoadShader(TextFormat("shaders/bubbleBasic.vs", 100), TextFormat("shaders/bubbleBasic.fs", 100));
     }
 
 private:
