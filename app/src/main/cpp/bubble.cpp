@@ -1,4 +1,5 @@
 #include "bubble.h"
+#include "Entity.h"
 #include "Log.h"
 #include "bubbleManager.h"
 #include "functionLibrary.h"
@@ -19,13 +20,14 @@ Bubble::Bubble()
 {
 }
 
-Bubble::~Bubble() { }
+Bubble::~Bubble() { UnloadModel(m_BubbleBaseModel); }
 
 void Bubble::Start()
 {
     SetActive(false);
     m_BubbleBaseModel = s_BubbleBaseModel;
     m_BubbleBaseModel.materials[0].shader = s_BubbleShader;
+    SetRenderMode(ALPHA);
 }
 
 Vector3 Bubble::GetRandomSpawnPos()

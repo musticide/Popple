@@ -3,6 +3,7 @@
 #include "EntityManager.h"
 #include "GameStateManager.h"
 #include "Log.h"
+#include "StaticMesh.h"
 #include "Tower.h"
 #include "bubbleManager.h"
 #include "gameData.h"
@@ -59,15 +60,13 @@ int main()
     GameStateManager::ChangeGameState(MAIN_MENU);
 
     Tower tower;
+    StaticMesh background("models/Quad.glb");
+    background.GetModel().materials[0].shader = LoadShader(0, "shaders/background.fs");
+    background.GetModel().materials[0].maps[0].texture = LoadTexture("textures/T_CheckerBackground.png");
+    // background.GetModel().materials[0].params[1] = (Vector4){0.f, 0.f, 1.f, 1.f};
+    background.position = {0.f, -20.f, 0.f};
+    background.scale = Vector3Scale(Vector3One(), 2.f);
 
-    // Rectangle tower = { -50.0f, -50.0f, 100.0f, 100.0f };
-    // Model tower = LoadModel("models/TowerBase.glb");
-    // Vector3 towerPosition = (Vector3){17,0,40};
-    // Vector3 towerPosition = (Vector3){0};
-    // tower.materials[0].shader = LoadShader(TextFormat("shaders/bubbleBasic.vs", 100), TextFormat("shaders/bubbleBasic.fs", 100));
-
-    // float towerRotation = 0.0f;
-    // Vector3 towerCenter = { tower.x + tower.width / 2, tower.y + tower.height / 2 };
 
     for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
         EntityManager::GetEntityAt(i)->Start();
@@ -80,6 +79,8 @@ int main()
     playButton.AddOnClickListener(StartGame);
     playButton.SetActive(true);
 
+    EntityManager::SortEntitiesByRenderMode();
+
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
@@ -87,6 +88,7 @@ int main()
         switch (GameStateManager::GetState()) {
 
         case MAIN_MENU:
+            background.SetActive(false);
             BeginDrawing(); //---------------------------------------------------||
 
             ClearBackground(BLACK);
@@ -104,6 +106,7 @@ int main()
 
         case GAMEPLAY:
             playButton.SetActive(false);
+            background.SetActive(true);
 
             SpatialGrid::Clear();
 
@@ -123,6 +126,7 @@ int main()
             // DrawModel(tower, towerPosition, 1.0f, WHITE);
         
 
+            BeginBlendMode(0);
             for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
                 auto e = EntityManager::GetEntityAt(i);
                 if (e != NULL && e->IsActive()) {
@@ -145,6 +149,7 @@ int main()
                 break;
             }
 
+            EndBlendMode();
 
             EndMode3D(); //-------------------------------------------||
 
@@ -164,6 +169,7 @@ int main()
 
         case PAUSED:
         case GAME_OVER:
+            background.SetActive(false);
             BeginDrawing(); //---------------------------------------------------||
 
             ClearBackground(BLACK);

@@ -26,6 +26,6 @@ void main()
     // Texel color fetching from texture sampler
     // vec4 texelColor = texture(texture0, fragTexCoord);
 
-    finalColor = fragColor * fresnel * colDiffuse;
-    // finalColor = vec4(fragNormal, 1.0f);
+    finalColor = fragColor * colDiffuse;
+    finalColor.a = fresnel;
 }

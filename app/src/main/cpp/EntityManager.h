@@ -18,6 +18,8 @@ public:
 
     static int GetEntityCount() {return Get().m_Entities.size();}
 
+    static void SortEntitiesByRenderMode() { Get().SortEntitiesByRenderModeInternal(); }
+
 private:
     EntityManager();
     ~EntityManager();
@@ -30,11 +32,9 @@ private:
         return instance;
     }
 
-    void RemoveInternal(Entity* e)
-    {
-        auto it = std::find(m_Entities.begin(), m_Entities.end(), e);
-        if (it != m_Entities.end()) {
-            m_Entities.erase(it);
-        }
-    }
+    //Reorder entities based on entity.GetRendermode()
+
+    void SortEntitiesByRenderModeInternal();
+
+    void RemoveInternal(Entity* e);
 };

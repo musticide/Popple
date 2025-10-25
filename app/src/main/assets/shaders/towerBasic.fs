@@ -24,7 +24,8 @@ void main()
     vec4 blue = vec4(.27f, .74f, .9f, 1.f);
     vec3 viewDir = normalize(-vec3(0.0, 1.0, 0.0));
     vec3 lightPos = vec3(10, 10, -10);
-    float lambert = max(dot(lightPos, fragNormal), 0.0f);
+    vec3 lightDir = normalize(lightPos);
+    float lambert = max(dot(lightDir, fragNormal), 0.0f);
 
     // Texel color fetching from texture sampler
     // vec4 texelColor = texture(texture0, fragTexCoord);
