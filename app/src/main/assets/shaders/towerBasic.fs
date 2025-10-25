@@ -10,6 +10,7 @@ in vec3 fragNormal;
 // uniform sampler2D texture0;
 uniform vec4 colDiffuse;
 
+uniform samplerCube environmentMap;
 // Output fragment color
 out vec4 finalColor;
 
@@ -27,10 +28,14 @@ void main()
     vec3 lightDir = normalize(lightPos);
     float lambert = max(dot(lightDir, fragNormal), 0.0f);
 
-    // Texel color fetching from texture sampler
+    float fresnel = Fresnel(viewDir, fragNormal, 0.0f, 1.0f, 1.0f);
+
+    vec3 R = reflect(-viewDir, fragNormal);
+
     // vec4 texelColor = texture(texture0, fragTexCoord);
 
-    // finalColor = fragColor * colDiffuse;
+    vec3 envColor = texture(environmentMap, R).rgb;
+
     finalColor = mix(blue * .8f, blue, lambert);
-    // finalColor = vec4(fragNormal, 1.0f);
+    finalColor += vec4(envColor, 1.0) * fresnel;
 }

@@ -15,16 +15,17 @@ class Bubble : public Entity {
 private:
     bool m_IsActive = true;
 
-    //Physics
+    // Physics
     BubbleType m_Type;
     Vector3 m_Velocity;
     constexpr static const float m_Drag = 0.1;
     constexpr static const float m_CenterForce = 0.01;
     // std::vector<Vector3> m_Forces;
 
-    //Rendering
+    // Rendering
     static Model s_BubbleBaseModel;
     static Shader s_BubbleShader;
+    static TextureCubemap s_EnvironmentMap;
     Model m_BubbleBaseModel;
 
 public:
@@ -53,14 +54,23 @@ public:
     Vector3 GetVelocity() const { return m_Velocity; }
     BubbleType GetType() const { return m_Type; }
 
-    static void LoadBubbleFiles(){
+    static void LoadBubbleFiles()
+    {
         static bool isModelLoaded = false;
-        if(!isModelLoaded)
+        if (!isModelLoaded)
             s_BubbleBaseModel = LoadModel("models/BubbleBase.glb");
 
         static bool isShaderLoaded = false;
-        if(!isShaderLoaded)
+        if (!isShaderLoaded)
             s_BubbleShader = LoadShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
+
+        static bool isEnvironmentMapLoaded = false;
+        if (!isEnvironmentMapLoaded) {
+            Image img = LoadImage("textures/Level01_ReflectionMap.png");
+            // Image img = LoadImage("textures/Cubemap.jpg");
+            ImageFormat(&img, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+            s_EnvironmentMap = LoadTextureCubemap(img, CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE);
+        }
     }
 
 private:

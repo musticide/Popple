@@ -11,6 +11,7 @@
 
 Model Bubble::s_BubbleBaseModel;
 Shader Bubble::s_BubbleShader;
+TextureCubemap Bubble::s_EnvironmentMap;
 
 Bubble::Bubble()
     : position((Vector3) { 0, 0 })
@@ -27,6 +28,11 @@ void Bubble::Start()
     SetActive(false);
     m_BubbleBaseModel = s_BubbleBaseModel;
     m_BubbleBaseModel.materials[0].shader = s_BubbleShader;
+    SetShaderValue(m_BubbleBaseModel.materials[0].shader, 
+                   GetShaderLocation(s_BubbleShader, "environmentMap"),
+                   (int[1]){MATERIAL_MAP_CUBEMAP}, 
+                   SHADER_UNIFORM_INT);
+    m_BubbleBaseModel.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = s_EnvironmentMap;
     SetRenderMode(ALPHA);
 }
 
