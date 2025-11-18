@@ -56,7 +56,7 @@ android {
 
         // Substitution variables for the manifest
         manifestPlaceholders = [
-            'GL_VERSION_CODE': getGLVersionCode(project.properties['gl.version']) ?: "0x00020000",
+            'GL_VERSION_CODE': getGLVersionCode(project.properties['gl.version']) ?: "0x00030000",
             'APP_LIB_NAME': project.properties['app.native_library_name'] ?: "raymob",
             'APP_ORIENTATION': project.properties['app.orientation'] ?: "landscape",
             'APP_CATEGORY': project.properties['app.category'] ?: "DEFAULT",
@@ -72,7 +72,12 @@ android {
                 def nativeLibName = project.findProperty('app.native_library_name') ?: 'raymob'
                 def glVersion = project.findProperty('gl.version') ?: 'ES20'
 
-                arguments "-DAPP_LIB_NAME=$nativeLibName", "-DGL_VERSION=$glVersion", "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+                arguments "-DAPP_LIB_NAME=$nativeLibName",
+                    "-DCMAKE_CXX_EXTENSIONS=OFF",
+                    "-DCMAKE_CXX_STANDARD_REQUIRED=ON",
+                    "-DCMAKE_CXX_STANDARD=17",
+                    "-DGL_VERSION=$glVersion",
+                    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
             }
         }
 

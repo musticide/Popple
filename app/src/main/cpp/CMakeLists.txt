@@ -7,6 +7,7 @@ cmake_minimum_required(VERSION 3.22.1)
 # Set standards for C and C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD_REQUIRED_ON)
 
 # Set the project name based on the name given on the gradle.properties
 project("${APP_LIB_NAME}")
