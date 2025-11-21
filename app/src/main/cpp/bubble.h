@@ -23,10 +23,10 @@ private:
     // std::vector<Vector3> m_Forces;
 
     // Rendering
-    static Model s_BubbleBaseModel;
-    static Shader s_BubbleShader;
+    /* static Model s_BubbleBaseModel;
+    static Shader s_BubbleShader;*/
     static TextureCubemap s_EnvironmentMap;
-    Model m_BubbleBaseModel;
+    std::shared_ptr<Model> m_BubbleBaseModel;
 
 public:
     Bubble();
@@ -44,6 +44,8 @@ public:
 
     void Draw() const override;
 
+    void LoadResources() override;
+
     void AddForce(Vector3 force);
 
     void Spawn();
@@ -56,7 +58,7 @@ public:
 
     static void LoadBubbleFiles()
     {
-        static bool isModelLoaded = false;
+        /* static bool isModelLoaded = false;
         if (!isModelLoaded) {
             s_BubbleBaseModel = LoadModel("models/BubbleBase.glb");
             isModelLoaded = true;
@@ -67,7 +69,7 @@ public:
 
             s_BubbleShader = LoadShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
             isShaderLoaded = true;
-        }
+        }*/
 
         static bool isEnvironmentMapLoaded = false;
         if (!isEnvironmentMapLoaded) {

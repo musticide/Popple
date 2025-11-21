@@ -1,6 +1,7 @@
 #include "bubble.h"
 #include "Entity.h"
 #include "Log.h"
+#include "ResourceManager.h"
 #include "bubbleManager.h"
 #include "functionLibrary.h"
 #include "gameData.h"
@@ -9,8 +10,8 @@
 #include "score.h"
 #include "spatialGrid.h"
 
-Model Bubble::s_BubbleBaseModel;
-Shader Bubble::s_BubbleShader;
+/* Model Bubble::s_BubbleBaseModel;
+Shader Bubble::s_BubbleShader;*/
 TextureCubemap Bubble::s_EnvironmentMap;
 
 Bubble::Bubble()
@@ -21,19 +22,30 @@ Bubble::Bubble()
 {
 }
 
-Bubble::~Bubble() { UnloadModel(m_BubbleBaseModel); }
+Bubble::~Bubble() { 
+    //UnloadModel(m_BubbleBaseModel); 
+}
+
+void Bubble::LoadResources()
+{
+    m_BubbleBaseModel = ResourceManager::GetModel("models/BubbleBase.glb");
+    m_BubbleBaseModel->materials[0].shader = *ResourceManager::GetShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
+    SetShaderValue(m_BubbleBaseModel->materials[0].shader, 
+                   GetShaderLocation(m_BubbleBaseModel->materials[0].shader, "environmentMap"),
+        (int[1]) { MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
+    // m_BubbleBaseModel.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = ResourceManager::GetCubemap("textures/Level01_ReflectionMap.png");
+    m_BubbleBaseModel->materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = s_EnvironmentMap;
+}
 
 void Bubble::Start()
 {
     SetActive(false);
-    m_BubbleBaseModel = s_BubbleBaseModel;
-    m_BubbleBaseModel.materials[0].shader = s_BubbleShader;
-    SetShaderValue(m_BubbleBaseModel.materials[0].shader, 
-                   GetShaderLocation(s_BubbleShader, "environmentMap"),
-                   (int[1]){MATERIAL_MAP_CUBEMAP}, 
-                   SHADER_UNIFORM_INT);
-    m_BubbleBaseModel.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = s_EnvironmentMap;
-    SetRenderMode(ALPHA);
+    // m_BubbleBaseModel = s_BubbleBaseModel;
+    // m_BubbleBaseModel.materials[0].shader = s_BubbleShader;
+    // SetShaderValue(m_BubbleBaseModel.materials[0].shader, GetShaderLocation(s_BubbleShader, "environmentMap"),
+    //     (int[1]) { MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
+    // m_BubbleBaseModel.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = s_EnvironmentMap;
+    SetRenderMode(RenderMode::ALPHA);
 }
 
 Vector3 Bubble::GetRandomSpawnPos()
@@ -96,7 +108,10 @@ void Bubble::Update(float dT)
     }
 }
 
-void Bubble::Draw() const { DrawModel(m_BubbleBaseModel, position, radius, color); }
+void Bubble::Draw() const { 
+    if(m_BubbleBaseModel != nullptr)
+    DrawModel(*m_BubbleBaseModel, position, radius, color); 
+}
 
 bool Bubble::IsPointInBubble(Vector3 point) const
 {

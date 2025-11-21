@@ -19,6 +19,8 @@
 Camera3D camera;
 Camera2D camera2D;
 
+int GetPercent(int a, int total) { return (a / total) * 100; }
+
 void Reset()
 {
     GameData::Reset();
@@ -48,9 +50,9 @@ int main()
     camera2D.zoom = 1.0f;
 
     camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 20.0f, 0.0f };    // Camera position
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Looking at the origin
-    camera.up = (Vector3){ 0.0f, 0.0f, -1.0f };         // "Up" points toward -Z since we're looking down Y
+    camera.position = (Vector3) { 0.0f, 20.0f, 0.0f }; // Camera position
+    camera.target = (Vector3) { 0.0f, 0.0f, 0.0f }; // Looking at the origin
+    camera.up = (Vector3) { 0.0f, 0.0f, -1.0f }; // "Up" points toward -Z since we're looking down Y
     camera.fovy = 80.0f;
     camera.projection = CAMERA_ORTHOGRAPHIC;
 
@@ -64,9 +66,13 @@ int main()
     background.GetModel().materials[0].shader = LoadShader(0, "shaders/background.fs");
     background.GetModel().materials[0].maps[0].texture = LoadTexture("textures/T_CheckerBackground.png");
     // background.GetModel().materials[0].params[1] = (Vector4){0.f, 0.f, 1.f, 1.f};
-    background.position = {0.f, -20.f, 0.f};
+    background.position = { 0.f, -20.f, 0.f };
     background.scale = Vector3Scale(Vector3One(), 2.f);
 
+    for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
+        EntityManager::GetEntityAt(i)->LoadResources();
+        LOGI("Loading resources: %d", GetPercent(i, EntityManager::GetEntityCount()));
+    }
 
     for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
         EntityManager::GetEntityAt(i)->Start();
@@ -124,7 +130,6 @@ int main()
             // DrawRectanglePro(tower, towerCenter, towerRotation, BEIGE);
             // DrawModelEx(tower, (Vector3){0}, Vector3Zero(), 0, Vector3One(), WHITE);
             // DrawModel(tower, towerPosition, 1.0f, WHITE);
-        
 
             BeginBlendMode(0);
             for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
@@ -154,9 +159,9 @@ int main()
             EndMode3D(); //-------------------------------------------||
 
             BeginMode2D(camera2D); //---------------------------------||
-                Score::ShowScore();
-                Score::ShowHealth();
-                GameData::DrawComboCount();
+            Score::ShowScore();
+            Score::ShowHealth();
+            GameData::DrawComboCount();
             EndMode2D(); //-------------------------------------------||
 
             EndDrawing(); //----------------------------------------------------||

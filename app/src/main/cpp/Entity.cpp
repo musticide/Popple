@@ -13,3 +13,4 @@ void Entity::Draw() const { }
 
 void Entity::SetActive(bool active) { m_IsActive = active; }
 
+void Entity::LoadResources() { }

@@ -43,6 +43,7 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/Button.cpp"
     "${CMAKE_SOURCE_DIR}/Tower.cpp"
     "${CMAKE_SOURCE_DIR}/StaticMesh.cpp"
+    "${CMAKE_SOURCE_DIR}/ResourceManager.cpp"
 
 )
 
