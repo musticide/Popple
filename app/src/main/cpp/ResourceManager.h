@@ -45,10 +45,10 @@ public:
 
     static std::shared_ptr<Model> GetModel(const char* filepath) { return Get().GetModelImpl(filepath); }
     static std::shared_ptr<Shader> GetShader(std::string vsPath, std::string fsPath) { return Get().GetShaderImpl(vsPath, fsPath); }
-    static std::shared_ptr<Shader> GetShader(int vsPath, std::string fsPath) { return Get().GetShader(vsPath, fsPath); }
-    static std::shared_ptr<Shader> GetShader(std::string vsPath, int fsPath) { return Get().GetShader(vsPath, fsPath); }
-    static std::shared_ptr<TextureCubemap> GetCubemap(const char* filepath) { return Get().GetCubemap(filepath); }
-    static std::shared_ptr<Texture2D> GetTexture(const char* filepath) { return Get().GetTexture(filepath); }
+    static std::shared_ptr<Shader> GetShader(int vsPath, std::string fsPath) { return Get().GetShaderImpl(vsPath, fsPath); }
+    static std::shared_ptr<Shader> GetShader(std::string vsPath, int fsPath) { return Get().GetShaderImpl(vsPath, fsPath); }
+    static std::shared_ptr<TextureCubemap> GetCubemap(const char* filepath) { return Get().GetCubemapImpl(filepath); }
+    static std::shared_ptr<Texture2D> GetTexture(const char* filepath) { return Get().GetTextureImpl(filepath); }
 
 private:
     std::shared_ptr<Model> GetModelImpl(const char* filepath);

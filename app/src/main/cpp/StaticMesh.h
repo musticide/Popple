@@ -3,11 +3,13 @@
 #include "Entity.h"
 #include "raylib.h"
 #include "raymath.h"
+#include <memory>
 
 class StaticMesh : public Entity {
 private:
     const char* m_Filepath;
-    Model m_Model;
+    std::shared_ptr<Model> m_Model;
+    Material m_Material;
 
 public:
     StaticMesh(const char* filepath);
@@ -21,7 +23,7 @@ public:
     Vector3 rotation = { 0, 0, 0 };
     Vector3 scale = { 1, 1, 1 };
 
-    Model& GetModel() { return m_Model; }
+    Model& GetModel() { return *m_Model; }
 
     void Draw() const override;
 };

@@ -56,31 +56,6 @@ public:
     Vector3 GetVelocity() const { return m_Velocity; }
     BubbleType GetType() const { return m_Type; }
 
-    static void LoadBubbleFiles()
-    {
-        /* static bool isModelLoaded = false;
-        if (!isModelLoaded) {
-            s_BubbleBaseModel = LoadModel("models/BubbleBase.glb");
-            isModelLoaded = true;
-        }
-
-        static bool isShaderLoaded = false;
-        if (!isShaderLoaded) {
-
-            s_BubbleShader = LoadShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
-            isShaderLoaded = true;
-        }*/
-
-        static bool isEnvironmentMapLoaded = false;
-        if (!isEnvironmentMapLoaded) {
-            Image img = LoadImage("textures/Level01_ReflectionMap.png");
-            // Image img = LoadImage("textures/Cubemap.jpg");
-            ImageFormat(&img, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
-            s_EnvironmentMap = LoadTextureCubemap(img, CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE);
-            isEnvironmentMapLoaded = true;
-        }
-    }
-
 private:
     void Init();
 

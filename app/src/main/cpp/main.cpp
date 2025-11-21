@@ -3,6 +3,7 @@
 #include "EntityManager.h"
 #include "GameStateManager.h"
 #include "Log.h"
+#include "ResourceManager.h"
 #include "StaticMesh.h"
 #include "Tower.h"
 #include "bubbleManager.h"
@@ -63,11 +64,15 @@ int main()
 
     Tower tower;
     StaticMesh background("models/Quad.glb");
-    background.GetModel().materials[0].shader = LoadShader(0, "shaders/background.fs");
-    background.GetModel().materials[0].maps[0].texture = LoadTexture("textures/T_CheckerBackground.png");
+    background.GetModel().materials[0].shader = *ResourceManager::GetShader(0, "shaders/background.fs");
+    background.GetModel().materials[0].maps[0].texture = *ResourceManager::GetTexture("textures/T_CheckerBackground.png");
     // background.GetModel().materials[0].params[1] = (Vector4){0.f, 0.f, 1.f, 1.f};
     background.position = { 0.f, -20.f, 0.f };
     background.scale = Vector3Scale(Vector3One(), 2.f);
+
+    Button playButton("textures/start_button.png", WHITE, { 0, 0 });
+    playButton.AddOnClickListener(StartGame);
+    playButton.SetActive(true);
 
     for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
         EntityManager::GetEntityAt(i)->LoadResources();
@@ -81,9 +86,6 @@ int main()
     float spawnTimer = 0.0f;
     float spawnInterval = 2.0f;
 
-    Button playButton("textures/start_button.png", WHITE, { 0, 0 });
-    playButton.AddOnClickListener(StartGame);
-    playButton.SetActive(true);
 
     EntityManager::SortEntitiesByRenderMode();
 

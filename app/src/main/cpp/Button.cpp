@@ -1,20 +1,20 @@
 #include "Button.h"
+#include "Log.h"
 #include "input.h"
 #include <raymob.h>
+#include "ResourceManager.h"
 
 Button::~Button()
 {
-    if (m_Texture.id != 0)
-        UnloadTexture(m_Texture);
 }
 Button::Button(const char* filepath, Color color)
-    : m_Color(color)
+    :m_Filepath(filepath), m_Color(color)
 {
-    m_Texture = LoadTexture(filepath);
-    if (m_Texture.id != 0) {
-        m_Rectangle.height = m_Texture.height;
-        m_Rectangle.width = m_Texture.width;
-        position = { -m_Texture.width / 2.0f, -m_Texture.height / 2.0f };
+    m_Texture = ResourceManager::GetTexture(m_Filepath);
+    if (m_Texture->id != 0) {
+        m_Rectangle.height = m_Texture->height;
+        m_Rectangle.width = m_Texture->width;
+        position = { -m_Texture->width / 2.0f, -m_Texture->height / 2.0f };
     } else {
         m_Rectangle.height = 200;
         m_Rectangle.width = 400;
@@ -25,15 +25,15 @@ Button::Button(const char* filepath, Color color)
 }
 
 Button::Button(const char* filepath, Color color, Vector2 position)
-    : m_Color(color)
+    :m_Filepath(filepath), m_Color(color)
 {
+    m_Texture = ResourceManager::GetTexture(m_Filepath);
     Vector2 fPos;
-    m_Texture = LoadTexture(filepath);
-    if (m_Texture.id != 0) {
-        m_Rectangle.height = m_Texture.height;
-        m_Rectangle.width = m_Texture.width;
-        this->position.x = position.x - m_Texture.width / 2.0f;
-        this->position.y = position.y - m_Texture.height / 2.0f;
+    if (m_Texture->id != 0) {
+        m_Rectangle.height = m_Texture->height;
+        m_Rectangle.width = m_Texture->width;
+        this->position.x = position.x - m_Texture->width / 2.0f;
+        this->position.y = position.y - m_Texture->height / 2.0f;
     } else {
         m_Rectangle.height = 200;
         m_Rectangle.width = 400;
@@ -43,13 +43,13 @@ Button::Button(const char* filepath, Color color, Vector2 position)
     m_Rectangle.y = 0;
 }
 Button::Button(const char* filepath)
-    : m_Color(WHITE)
+    :m_Filepath(filepath), m_Color(WHITE)
 {
-    m_Texture = LoadTexture(filepath);
-    if (m_Texture.id != 0) {
-        m_Rectangle.height = m_Texture.height;
-        m_Rectangle.width = m_Texture.width;
-        position = { -m_Texture.width / 2.0f, -m_Texture.height / 2.0f };
+    m_Texture = ResourceManager::GetTexture(m_Filepath);
+    if (m_Texture->id != 0) {
+        m_Rectangle.height = m_Texture->height;
+        m_Rectangle.width = m_Texture->width;
+        position = { -m_Texture->width / 2.0f, -m_Texture->height / 2.0f };
     } else {
         m_Rectangle.height = 200;
         m_Rectangle.width = 400;
@@ -61,8 +61,8 @@ Button::Button(const char* filepath)
 
 void Button::Draw() const
 {
-    if (m_Texture.id != 0)
-        DrawTextureRec(m_Texture, m_Rectangle, position, m_Color);
+    if (m_Texture->id != 0)
+        DrawTextureRec(*m_Texture, m_Rectangle, position, m_Color);
     else
         DrawRectangleRec(m_Rectangle, PINK);
 }
@@ -78,3 +78,7 @@ void Button::Update(float dT)
 }
 
 void Button::AddOnClickListener(std::function<void()> func) { onClick.connect(func); }
+void Button::LoadResources() { 
+    LOGI("About to call rm gettexture");
+    m_Texture = ResourceManager::GetTexture(m_Filepath);
+}

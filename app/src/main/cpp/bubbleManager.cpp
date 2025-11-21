@@ -13,7 +13,7 @@ BubbleManager::~BubbleManager() { delete[] m_Bubbles; }
 
 void BubbleManager::DoAnemoBlast(Bubble& bubble)
 {
-    LOGI("Anemo Blast Force applied");
+    // LOGI("Anemo Blast Force applied");
     Vector3 force = Vector3Normalize(bubble.position);
     force = Vector3Scale(force, 500);
     bubble.AddForce(force);
@@ -95,7 +95,6 @@ void BubbleManager::SpawnBubbleInternal()
 
 void BubbleManager::Init() { Get(); }
 void BubbleManager::Start() { 
-    Bubble::LoadBubbleFiles(); 
     }
 
 void BubbleManager::ResetInternal()

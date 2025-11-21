@@ -18,6 +18,8 @@ public:
 
     Vector2 position;
 
+    void LoadResources() override;
+
     void Update(float dT = 1.0f) override;
 
     void Draw() const override;
@@ -25,7 +27,8 @@ public:
     void AddOnClickListener(std::function<void()> func);
 
 private:
-    Texture2D m_Texture;
+    std::shared_ptr<Texture2D> m_Texture;
+    const char* m_Filepath;
     Rectangle m_Rectangle;
     Color m_Color;
 

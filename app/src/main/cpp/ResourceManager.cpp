@@ -5,7 +5,7 @@
 
 ResourceManager::ResourceManager() { }
 
-ResourceManager::~ResourceManager() { }
+ResourceManager::~ResourceManager() { CleanUpImpl(); }
 void ResourceManager::CleanUpImpl()
 {
     for (auto& [path, tex] : m_Textures) {
@@ -33,6 +33,7 @@ std::shared_ptr<Texture2D> ResourceManager::GetTextureImpl(const char* filepath)
 {
     auto it = m_Textures.find(filepath);
     if (it == m_Textures.end()) {
+        LOGI("Trying to load texture: %s", filepath);
         m_Textures[filepath] = std::make_shared<Texture2D>(LoadTexture(filepath));
     }
     return m_Textures[filepath];
@@ -43,14 +44,14 @@ std::shared_ptr<TextureCubemap> ResourceManager::GetCubemapImpl(const char* file
     auto it = m_Cubemaps.find(filepath);
     if (it == m_Cubemaps.end()) {
         Image img = LoadImage(filepath);
-        if(img.data != NULL)
-        {
+        if (img.data == NULL) {
             LOGE("Could not load Image");
+            return nullptr;
         }
         ImageFormat(&img, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
         m_Cubemaps[filepath]
             = std::make_shared<TextureCubemap>(LoadTextureCubemap(img, CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE));
-        // UnloadImage(img);
+        UnloadImage(img);
     }
     return m_Cubemaps[filepath];
 }
