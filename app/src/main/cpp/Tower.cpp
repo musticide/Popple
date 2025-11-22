@@ -1,5 +1,6 @@
 #include "Tower.h"
 #include "Log.h"
+#include "ResourceManager.h"
 #include "raylib.h"
 
 Tower::Tower()
@@ -12,18 +13,20 @@ Tower::Tower()
 }
 
 Tower::~Tower() { }
+
+void Tower::LoadResources() { 
+
+    m_Model = *ResourceManager::GetModel("models/TowerBase.glb");
+    m_Model.materials[0].shader = *ResourceManager::GetShader("shaders/towerBasic.vs", "shaders/towerBasic.fs");
+    SetShaderValue(m_Model.materials[0].shader, GetShaderLocation(m_Model.materials[0].shader, "environmentMap"), (int[1]){ MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
+
+    m_Model.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture 
+    = *ResourceManager::GetCubemap("textures/Level01_ReflectionMap.png");
+}
+
 void Tower::Start()
 {
-    Image img = LoadImage("textures/Level01_ReflectionMap.png");
-    // Image img = LoadImage("textures/Cubemap.jpg");
-    ImageFormat(&img, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
-    TextureCubemap m_EnvironmentMap = LoadTextureCubemap(img, CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE);
-
     SetActive(true);
-    m_Model = LoadModel("models/TowerBase.glb");
-    m_Model.materials[0].shader = LoadShader("shaders/towerBasic.vs", "shaders/towerBasic.fs");
-    SetShaderValue(m_Model.materials[0].shader, GetShaderLocation(m_Model.materials[0].shader, "environmentMap"), (int[1]){ MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
-    m_Model.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = m_EnvironmentMap;
 }
 
 void Tower::Update(float dT)
@@ -33,3 +36,4 @@ void Tower::Update(float dT)
 }
 
 void Tower::Draw() const { DrawModelEx(m_Model, position, (Vector3) { 0.5f, 1.0f, 0.5f }, rotate, scale, color); }
+

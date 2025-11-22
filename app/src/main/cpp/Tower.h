@@ -23,6 +23,7 @@ public:
     Tower &operator=(const Tower &) = default;
     ~Tower();
 
+    void LoadResources() override;
     void Start() override;
     void Update(float dT = 1.0f) override;
     void Draw() const override;
