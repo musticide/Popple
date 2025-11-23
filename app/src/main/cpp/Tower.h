@@ -4,10 +4,11 @@
 #include "raylib.h"
 #include "raymath.h"
 #include <raymob.h>
+#include <memory>
 
 class Tower : public Entity{
 private:
-    Model m_Model;
+    std::shared_ptr<Model> m_Model;
     float rotate;
 
 public:

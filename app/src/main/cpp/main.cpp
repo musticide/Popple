@@ -4,6 +4,8 @@
 #include "GameStateManager.h"
 #include "Log.h"
 #include "ResourceManager.h"
+#include "Scene.h"
+#include "SceneManager.h"
 #include "StaticMesh.h"
 #include "Tower.h"
 #include "bubbleManager.h"
@@ -13,6 +15,7 @@
 #include "raymath.h"
 #include "score.h"
 #include "spatialGrid.h"
+#include <memory>
 #include <raymob.h>
 
 #define BUBBLE_COUNT 50
@@ -33,8 +36,8 @@ void Reset()
 void StartGame()
 {
     Reset();
-    GameStateManager::ChangeGameState(GAMEPLAY);
-    BubbleManager::Get().SetActive(true);
+    GameStateManager::ChangeGameState(GameState::GAMEPLAY);
+    BubbleManager::Get()->SetActive(true);
 }
 
 int main()
@@ -58,138 +61,60 @@ int main()
     camera.projection = CAMERA_ORTHOGRAPHIC;
 
     Input::initialize(camera, camera2D);
-    BubbleManager::Init();
-    GameStateManager::Init();
-    GameStateManager::ChangeGameState(MAIN_MENU);
+    // BubbleManager::Init();
+    // GameStateManager::Init();
 
-    Tower tower;
-    StaticMesh background("models/Quad.glb");
-    background.GetModel().materials[0].shader = *ResourceManager::GetShader(0, "shaders/background.fs");
-    background.GetModel().materials[0].maps[0].texture = *ResourceManager::GetTexture("textures/T_CheckerBackground.png");
-    // background.GetModel().materials[0].params[1] = (Vector4){0.f, 0.f, 1.f, 1.f};
-    background.position = { 0.f, -20.f, 0.f };
-    background.scale = Vector3Scale(Vector3One(), 2.f);
+    std::unique_ptr<Scene> globalScene = std::make_unique<Scene>("Global Scene");
+    SceneManager::Get()->AddScene(globalScene.get());
 
-    Button playButton("textures/start_button.png", WHITE, { 0, 0 });
-    playButton.AddOnClickListener(StartGame);
-    playButton.SetActive(true);
+    globalScene->AddEntity(std::make_unique<GameStateManager>());
+    GameStateManager::ChangeGameState(GameState::MAIN_MENU);
 
-    for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
-        EntityManager::GetEntityAt(i)->LoadResources();
-        LOGI("Loading resources: %d", GetPercent(i, EntityManager::GetEntityCount()));
-    }
+    SceneManager::Get()->LoadScene(globalScene.get());
+    globalScene->SetActive(true);
 
-    for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
-        EntityManager::GetEntityAt(i)->Start();
-    }
+    std::unique_ptr<Scene> homeScene = std::make_unique<Scene>("Home Scene");
+    SceneManager::Get()->AddScene(homeScene.get());
 
-    float spawnTimer = 0.0f;
-    float spawnInterval = 2.0f;
+    Button* playButton = homeScene->CreateEntity<Button>("textures/start_button.png", WHITE, (Vector2) { 0, 0 });
+    playButton->AddOnClickListener(StartGame);
+    playButton->SetActive(true);
 
+    SceneManager::Get()->LoadScene(homeScene.get());
+    homeScene->SetActive(true);
 
-    EntityManager::SortEntitiesByRenderMode();
+    Scene gameplayScene("Gameplay Scene");
+    //TODO: spatial grid stuff
+
+    Tower* tower = gameplayScene.CreateEntity<Tower>();
+    StaticMesh* background = gameplayScene.CreateEntity<StaticMesh>("models/Quad.glb");
+    background->GetModel().materials[0].shader = *ResourceManager::GetShader(0, "shaders/background.fs");
+    background->GetModel().materials[0].maps[0].texture
+        = *ResourceManager::GetTexture("textures/T_CheckerBackground.png");
+
+    background->position = { 0.f, -20.f, 0.f };
+    background->scale = Vector3Scale(Vector3One(), 2.f);
+
 
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
 
-        switch (GameStateManager::GetState()) {
+        SceneManager::Get()->StartScenes();
+        SceneManager::Get()->UpdateScenes(GetFrameTime());
 
-        case MAIN_MENU:
-            background.SetActive(false);
-            BeginDrawing(); //---------------------------------------------------||
+        BeginDrawing(); //---------------------------------------------------||
 
-            ClearBackground(BLACK);
+        ClearBackground(BLACK);
+        BeginMode3D(camera);
+        SceneManager::Get()->DrawScenes();
+        EndMode3D();
 
-            BeginMode2D(camera2D); //-----------------------------------||
+        BeginMode2D(camera2D); //-----------------------------------||
+        SceneManager::Get()->DrawUI();
+        EndMode2D();
+        EndDrawing();
 
-            playButton.Update(GetFrameTime());
-            playButton.Draw();
-
-            EndMode2D(); //-------------------------------------------||
-            EndDrawing(); //----------------------------------------------------||
-            // GameStateManager::ChangeGameState(GAMEPLAY);
-
-            break;
-
-        case GAMEPLAY:
-            playButton.SetActive(false);
-            background.SetActive(true);
-
-            SpatialGrid::Clear();
-
-            //---DRAWING AND UPDATE LOOP
-            // will separate if needed
-
-            GameData::Update(GetFrameTime());
-
-            BeginDrawing(); //---------------------------------------------------||
-
-            ClearBackground(BLACK);
-
-            BeginMode3D(camera); //-----------------------------------||
-
-            // DrawRectanglePro(tower, towerCenter, towerRotation, BEIGE);
-            // DrawModelEx(tower, (Vector3){0}, Vector3Zero(), 0, Vector3One(), WHITE);
-            // DrawModel(tower, towerPosition, 1.0f, WHITE);
-
-            BeginBlendMode(0);
-            for (int i = 0; i < EntityManager::GetEntityCount(); i++) {
-                auto e = EntityManager::GetEntityAt(i);
-                if (e != NULL && e->IsActive()) {
-                    e->Update(GetFrameTime());
-                    e->Draw();
-                }
-            }
-
-            switch (GameData::GetActiveElementalEffect()) {
-
-            case NO_ELEMENTAL_EFFECT:
-                break;
-            case ELECTRO:
-                DrawCircleLinesV({ 0 }, 200, PURPLE);
-                break;
-            case ANEMO:
-                DrawCircleLinesV({ 0 }, 200, GREEN);
-                break;
-            case ELEMENTAL_EFFECT_COUNT:
-                break;
-            }
-
-            EndBlendMode();
-
-            EndMode3D(); //-------------------------------------------||
-
-            BeginMode2D(camera2D); //---------------------------------||
-            Score::ShowScore();
-            Score::ShowHealth();
-            GameData::DrawComboCount();
-            EndMode2D(); //-------------------------------------------||
-
-            EndDrawing(); //----------------------------------------------------||
-
-            if (Score::GetHealth() <= 0) {
-                GameStateManager::ChangeGameState(GAME_OVER);
-            }
-
-            break;
-
-        case PAUSED:
-        case GAME_OVER:
-            background.SetActive(false);
-            BeginDrawing(); //---------------------------------------------------||
-
-            ClearBackground(BLACK);
-
-            BeginMode2D(camera2D); //-----------------------------------||
-            Score::ShowScore();
-            Score::ShowHealth();
-            playButton.Update(GetFrameTime());
-            playButton.Draw();
-            EndMode2D(); //-------------------------------------------||
-            EndDrawing(); //----------------------------------------------------||
-            break;
-        }
     }
 
     CloseWindow();

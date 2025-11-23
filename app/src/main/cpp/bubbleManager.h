@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Entity.h"
+#include "Singleton.h"
 #include "bubble.h"
 #include "gameData.h"
+#include <memory>
 
-class BubbleManager : public Entity {
+class BubbleManager : public Entity , public Singleton<BubbleManager>{
 private:
-    BubbleManager();
-
 
     const int m_MaxBubbleCount = 30;
 
@@ -21,25 +21,15 @@ private:
     void ResetInternal();
 
 public:
-    BubbleManager(BubbleManager&&) = delete;
-    BubbleManager(const BubbleManager&) = delete;
-    BubbleManager& operator=(BubbleManager&&) = delete;
-    BubbleManager& operator=(const BubbleManager&) = delete;
+    BubbleManager();
     ~BubbleManager();
-
-    static BubbleManager& Get()
-    {
-        static BubbleManager instance;
-        return instance;
-    }
 
     void Start() override;
 
     void Update(float dT = 1.0f) override;
 
-    static void SpawnBubble() { Get().SpawnBubbleInternal(); }
+    static void SpawnBubble() { Get()->SpawnBubbleInternal(); }
 
-    static void Init();
-
-    static void Reset() { Get().ResetInternal(); }
+    static void Reset() { Get()->ResetInternal(); }
 };
+//TODO: Add bubbles to scene

@@ -44,7 +44,8 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/Tower.cpp"
     "${CMAKE_SOURCE_DIR}/StaticMesh.cpp"
     "${CMAKE_SOURCE_DIR}/ResourceManager.cpp"
-
+    "${CMAKE_SOURCE_DIR}/Scene.cpp"
+    "${CMAKE_SOURCE_DIR}/SceneManager.cpp"
 )
 
 # Define compiler macros for the library

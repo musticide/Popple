@@ -14,20 +14,19 @@ Tower::Tower()
 
 Tower::~Tower() { }
 
-void Tower::LoadResources() { 
-
-    m_Model = *ResourceManager::GetModel("models/TowerBase.glb");
-    m_Model.materials[0].shader = *ResourceManager::GetShader("shaders/towerBasic.vs", "shaders/towerBasic.fs");
-    SetShaderValue(m_Model.materials[0].shader, GetShaderLocation(m_Model.materials[0].shader, "environmentMap"), (int[1]){ MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
-
-    m_Model.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture 
-    = *ResourceManager::GetCubemap("textures/Level01_ReflectionMap.png");
-}
-
-void Tower::Start()
+void Tower::LoadResources()
 {
-    SetActive(true);
+
+    m_Model = ResourceManager::GetModel("models/TowerBase.glb");
+    m_Model->materials[0].shader = *ResourceManager::GetShader("shaders/towerBasic.vs", "shaders/towerBasic.fs");
+    SetShaderValue(m_Model->materials[0].shader, GetShaderLocation(m_Model->materials[0].shader, "environmentMap"),
+        (int[1]) { MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
+
+    m_Model->materials[0].maps[MATERIAL_MAP_CUBEMAP].texture
+        = *ResourceManager::GetCubemap("textures/Level01_ReflectionMap.png");
 }
+
+void Tower::Start() { SetActive(true); }
 
 void Tower::Update(float dT)
 {
@@ -35,5 +34,10 @@ void Tower::Update(float dT)
     rotate += 0.8f;
 }
 
-void Tower::Draw() const { DrawModelEx(m_Model, position, (Vector3) { 0.5f, 1.0f, 0.5f }, rotate, scale, color); }
-
+void Tower::Draw() const
+{
+    if (m_Model.get() != nullptr)
+        DrawModelEx(*m_Model, position, (Vector3) { 0.5f, 1.0f, 0.5f }, rotate, scale, color);
+    else
+        LOGW("Could not draw model");
+}

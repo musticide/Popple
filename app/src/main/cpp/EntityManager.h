@@ -4,7 +4,8 @@
 #include <vector>
 
 class EntityManager {
-public:
+// public:
+private:
     EntityManager(EntityManager&&) = delete;
     EntityManager(const EntityManager&) = delete;
     EntityManager& operator=(EntityManager&&) = delete;
@@ -32,7 +33,6 @@ private:
         return instance;
     }
 
-    //Reorder entities based on entity.GetRendermode()
 
     void SortEntitiesByRenderModeInternal();
 

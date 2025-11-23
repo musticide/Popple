@@ -7,9 +7,14 @@
 #include "raymath.h"
 #include "score.h"
 
-BubbleManager::BubbleManager() { LOGI("Bubble Manager Initialized"); }
+// BubbleManager* BubbleManager::s_instance = nullptr;
 
-BubbleManager::~BubbleManager() { delete[] m_Bubbles; }
+BubbleManager::BubbleManager()
+{
+}
+
+BubbleManager::~BubbleManager() { 
+}
 
 void BubbleManager::DoAnemoBlast(Bubble& bubble)
 {
@@ -54,8 +59,6 @@ void BubbleManager::Update(float dT)
 
             case ANEMO:
                 DoAnemoBlast(m_Bubbles[i]);
-                //     Vector3 force = m
-                // m_Bubbles[i].AddForce(Vector3 force)
             default:
                 break;
             }
@@ -76,7 +79,6 @@ void BubbleManager::Update(float dT)
 
 void BubbleManager::SpawnBubbleInternal()
 {
-    // LOGI("Spawn Bubble called");
     m_SpawnTimer += GetFrameTime();
     float spawnInterval = GameData::GetSpawnInterval();
 
@@ -93,9 +95,7 @@ void BubbleManager::SpawnBubbleInternal()
     }
 }
 
-void BubbleManager::Init() { Get(); }
-void BubbleManager::Start() { 
-    }
+void BubbleManager::Start() { }
 
 void BubbleManager::ResetInternal()
 {

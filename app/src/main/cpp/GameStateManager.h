@@ -2,33 +2,23 @@
 
 #include "Entity.h"
 #include "Log.h"
+#include "Singleton.h"
 
-enum GameState { MAIN_MENU, GAMEPLAY, PAUSED, GAME_OVER };
+enum class GameState { MAIN_MENU, GAMEPLAY, PAUSED, GAME_OVER };
 
-class GameStateManager : public Entity {
+class GameStateManager : public Entity, public Singleton<GameStateManager>{
 private:
-    GameStateManager();
-
-    static GameStateManager& Get()
-    {
-        static GameStateManager instance;
-        return instance;
-    }
-
     GameState m_GameState;
 
     void ChangeStateInternal(GameState state);
 
 public:
-    GameStateManager(GameStateManager&&) = delete;
-    GameStateManager(const GameStateManager&) = delete;
-    GameStateManager& operator=(GameStateManager&&) = delete;
-    GameStateManager& operator=(const GameStateManager&) = delete;
+    GameStateManager();
     ~GameStateManager();
 
-    static void Init();
+    void Start() override;
 
-    static GameState GetState() { return Get().m_GameState; }
+    static GameState GetState() { return Get()->m_GameState; }
 
-    static void ChangeGameState(GameState state) { Get().ChangeStateInternal(state); }
+    static void ChangeGameState(GameState state) { Get()->ChangeStateInternal(state); }
 };

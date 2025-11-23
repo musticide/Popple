@@ -1,4 +1,5 @@
 #include "Button.h"
+#include "Entity.h"
 #include "Log.h"
 #include "input.h"
 #include <raymob.h>
@@ -22,6 +23,7 @@ Button::Button(const char* filepath, Color color)
     }
     m_Rectangle.x = 0;
     m_Rectangle.y = 0;
+    SetRenderQueue(RenderQueue::UI);
 }
 
 Button::Button(const char* filepath, Color color, Vector2 position)
@@ -41,6 +43,7 @@ Button::Button(const char* filepath, Color color, Vector2 position)
     }
     m_Rectangle.x = 0;
     m_Rectangle.y = 0;
+    SetRenderQueue(RenderQueue::UI);
 }
 Button::Button(const char* filepath)
     :m_Filepath(filepath), m_Color(WHITE)
@@ -57,6 +60,7 @@ Button::Button(const char* filepath)
     }
     m_Rectangle.x = 0;
     m_Rectangle.y = 0;
+    SetRenderQueue(RenderQueue::UI);
 }
 
 void Button::Draw() const
@@ -79,6 +83,5 @@ void Button::Update(float dT)
 
 void Button::AddOnClickListener(std::function<void()> func) { onClick.connect(func); }
 void Button::LoadResources() { 
-    LOGI("About to call rm gettexture");
     m_Texture = ResourceManager::GetTexture(m_Filepath);
 }

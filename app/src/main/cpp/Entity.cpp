@@ -1,9 +1,9 @@
 #include "Entity.h"
 #include "EntityManager.h"
 
-Entity::Entity() { EntityManager::AddEntity(this); }
+Entity::Entity() { }
 
-Entity::~Entity() { EntityManager::Remove(this); }
+Entity::~Entity() { }
 
 void Entity::Update(float dT) { }
 

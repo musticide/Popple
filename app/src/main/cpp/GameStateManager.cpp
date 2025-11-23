@@ -1,7 +1,7 @@
 #include "GameStateManager.h"
 
 GameStateManager::GameStateManager() 
-: m_GameState(MAIN_MENU)
+: m_GameState(GameState::MAIN_MENU)
 {
 }
 
@@ -14,8 +14,7 @@ void GameStateManager::ChangeStateInternal(GameState state)
     LOGI("GameState changed to : %d", state);
 }
 
-void GameStateManager::Init()
-{
-    Get().SetActive(true);
-    LOGI("Game State Manager Initialized");
+void GameStateManager::Start() { 
+    Get()->SetActive(true);
 }
+
