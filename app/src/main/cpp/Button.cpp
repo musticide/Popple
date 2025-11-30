@@ -82,6 +82,3 @@ void Button::Update(float dT)
 }
 
 void Button::AddOnClickListener(std::function<void()> func) { onClick.connect(func); }
-void Button::LoadResources() { 
-    m_Texture = ResourceManager::GetTexture(m_Filepath);
-}

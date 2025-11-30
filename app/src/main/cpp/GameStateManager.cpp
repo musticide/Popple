@@ -15,6 +15,6 @@ void GameStateManager::ChangeStateInternal(GameState state)
 }
 
 void GameStateManager::Start() { 
-    Get()->SetActive(true);
+    Get().SetActive(true);
 }
 

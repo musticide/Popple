@@ -2,10 +2,16 @@
 
 #include "Entity.h"
 #include "Log.h"
+#include <exception>
 #include <memory>
 #include <type_traits>
 #include <utility>
 #include <vector>
+
+enum class SceneType {
+    HOME,
+    GAMEPLAY
+};
 
 class Scene {
 public:
@@ -16,40 +22,55 @@ public:
     Scene& operator=(const Scene&) = default;
     ~Scene();
 
-    template <typename T, typename... Args> T* CreateEntity(Args&&... args)
+    template <typename T, typename... Args> std::unique_ptr<T> CreateEntity(Args&&... args)
     {
-        static_assert(std::is_base_of<Entity, T>::value, "T must derive from value");
+        static_assert(std::is_base_of<Entity, T>::value, "T must derive from Entity");
 
+        LOGV("%s is creating entity", m_Name);
         auto entity = std::make_unique<T>(std::forward<Args>(args)...);
         entity->parentScene = this;
 
         T* ptr = entity.get();
-        AddEntity(std::move(entity));
-        return ptr;
+
+        m_SceneEntities.push_back(ptr);
+        switch (ptr->GetRenderQueue()) {
+        case RenderQueue::SKY:
+            m_Buckets.sky.push_back(ptr);
+            break;
+        case RenderQueue::OPAQUE:
+            m_Buckets.opaque.push_back(ptr);
+            break;
+        case RenderQueue::TRANSPARENT:
+            m_Buckets.transparent.push_back(ptr);
+            break;
+        case RenderQueue::UI:
+            m_Buckets.ui.push_back(ptr);
+            break;
+        }
+
+        return std::move(entity);
     }
 
-    const char* const GetName() const { return m_Name;}
+    const char* const GetName() const { return m_Name; }
 
     bool IsActive() const { return m_IsActive; }
-    void SetActive(bool active) { m_IsActive = active; }
+    void SetActive(bool active)
+    {
+        m_IsActive = active;
+        if (active)
+            LOGI("Scene activated: %s", m_Name);
+        else
+            LOGI("Scene deactivated: %s", m_Name);
+    }
 
-    bool HasLoaded() const { return m_Loaded; }
-    bool HasStarted() const { return m_HasStarted; }
-
-    void AddEntity(std::unique_ptr<Entity> entity);
-
-    void Load();
     void Start();
     void Update(float dT);
     void Draw();
     void DrawUI();
 
-private:
+protected:
     const char* m_Name;
-    std::vector<std::unique_ptr<Entity>> m_SceneEntities;
-    bool m_IsActive;
-    bool m_Loaded = false;
-    bool m_HasStarted = false;
+    std::vector<Entity*> m_SceneEntities;
 
     struct RenderBuckets {
         std::vector<Entity*> sky;
@@ -57,4 +78,7 @@ private:
         std::vector<Entity*> transparent;
         std::vector<Entity*> ui;
     } m_Buckets;
+
+private:
+    bool m_IsActive;
 };

@@ -1,21 +1,14 @@
 #pragma once
 
+#include "Entity.h"
+#include "Singleton.h"
 #include "bubble.h"
 #include <vector>
-#define MAX_COMBO_LENGTH 3
 
 enum ElementalEffect { NO_ELEMENTAL_EFFECT = 0, ELECTRO, ANEMO, ELEMENTAL_EFFECT_COUNT };
 
-class GameData {
+class GameData : public Entity, public Singleton<GameData>{
 private:
-    GameData();
-    ~GameData();
-
-    static GameData& Get()
-    {
-        static GameData instance;
-        return instance;
-    }
 
     float m_SpawnInterval = 1.5f;
     float m_MinSpawnInterval = 0.20f;
@@ -29,7 +22,6 @@ private:
     float m_AnemoEffectTimer = 0.0f;
     float m_AnemoEffectDuration = 1.0f;
 
-    void UpdateInternal(float dT);
 
     void SetSpawnIntervalInternal(float interval);
 
@@ -39,17 +31,14 @@ private:
 
     void ActivateAnemoBlast();
 
-    void DrawComboCountInternal();
+    void DrawComboCountInternal()const;
 
-    Color GetElementalColorInternal(ElementalEffect type);
+    Color GetElementalColorInternal(ElementalEffect type)const;
 
     void ResetInternal();
 
 public:
-    GameData(GameData&&) = delete;
-    GameData(const GameData&) = delete;
-    GameData& operator=(GameData&&) = delete;
-    GameData& operator=(const GameData&) = delete;
+    const int MAX_COMBO_LENGTH = 3;
 
     static float GetSpawnInterval() { return Get().m_SpawnInterval; }
 
@@ -63,11 +52,18 @@ public:
 
     static ElementalEffect GetActiveElementalEffect() { return Get().m_ActiveElementalEffect; }
 
-    static void DrawComboCount() { Get().DrawComboCountInternal(); }
 
-    static void Update(float dT) { Get().UpdateInternal(dT); }
+    // static void Update(float dT) override { Get()->UpdateInternal(dT); }
 
     static Color GetElementalColor(ElementalEffect type) { return Get().GetElementalColorInternal(type); }
 
+    static int GetComboCountForType(ElementalEffect type) { return Get().m_ComboCount[(int)type];}
+
     static void Reset() { Get().ResetInternal(); }
+
+    void Start() override;
+
+    void Draw() const override { DrawComboCountInternal();}
+
+    void Update(float dT) override;
 };

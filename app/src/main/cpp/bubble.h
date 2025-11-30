@@ -20,12 +20,6 @@ private:
     Vector3 m_Velocity;
     constexpr static const float m_Drag = 0.1;
     constexpr static const float m_CenterForce = 0.01;
-    // std::vector<Vector3> m_Forces;
-
-    // Rendering
-    /* static Model s_BubbleBaseModel;
-    static Shader s_BubbleShader;*/
-    static TextureCubemap s_EnvironmentMap;
     std::shared_ptr<Model> m_BubbleBaseModel;
 
 public:
@@ -43,8 +37,6 @@ public:
     void Update(float dT = 1.0f) override;
 
     void Draw() const override;
-
-    void LoadResources() override;
 
     void AddForce(Vector3 force);
 

@@ -18,8 +18,6 @@ public:
 
     Vector2 position;
 
-    void LoadResources() override;
-
     void Update(float dT = 1.0f) override;
 
     void Draw() const override;

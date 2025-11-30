@@ -33,7 +33,7 @@ std::shared_ptr<Texture2D> ResourceManager::GetTextureImpl(const char* filepath)
 {
     auto it = m_Textures.find(filepath);
     if (it == m_Textures.end()) {
-        LOGI("Trying to load texture: %s", filepath);
+        LOGV("Loading Texture: %s", filepath);
         m_Textures[filepath] = std::make_shared<Texture2D>(LoadTexture(filepath));
     }
     return m_Textures[filepath];
@@ -49,6 +49,7 @@ std::shared_ptr<TextureCubemap> ResourceManager::GetCubemapImpl(const char* file
             return nullptr;
         }
         ImageFormat(&img, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+        LOGV("Loading Cubemap: %s", filepath);
         m_Cubemaps[filepath]
             = std::make_shared<TextureCubemap>(LoadTextureCubemap(img, CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE));
         UnloadImage(img);
@@ -63,6 +64,7 @@ std::shared_ptr<Shader> ResourceManager::GetShaderImpl(std::string vsPath, int f
     key.fsPath = "";
     auto it = m_Shaders.find(key);
     if (it == m_Shaders.end()) {
+        LOGV("Loading shader: %s", vsPath.c_str());
         m_Shaders[key] = std::make_shared<Shader>(LoadShader(vsPath.c_str(), 0));
     }
     return m_Shaders[key];
@@ -75,6 +77,7 @@ std::shared_ptr<Shader> ResourceManager::GetShaderImpl(int vsPath, std::string f
     key.fsPath = fsPath;
     auto it = m_Shaders.find(key);
     if (it == m_Shaders.end()) {
+        LOGV("Loading shader: %s", fsPath.c_str());
         m_Shaders[key] = std::make_shared<Shader>(LoadShader(0, fsPath.c_str()));
     }
     return m_Shaders[key];
@@ -87,6 +90,7 @@ std::shared_ptr<Shader> ResourceManager::GetShaderImpl(std::string vsPath, std::
     key.fsPath = fsPath;
     auto it = m_Shaders.find(key);
     if (it == m_Shaders.end()) {
+        LOGV("Loading shaders: %s, %s", vsPath.c_str(), fsPath.c_str());
         m_Shaders[key] = std::make_shared<Shader>(LoadShader(vsPath.c_str(), fsPath.c_str()));
     }
     return m_Shaders[key];
@@ -96,6 +100,7 @@ std::shared_ptr<Model> ResourceManager::GetModelImpl(const char* filepath)
 {
     auto it = m_Models.find(filepath);
     if (it == m_Models.end()) {
+        LOGV("Loading model: %s", filepath);
         m_Models[filepath] = std::make_shared<Model>(LoadModel(filepath));
     }
     return m_Models[filepath];

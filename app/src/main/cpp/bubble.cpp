@@ -17,15 +17,6 @@ Bubble::Bubble()
     , radius(1.0f)
     , color(RAYWHITE)
 {
-}
-
-Bubble::~Bubble()
-{
-    // UnloadModel(m_BubbleBaseModel);
-}
-
-void Bubble::LoadResources()
-{
     m_BubbleBaseModel = ResourceManager::GetModel("models/BubbleBase.glb");
     m_BubbleBaseModel->materials[0].shader
         = *ResourceManager::GetShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
@@ -34,12 +25,16 @@ void Bubble::LoadResources()
         SHADER_UNIFORM_INT);
     m_BubbleBaseModel->materials[0].maps[MATERIAL_MAP_CUBEMAP].texture
         = *ResourceManager::GetCubemap("textures/Level01_ReflectionMap.png");
+    SetRenderQueue(RenderQueue::TRANSPARENT);
+}
+
+Bubble::~Bubble()
+{
 }
 
 void Bubble::Start()
 {
     SetActive(false);
-    SetRenderMode(RenderMode::ALPHA);
 }
 
 Vector3 Bubble::GetRandomSpawnPos()
@@ -49,7 +44,6 @@ Vector3 Bubble::GetRandomSpawnPos()
     float distance = GetRandomValue(45, 55);
     float randAngle = GetRandomValue(0, 360);
     return (Vector3) { (float)cos(randAngle) * distance, 0, (float)sin(randAngle) * distance };
-    // return Vector3{10, 0, 10};
 }
 
 void Bubble::Spawn() { Init(); }
@@ -97,7 +91,7 @@ void Bubble::Update(float dT)
     // INFO: Check for collisions
     for (Bubble* nearby : SpatialGrid::GetNearbyEntities(this->position)) {
         if (CheckCollisionSpheres(this->position, this->radius, nearby->position, nearby->radius)) {
-            ResolveCollision(nearby);
+            // ResolveCollision(nearby);
         }
     }
 }

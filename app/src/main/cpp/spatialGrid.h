@@ -1,20 +1,15 @@
 #pragma once
-#include "popple.h"
+#include "Entity.h"
+#include "Singleton.h"
+#include "bubble.h"
 #include "raylib.h"
 #include <vector>
-#include "bubble.h"
 
-class SpatialGrid {
+class SpatialGrid : public Entity, public Singleton<SpatialGrid> {
 private:
     std::vector<std::vector<Bubble*>> m_Grid;
     const int GRID_SIZE = 100, GRID_COLS = (GetScreenWidth() + GRID_SIZE - 1) / GRID_SIZE,
               GRID_ROWS = (GetScreenHeight() + GRID_SIZE - 1) / GRID_SIZE;
-
-    SpatialGrid();
-    ~SpatialGrid();
-
-    SpatialGrid(SpatialGrid const&) = delete;
-    void operator=(SpatialGrid const&) = delete;
 
     void ClearInternal();
 
@@ -25,19 +20,16 @@ private:
     std::vector<Bubble*> GetNearbyEntitiesInternal(Vector3 position) const;
 
 public:
-    static SpatialGrid& GetInstance()
+    SpatialGrid();
+
+    static void Clear() { Get().ClearInternal(); }
+
+    static int GetGridIndex(Vector3 position) { return Get().GetGridIndexInternal(position); }
+
+    static void AddEntity(Bubble* entity) { Get().AddEntityInternal(entity); }
+
+    static std::vector<Bubble*> GetNearbyEntities(Vector3 position)
     {
-        static SpatialGrid instance;
-        return instance;
-    }
-
-    static void Clear() { GetInstance().ClearInternal(); }
-
-    static int GetGridIndex(Vector3 position) { return GetInstance().GetGridIndexInternal(position); }
-
-    static void AddEntity(Bubble* entity) { GetInstance().AddEntityInternal(entity); }
-
-    static std::vector<Bubble*> GetNearbyEntities(Vector3 position) {
-        return GetInstance().GetNearbyEntitiesInternal(position);
+        return Get().GetNearbyEntitiesInternal(position);
     }
 };

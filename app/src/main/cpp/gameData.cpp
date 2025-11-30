@@ -1,11 +1,10 @@
 #include "gameData.h"
+#include "Entity.h"
 #include "Log.h"
 #include "bubble.h"
 #include "bubbleManager.h"
 #include "raylib.h"
 
-GameData::GameData() { }
-GameData::~GameData() { }
 
 void GameData::DecreaseSpawnIntervalInternal(float factor)
 {
@@ -15,7 +14,12 @@ void GameData::DecreaseSpawnIntervalInternal(float factor)
 }
 
 void GameData::SetSpawnIntervalInternal(float interval) { m_SpawnInterval = interval; }
-void GameData::UpdateInternal(float dT)
+
+void GameData::Start() { 
+    this->SetRenderQueue(RenderQueue::UI);
+}
+
+void GameData::Update(float dT)
 {
     switch (m_ActiveElementalEffect) {
     case NO_ELEMENTAL_EFFECT:
@@ -75,7 +79,7 @@ void GameData::AddSpecialBubbleInternal(BubbleType type)
 
 void GameData::ActivateAnemoBlast() { }
 
-void GameData::DrawComboCountInternal()
+void GameData::DrawComboCountInternal() const
 {
     for (int i = 0; i < MAX_COMBO_LENGTH; i++) {
         Color color = GRAY;
@@ -93,7 +97,7 @@ void GameData::DrawComboCountInternal()
         DrawCircleV(center, radius, color);
     }
 }
-Color GameData::GetElementalColorInternal(ElementalEffect type)
+Color GameData::GetElementalColorInternal(ElementalEffect type) const
 {
     Color result;
 
@@ -128,3 +132,5 @@ void GameData::ResetInternal()
         m_ComboCount[j] = 0;
     }
 }
+
+

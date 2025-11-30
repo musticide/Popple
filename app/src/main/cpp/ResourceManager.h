@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Singleton.h"
 #include "raylib.h"
 #include <cstddef>
 #include <functional>
@@ -21,27 +22,21 @@ struct ShaderKeyHash {
     }
 };
 
-class ResourceManager {
+class ResourceManager : public Singleton<ResourceManager>{
 private:
     std::unordered_map<const char*, std::shared_ptr<Model>> m_Models;
     std::unordered_map<const char*, std::shared_ptr<Texture2D>> m_Textures;
     std::unordered_map<const char*, std::shared_ptr<TextureCubemap>> m_Cubemaps;
     std::unordered_map<ShaderKey, std::shared_ptr<Shader>, ShaderKeyHash> m_Shaders;
 
-    ResourceManager();
 
 public:
+    ResourceManager();
     ResourceManager(ResourceManager&&) = delete;
     ResourceManager(const ResourceManager&) = delete;
     ResourceManager& operator=(ResourceManager&&) = delete;
     ResourceManager& operator=(const ResourceManager&) = delete;
     ~ResourceManager();
-
-    static ResourceManager& Get()
-    {
-        static ResourceManager instance = ResourceManager();
-        return instance;
-    }
 
     static std::shared_ptr<Model> GetModel(const char* filepath) { return Get().GetModelImpl(filepath); }
     static std::shared_ptr<Shader> GetShader(std::string vsPath, std::string fsPath) { return Get().GetShaderImpl(vsPath, fsPath); }

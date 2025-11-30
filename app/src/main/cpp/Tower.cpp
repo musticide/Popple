@@ -10,13 +10,6 @@ Tower::Tower()
     , color(BLUE)
     , rotate(0.0f)
 {
-}
-
-Tower::~Tower() { }
-
-void Tower::LoadResources()
-{
-
     m_Model = ResourceManager::GetModel("models/TowerBase.glb");
     m_Model->materials[0].shader = *ResourceManager::GetShader("shaders/towerBasic.vs", "shaders/towerBasic.fs");
     SetShaderValue(m_Model->materials[0].shader, GetShaderLocation(m_Model->materials[0].shader, "environmentMap"),
@@ -26,7 +19,12 @@ void Tower::LoadResources()
         = *ResourceManager::GetCubemap("textures/Level01_ReflectionMap.png");
 }
 
-void Tower::Start() { SetActive(true); }
+Tower::~Tower() { }
+
+void Tower::Start() { 
+    LOGV("Tower start");
+    SetActive(true); 
+}
 
 void Tower::Update(float dT)
 {

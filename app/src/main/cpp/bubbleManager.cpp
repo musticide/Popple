@@ -1,48 +1,43 @@
 #include "bubbleManager.h"
 #include "Log.h"
+#include "Scene.h"
 #include "bubble.h"
 #include "gameData.h"
 #include "input.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "score.h"
+#include "spatialGrid.h"
+#include <iostream>
+#include <ostream>
 
-// BubbleManager* BubbleManager::s_instance = nullptr;
+BubbleManager::BubbleManager() { LOGI("Bubble Manager constructed"); }
 
-BubbleManager::BubbleManager()
-{
-}
+BubbleManager::~BubbleManager() { }
 
-BubbleManager::~BubbleManager() { 
-}
-
-void BubbleManager::DoAnemoBlast(Bubble& bubble)
+void BubbleManager::DoAnemoBlast(Bubble* bubble)
 {
     // LOGI("Anemo Blast Force applied");
-    Vector3 force = Vector3Normalize(bubble.position);
+    Vector3 force = Vector3Normalize(bubble->position);
     force = Vector3Scale(force, 500);
-    bubble.AddForce(force);
+    bubble->AddForce(force);
 }
 void BubbleManager::Update(float dT)
 {
+    SpatialGrid::Clear();
     SpawnBubbleInternal();
 
     for (int i = 0; i < m_MaxBubbleCount; i++) {
-        /* if(m_Bubbles[i] == nullptr){
-            LOGE("Null Reference: Bubble Missing");
-            continue;
-        } */
-
-        if (m_Bubbles[i].IsActive()) {
+        if (m_Bubbles[i]->IsActive()) {
 
             for (int j = 0; j < GetTouchPointCount(); j++) {
                 // Vector3 touchPos = Input::GetTouchPositionWS(j);
                 // LOGI("Touch Pos: %f, %f, %f", touchPos.x, touchPos.y, touchPos.z);
-                if (m_Bubbles[i].IsPointInBubble(Input::GetTouchPositionWS(j))) {
+                if (m_Bubbles[i]->IsPointInBubble(Input::GetTouchPositionWS(j))) {
                     Score::AddScore(5);
                     GameData::DecreaseSpawnInterval(0.01f);
-                    GameData::AddSpecialBubble(m_Bubbles[i].GetType());
-                    m_Bubbles[i].SetActive(false);
+                    GameData::AddSpecialBubble(m_Bubbles[i]->GetType());
+                    m_Bubbles[i]->SetActive(false);
                     continue;
                 }
             }
@@ -52,23 +47,23 @@ void BubbleManager::Update(float dT)
                 break;
 
             case ELECTRO:
-                if (Vector3Length(m_Bubbles[i].position) <= m_Bubbles[i].radius + 4) {
-                    m_Bubbles[i].SetActive(false);
+                if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + 4) {
+                    m_Bubbles[i]->SetActive(false);
                 }
                 break;
 
             case ANEMO:
-                DoAnemoBlast(m_Bubbles[i]);
+                DoAnemoBlast(m_Bubbles[i].get());
             default:
                 break;
             }
 
-            if (m_Bubbles[i].IsActive()) {
-                if (Vector3Length(m_Bubbles[i].position) <= m_Bubbles[i].radius + 2) {
-                    if (m_Bubbles[i].GetType() == DEFAULT_BUBBLE) {
+            if (m_Bubbles[i]->IsActive()) {
+                if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + 2) {
+                    if (m_Bubbles[i]->GetType() == DEFAULT_BUBBLE) {
                         Score::DecreaseHealth(10);
                     }
-                    m_Bubbles[i].SetActive(false);
+                    m_Bubbles[i]->SetActive(false);
                     LOGI("Bubble Reset");
                     continue;
                 }
@@ -85,22 +80,30 @@ void BubbleManager::SpawnBubbleInternal()
     if (m_SpawnTimer > spawnInterval) {
         m_SpawnTimer = 0.0f;
         for (int i = 0; i < m_MaxBubbleCount; i++) {
-            if (!m_Bubbles[i].IsActive()) {
+            if (!m_Bubbles[i]->IsActive()) {
                 // LOGI("Bubble Spawned at frame: %f", GetTime());
-                m_Bubbles[i].SetActive(true);
-                m_Bubbles[i].Spawn();
+                m_Bubbles[i]->SetActive(true);
+                m_Bubbles[i]->Spawn();
                 break;
             }
         }
     }
 }
 
-void BubbleManager::Start() { }
+void BubbleManager::Start()
+{
+    LOGV("Bubble start");
+    for (int i = 0; i < m_MaxBubbleCount; i++) {
+        if (parentScene != nullptr) {
+            m_Bubbles.push_back(std::move(parentScene->CreateEntity<Bubble>()));
+        }
+    }
+    LOGV("Bubbles generated");
+}
 
 void BubbleManager::ResetInternal()
 {
-
     for (int i = 0; i < m_MaxBubbleCount; i++) {
-        m_Bubbles[i].SetActive(false);
+        m_Bubbles[i]->SetActive(false);
     }
 }

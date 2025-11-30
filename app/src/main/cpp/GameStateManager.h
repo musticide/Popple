@@ -18,7 +18,7 @@ public:
 
     void Start() override;
 
-    static GameState GetState() { return Get()->m_GameState; }
+    static GameState GetState() { return Get().m_GameState; }
 
-    static void ChangeGameState(GameState state) { Get()->ChangeStateInternal(state); }
+    static void ChangeGameState(GameState state) { Get().ChangeStateInternal(state); }
 };

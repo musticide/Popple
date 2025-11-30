@@ -3,7 +3,6 @@
 
 SpatialGrid::SpatialGrid() { m_Grid.resize(GRID_COLS * GRID_ROWS); }
 
-SpatialGrid::~SpatialGrid() { }
 
 void SpatialGrid::AddEntityInternal(Bubble* entity)
 {

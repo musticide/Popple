@@ -3,12 +3,10 @@
 
 template <typename T> class Singleton {
 public:
-    static T* Get()
+    static T& Get()
     {
-        if (!s_instance) {
-            static T instance;
-        }
-        return s_instance;
+        assert(s_instance && "Singleton not initialized");
+        return *s_instance;
     }
 
     Singleton()
@@ -28,6 +26,3 @@ public:
 private:
     inline static T* s_instance = nullptr;
 };
-
-// template <typename T>
-// T* Singleton<T>::s_instance = nullptr;

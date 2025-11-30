@@ -30,15 +30,14 @@ list(APPEND SOURCES ${ANDROID_NDK}/sources/android/native_app_glue/android_nativ
 add_library(${APP_LIB_NAME} SHARED ${SOURCES})
 list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/main.cpp"
+    "${CMAKE_SOURCE_DIR}/Game.cpp"
     "${CMAKE_SOURCE_DIR}/bubble.cpp"
     "${CMAKE_SOURCE_DIR}/input.cpp"
     "${CMAKE_SOURCE_DIR}/spatialGrid.cpp"
     "${CMAKE_SOURCE_DIR}/score.cpp"
     "${CMAKE_SOURCE_DIR}/gameData.cpp"
     "${CMAKE_SOURCE_DIR}/Entity.cpp"
-    "${CMAKE_SOURCE_DIR}/EntityManager.cpp"
     "${CMAKE_SOURCE_DIR}/bubbleManager.cpp"
-    "${CMAKE_SOURCE_DIR}/GameStateManager.cpp"
     "${CMAKE_SOURCE_DIR}/Signal.cpp"
     "${CMAKE_SOURCE_DIR}/Button.cpp"
     "${CMAKE_SOURCE_DIR}/Tower.cpp"
@@ -46,6 +45,9 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/ResourceManager.cpp"
     "${CMAKE_SOURCE_DIR}/Scene.cpp"
     "${CMAKE_SOURCE_DIR}/SceneManager.cpp"
+    "${CMAKE_SOURCE_DIR}/HomeScene.cpp"
+    "${CMAKE_SOURCE_DIR}/GameplayScene.cpp"
+    "${CMAKE_SOURCE_DIR}/GameUI.cpp"
 )
 
 # Define compiler macros for the library
