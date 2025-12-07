@@ -31,6 +31,7 @@ void Game::Init()
     mainCamera3D.fovy = 80.0f;
     mainCamera3D.projection = CAMERA_ORTHOGRAPHIC;
 
+    //Managers/Systems
     m_InputManager = std::make_unique<Input>(&mainCamera3D, &uiCamera);
     m_ResourceManager = std::make_unique<ResourceManager>();
     m_GameData = std::make_unique<GameData>();
