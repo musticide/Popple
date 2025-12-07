@@ -48,6 +48,8 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/HomeScene.cpp"
     "${CMAKE_SOURCE_DIR}/GameplayScene.cpp"
     "${CMAKE_SOURCE_DIR}/GameUI.cpp"
+    "${CMAKE_SOURCE_DIR}/ParticleSystem.cpp"
+    "${CMAKE_SOURCE_DIR}/TouchFeedback.cpp"
 )
 
 # Define compiler macros for the library
