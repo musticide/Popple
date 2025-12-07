@@ -22,13 +22,15 @@ public:
     Scene& operator=(const Scene&) = default;
     ~Scene();
 
-    template <typename T, typename... Args> std::unique_ptr<T> CreateEntity(Args&&... args)
+    template <typename T, typename... Args> std::unique_ptr<T> CreateEntity(bool active, Args&&... args)
     {
         static_assert(std::is_base_of<Entity, T>::value, "T must derive from Entity");
 
         LOGV("%s is creating entity", m_Name);
         auto entity = std::make_unique<T>(std::forward<Args>(args)...);
+
         entity->parentScene = this;
+        entity->SetActive(active);
 
         T* ptr = entity.get();
 

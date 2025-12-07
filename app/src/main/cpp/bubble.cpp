@@ -39,8 +39,6 @@ void Bubble::Start()
 
 Vector3 Bubble::GetRandomSpawnPos()
 {
-    int screenSize = GetScreenWidth() > GetScreenHeight() ? GetScreenWidth() : GetScreenHeight();
-    screenSize /= 2;
     float distance = GetRandomValue(45, 55);
     float randAngle = GetRandomValue(0, 360);
     return (Vector3) { (float)cos(randAngle) * distance, 0, (float)sin(randAngle) * distance };

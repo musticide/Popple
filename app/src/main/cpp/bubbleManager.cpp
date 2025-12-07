@@ -95,7 +95,7 @@ void BubbleManager::Start()
     LOGV("Bubble start");
     for (int i = 0; i < m_MaxBubbleCount; i++) {
         if (parentScene != nullptr) {
-            m_Bubbles.push_back(std::move(parentScene->CreateEntity<Bubble>()));
+            m_Bubbles.push_back(std::move(parentScene->CreateEntity<Bubble>(false)));
         }
     }
     LOGV("Bubbles generated");

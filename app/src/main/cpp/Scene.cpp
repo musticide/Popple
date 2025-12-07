@@ -13,8 +13,7 @@ Scene::~Scene() { }
 void Scene::Start()
 {
     for (auto& e : m_SceneEntities) {
-        if (e != nullptr && !e->hasStarted)
-            if (e->IsActive()) {
+        if (e != nullptr && e->IsActive() && !e->hasStarted){
                 e->Start();
                 LOGV("Scene Started: %s", m_Name);
                 e->hasStarted = true;
@@ -44,7 +43,7 @@ void Scene::Update(float dT)
 {
     for (auto& e : m_SceneEntities) {
         if (e != nullptr)
-            if (e->IsActive())
+            if (e->IsActive() && e->hasStarted)
                 e->Update(dT);
     }
 }
@@ -53,6 +52,6 @@ void Scene::DrawUI()
 {
     for (auto e : m_Buckets.ui)
         if (e != nullptr)
-            if (e->IsActive())
+            if (e->IsActive() && e->hasStarted)
                 e->Draw();
 }
