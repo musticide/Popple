@@ -11,10 +11,17 @@ void Entity::Start() { }
 
 void Entity::Draw() const { }
 
-void Entity::SetActive(bool active) { m_IsActive = active; }
+void Entity::SetActive(bool active) { m_IsActive = active; 
+    if(active)
+        OnEnable();
+    else
+        OnDisable();
+}
 
 Entity::Entity(Scene* scene)
     : parentScene(scene)
 {
 }
 
+void Entity::OnEnable() { }
+void Entity::OnDisable() { }

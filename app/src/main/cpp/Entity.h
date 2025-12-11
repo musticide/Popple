@@ -24,6 +24,10 @@ public:
 
     virtual void Draw() const;
 
+    virtual void OnEnable();
+
+    virtual void OnDisable();
+
     void SetActive(bool active);
     bool IsActive() const { return m_IsActive; }
 

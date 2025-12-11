@@ -8,10 +8,7 @@
 #include <utility>
 #include <vector>
 
-enum class SceneType {
-    HOME,
-    GAMEPLAY
-};
+enum class SceneType { HOME, GAMEPLAY };
 
 class Scene {
 public:
@@ -59,10 +56,22 @@ public:
     void SetActive(bool active)
     {
         m_IsActive = active;
-        if (active)
+        if (active) {
             LOGI("Scene activated: %s", m_Name);
-        else
+            for (auto e : m_SceneEntities) {
+                if (e != nullptr && e->IsActive()) { 
+                    e->OnEnable();
+                }
+            }
+
+        } else {
             LOGI("Scene deactivated: %s", m_Name);
+            for (auto e : m_SceneEntities) {
+                if (e != nullptr && e->IsActive()) { 
+                    e->OnDisable();
+                }
+            }
+        }
     }
 
     void Start();
