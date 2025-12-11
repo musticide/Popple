@@ -4,6 +4,7 @@
 GameplayScene::GameplayScene() 
 :Scene("GameplayScene")
 {
+    m_GameManager = CreateEntity<GameManager>(true);
     m_SpatialGrid = CreateEntity<SpatialGrid>(true);
     m_BubbleManager = CreateEntity<BubbleManager>(true);
 

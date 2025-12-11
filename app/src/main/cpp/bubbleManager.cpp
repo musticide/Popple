@@ -1,19 +1,19 @@
 #include "bubbleManager.h"
+#include "GameManager.h"
 #include "Log.h"
 #include "Scene.h"
 #include "bubble.h"
-#include "gameData.h"
 #include "input.h"
-#include "raylib.h"
 #include "raymath.h"
-#include "score.h"
 #include "spatialGrid.h"
-#include <iostream>
-#include <ostream>
+#include <raymob.h>
 
 BubbleManager::BubbleManager() { LOGI("Bubble Manager constructed"); }
 
 BubbleManager::~BubbleManager() { }
+
+ElementType BubbleManager::s_ActiveEffect;
+float BubbleManager::s_SpawnInterval;
 
 void BubbleManager::DoAnemoBlast(Bubble* bubble)
 {
@@ -31,28 +31,27 @@ void BubbleManager::Update(float dT)
         if (m_Bubbles[i]->IsActive()) {
 
             for (int j = 0; j < GetTouchPointCount(); j++) {
-                // Vector3 touchPos = Input::GetTouchPositionWS(j);
                 // LOGI("Touch Pos: %f, %f, %f", touchPos.x, touchPos.y, touchPos.z);
                 if (m_Bubbles[i]->IsPointInBubble(Input::GetTouchPositionWS(j))) {
-                    Score::AddScore(5);
-                    GameData::DecreaseSpawnInterval(0.01f);
-                    GameData::AddSpecialBubble(m_Bubbles[i]->GetType());
+                    GameManager::Get().AddScore(5);
+                    GameManager::Get().DecreaseSpawnInterval(0.01f);
+                    GameManager::Get().AddSpecialBubbleInternal(m_Bubbles[i]->GetType());
                     m_Bubbles[i]->SetActive(false);
                     continue;
                 }
             }
 
-            switch (GameData::GetActiveElementalEffect()) {
-            case NO_ELEMENTAL_EFFECT:
+            switch (s_ActiveEffect) {
+            case ElementType::NONE:
                 break;
 
-            case ELECTRO:
+            case ElementType::ELECTRO:
                 if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + 4) {
                     m_Bubbles[i]->SetActive(false);
                 }
                 break;
 
-            case ANEMO:
+            case ElementType::ANEMO:
                 DoAnemoBlast(m_Bubbles[i].get());
             default:
                 break;
@@ -60,8 +59,8 @@ void BubbleManager::Update(float dT)
 
             if (m_Bubbles[i]->IsActive()) {
                 if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + 2) {
-                    if (m_Bubbles[i]->GetType() == DEFAULT_BUBBLE) {
-                        Score::DecreaseHealth(10);
+                    if (m_Bubbles[i]->GetType() == ElementType::NONE) {
+                        GameManager::Get().DecreaseHealth(10);
                     }
                     m_Bubbles[i]->SetActive(false);
                     LOGI("Bubble Reset");
@@ -75,9 +74,8 @@ void BubbleManager::Update(float dT)
 void BubbleManager::SpawnBubbleInternal()
 {
     m_SpawnTimer += GetFrameTime();
-    float spawnInterval = GameData::GetSpawnInterval();
 
-    if (m_SpawnTimer > spawnInterval) {
+    if (m_SpawnTimer > s_SpawnInterval) {
         m_SpawnTimer = 0.0f;
         for (int i = 0; i < m_MaxBubbleCount; i++) {
             if (!m_Bubbles[i]->IsActive()) {
@@ -99,6 +97,19 @@ void BubbleManager::Start()
         }
     }
     LOGV("Bubbles generated");
+
+    s_ActiveEffect = GameManager::Get().GetActiveEffect();
+    s_SpawnInterval = GameManager::Get().GetSpawnInterval();
+
+    GameManager::Get().activeElementEffectChanged.connect(BubbleManager::ActiveEffectChanged);
+    GameManager::Get().spawnIntervalChanged.connect(BubbleManager::SpawnIntervalChanged);
+}
+
+void BubbleManager::OnEnable()
+{
+    for (int i = 0; i < m_Bubbles.size(); i++) {
+        m_Bubbles[i]->SetActive(false);
+    }
 }
 
 void BubbleManager::ResetInternal()
@@ -107,3 +118,5 @@ void BubbleManager::ResetInternal()
         m_Bubbles[i]->SetActive(false);
     }
 }
+void BubbleManager::ActiveEffectChanged(ElementType type) { s_ActiveEffect = type; }
+void BubbleManager::SpawnIntervalChanged(float spawnInterval, float amount) { s_SpawnInterval = spawnInterval; }

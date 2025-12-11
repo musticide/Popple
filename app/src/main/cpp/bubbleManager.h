@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Entity.h"
+#include "GameManager.h"
 #include "Singleton.h"
 #include "bubble.h"
-#include "gameData.h"
 #include <memory>
 #include <vector>
 
@@ -21,11 +21,17 @@ private:
 
     void ResetInternal();
 
+    static void ActiveEffectChanged(ElementType type);
+    static void SpawnIntervalChanged(float spawnInterval, float amount);
+
+    static ElementType s_ActiveEffect;
+    static float s_SpawnInterval;
 public:
     BubbleManager();
     ~BubbleManager();
 
     void Start() override;
+    void OnEnable() override;
 
     void Update(float dT = 1.0f) override;
 

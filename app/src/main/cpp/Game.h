@@ -4,8 +4,6 @@
 #include "input.h"
 #include "SceneManager.h"
 #include "ResourceManager.h"
-#include "gameData.h"
-#include "score.h"
 #include "raylib.h"
 #include "HomeScene.h"
 #include "GameplayScene.h"
@@ -24,9 +22,7 @@ private:
 
     std::unique_ptr<Input> m_InputManager;
     std::unique_ptr<ResourceManager> m_ResourceManager;
-    std::unique_ptr<GameData> m_GameData;
     std::unique_ptr<SceneManager> m_SceneManager;
-    std::unique_ptr<Score> m_Score;
 
     Camera3D mainCamera3D;
     Camera2D uiCamera;

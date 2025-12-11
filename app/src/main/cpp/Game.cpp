@@ -34,9 +34,7 @@ void Game::Init()
     //Managers/Systems
     m_InputManager = std::make_unique<Input>(&mainCamera3D, &uiCamera);
     m_ResourceManager = std::make_unique<ResourceManager>();
-    m_GameData = std::make_unique<GameData>();
     m_SceneManager = std::make_unique<SceneManager>();
-    m_Score = std::make_unique<Score>();
 
     m_HomeScene = SceneManager::Get().RegisterScene<HomeScene>();
     m_GameplayScene = SceneManager::Get().RegisterScene<GameplayScene>();

@@ -1,13 +1,11 @@
 #include "bubble.h"
 #include "Entity.h"
+#include "GameManager.h"
 #include "Log.h"
 #include "ResourceManager.h"
-#include "bubbleManager.h"
 #include "functionLibrary.h"
-#include "gameData.h"
-#include "raylib.h"
+#include <raymob.h>
 #include "raymath.h"
-#include "score.h"
 #include "spatialGrid.h"
 #include <memory>
 
@@ -28,17 +26,13 @@ Bubble::Bubble()
     SetRenderQueue(RenderQueue::TRANSPARENT);
 }
 
-Bubble::~Bubble()
-{
-}
+Bubble::~Bubble() { }
 
-void Bubble::Start()
-{
-    SetActive(false);
-}
+void Bubble::Start() { SetActive(false); }
 
 Vector3 Bubble::GetRandomSpawnPos()
 {
+    //TODO: decrease distance
     float distance = GetRandomValue(45, 55);
     float randAngle = GetRandomValue(0, 360);
     return (Vector3) { (float)cos(randAngle) * distance, 0, (float)sin(randAngle) * distance };
@@ -57,12 +51,12 @@ void Bubble::Init()
 
     // 20% chance of a special bubble
     if (RollPercentage(40)) {
-        m_Type = RollPercentage(50) ? ANEMO_BUBBLE : ELECTRO_BUBBLE;
+        m_Type = RollPercentage(50) ? ElementType::ANEMO : ElementType::ELECTRO;
     } else {
-        m_Type = DEFAULT_BUBBLE;
+        m_Type = ElementType::NONE;
     }
 
-    SetColor(m_Type);
+    SetColor();
 }
 
 void Bubble::ResolveCollision(Bubble* collider)
@@ -119,20 +113,28 @@ void Bubble::ApplyForces()
     position += m_Velocity;
 }
 void Bubble::ClearForces() { }
-void Bubble::SetColor(BubbleType type)
+void Bubble::SetColor()
 {
     switch (m_Type) {
-    case DEFAULT_BUBBLE:
+
+    case ElementType::NONE:
         color = WHITE;
         break;
-    case ELECTRO_BUBBLE:
+    case ElementType::ELECTRO:
         color = PURPLE;
         break;
-    case ANEMO_BUBBLE:
+    case ElementType::ANEMO:
         color = { 107, 227, 183, 255 };
         break;
+    case ElementType::COUNT:
     default:
         color = WHITE;
         break;
     }
+    /* switch (m_Type) {
+    case DEFAULT_BUBBLE:
+    case ELECTRO_BUBBLE:
+    case ANEMO_BUBBLE:
+    default:
+    } */
 }

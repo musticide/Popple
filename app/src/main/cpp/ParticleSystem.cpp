@@ -52,7 +52,6 @@ void ParticleSystem::Update(float dT)
 
         if (particle.age >= particle.lifetime) {
             particle.isActive = false;
-            LOGI("ps: particle dead");
             continue;
         }
         float life = particle.age / particle.lifetime;
@@ -75,7 +74,6 @@ void ParticleSystem::Draw() const
 
 void ParticleSystem::Emit()
 {
-    LOGI("Particle Emitted");
     Particle& particle = m_ParticlePool[m_CurrentIndex];
     particle.isActive = true;
     particle.lifetime = particleProperties.lifetime;
@@ -93,7 +91,6 @@ void ParticleSystem::Emit()
     }
 
     m_CurrentIndex = (--m_CurrentIndex + m_ParticlePool.size()) % m_ParticlePool.size();
-    LOGI("Current index: %d", m_CurrentIndex);
 }
 void ParticleSystem::Burst(int amount) { 
     int count = 0;

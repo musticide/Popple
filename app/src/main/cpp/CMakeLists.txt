@@ -34,8 +34,6 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/bubble.cpp"
     "${CMAKE_SOURCE_DIR}/input.cpp"
     "${CMAKE_SOURCE_DIR}/spatialGrid.cpp"
-    "${CMAKE_SOURCE_DIR}/score.cpp"
-    "${CMAKE_SOURCE_DIR}/gameData.cpp"
     "${CMAKE_SOURCE_DIR}/Entity.cpp"
     "${CMAKE_SOURCE_DIR}/bubbleManager.cpp"
     "${CMAKE_SOURCE_DIR}/Signal.cpp"
@@ -50,6 +48,7 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/GameUI.cpp"
     "${CMAKE_SOURCE_DIR}/ParticleSystem.cpp"
     "${CMAKE_SOURCE_DIR}/TouchFeedback.cpp"
+    "${CMAKE_SOURCE_DIR}/GameManager.cpp"
 )
 
 # Define compiler macros for the library

@@ -1,22 +1,22 @@
 #pragma once
 
+#include "GameManager.h"
 #include "Log.h"
-#include "raylib.h"
-#include "raymath.h"
 #include <raymob.h>
+#include "raymath.h"
 #include <vector>
 
 #include "Entity.h"
 #include "input.h"
 
-enum BubbleType { DEFAULT_BUBBLE = 0, ELECTRO_BUBBLE, ANEMO_BUBBLE, BUBBLE_TYPES_COUNT };
+// enum BubbleType { DEFAULT_BUBBLE = 0, ELECTRO_BUBBLE, ANEMO_BUBBLE, BUBBLE_TYPES_COUNT };
 
 class Bubble : public Entity {
 private:
     bool m_IsActive = true;
 
     // Physics
-    BubbleType m_Type;
+    ElementType m_Type;
     Vector3 m_Velocity;
     constexpr static const float m_Drag = 0.1;
     constexpr static const float m_CenterForce = 0.01;
@@ -46,12 +46,12 @@ public:
 
     // Getters
     Vector3 GetVelocity() const { return m_Velocity; }
-    BubbleType GetType() const { return m_Type; }
+    ElementType GetType() const { return m_Type; }
 
 private:
     void Init();
 
-    void SetColor(BubbleType type);
+    void SetColor();
 
     Vector3 GetRandomSpawnPos();
     void ApplyForces();
