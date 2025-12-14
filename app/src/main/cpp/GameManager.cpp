@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include "Log.h"
+#include "bubbleManager.h"
 
 GameManager::GameManager() { }
 GameManager::~GameManager() { }
@@ -77,27 +78,18 @@ void GameManager::Start()
     spawnIntervalChanged(m_SpawnInterval, 0.f);
 }
 
-void GameManager::OnEnable() { 
+void GameManager::OnEnable()
+{
     LOGI("Game Manager Enabled");
     ResetGameValues();
     activeElementEffectChanged(m_ActiveEffect);
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
     spawnIntervalChanged(m_SpawnInterval, 0.f);
-
 }
-
 
 void GameManager::Update(float dT)
 {
-    for (size_t i = 0; i < m_ComboCount.size(); i++) {
-        if (m_ComboCount[i] >= MAX_COMBO_LENGTH) {
-            m_ActiveEffect = (ElementType)i;
-            activeElementEffectChanged(m_ActiveEffect);
-            ResetComboCount();
-        }
-    }
-
     switch (m_ActiveEffect) {
     case ElementType::NONE:
         break;
@@ -108,14 +100,18 @@ void GameManager::Update(float dT)
             activeElementEffectChanged(m_ActiveEffect);
             m_ElectroShieldTimer = 0.0f;
         }
+        break;
     case ElementType::ANEMO:
         m_AnemoEffectTimer += dT;
+        BubbleManager::Get().PauseSpawn();
         if (m_AnemoEffectTimer > ANEMO_EFFECT_DURATION) {
             m_ActiveEffect = ElementType::NONE;
             activeElementEffectChanged(m_ActiveEffect);
+            BubbleManager::Get().ContinueSpawn();
             m_AnemoEffectTimer = 0.0f;
         }
-    case ElementType::COUNT:
+        break;
+    default:
         LOGE("Active effect index out of bounds");
         break;
     }
@@ -127,7 +123,6 @@ void GameManager::EndGame()
 {
     SceneManager::Get().ActivateScene("HomeScene");
     SceneManager::Get().DeactivateScene("GameplayScene");
-    // TODO: Reset stuff...
 }
 
 void GameManager::ResetGameValues()
@@ -144,4 +139,3 @@ void GameManager::ResetGameValues()
 
     m_AnemoEffectTimer = 0.0f;
 }
-

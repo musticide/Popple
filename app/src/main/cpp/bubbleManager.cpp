@@ -73,6 +73,8 @@ void BubbleManager::Update(float dT)
 
 void BubbleManager::SpawnBubbleInternal()
 {
+    if (m_PauseSpawn)
+        return;
     m_SpawnTimer += GetFrameTime();
 
     if (m_SpawnTimer > s_SpawnInterval) {
@@ -120,3 +122,6 @@ void BubbleManager::ResetInternal()
 }
 void BubbleManager::ActiveEffectChanged(ElementType type) { s_ActiveEffect = type; }
 void BubbleManager::SpawnIntervalChanged(float spawnInterval, float amount) { s_SpawnInterval = spawnInterval; }
+void BubbleManager::ContinueSpawn() { m_PauseSpawn = false; }
+
+void BubbleManager::PauseSpawn() { m_PauseSpawn = true; }

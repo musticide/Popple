@@ -7,14 +7,14 @@
 #include <memory>
 #include <vector>
 
-class BubbleManager : public Entity , public Singleton<BubbleManager>{
+class BubbleManager : public Entity, public Singleton<BubbleManager> {
 private:
-
     const int m_MaxBubbleCount = 30;
 
     std::vector<std::unique_ptr<Bubble>> m_Bubbles;
 
     float m_SpawnTimer = 0.0f;
+    bool m_PauseSpawn = false;
 
     void SpawnBubbleInternal();
     void DoAnemoBlast(Bubble* bubble);
@@ -26,6 +26,7 @@ private:
 
     static ElementType s_ActiveEffect;
     static float s_SpawnInterval;
+
 public:
     BubbleManager();
     ~BubbleManager();
@@ -38,5 +39,8 @@ public:
     static void SpawnBubble() { Get().SpawnBubbleInternal(); }
 
     static void Reset() { Get().ResetInternal(); }
+
+    void PauseSpawn();
+    void ContinueSpawn();
 };
-//TODO: Add bubbles to scene
+// TODO: Add bubbles to scene

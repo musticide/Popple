@@ -33,7 +33,7 @@ void Bubble::Start() { SetActive(false); }
 Vector3 Bubble::GetRandomSpawnPos()
 {
     //TODO: decrease distance
-    float distance = GetRandomValue(45, 55);
+    float distance = GetRandomValue(40, 35);
     float randAngle = GetRandomValue(0, 360);
     return (Vector3) { (float)cos(randAngle) * distance, 0, (float)sin(randAngle) * distance };
 }
