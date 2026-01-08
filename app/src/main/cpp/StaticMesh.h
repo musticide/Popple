@@ -1,18 +1,18 @@
 #pragma once
 
-#include "Entity.h"
+#include "DrawableEntity.h"
 #include "raylib.h"
 #include "raymath.h"
 #include <memory>
 
-class StaticMesh : public Entity {
+class StaticMesh : public DrawableEntity{
 private:
     const char* m_Filepath;
     std::shared_ptr<Model> m_Model;
     Material m_Material;
 
 public:
-    StaticMesh(const char* filepath);
+    StaticMesh(const char* filepath, RenderQueue type);
     StaticMesh(StaticMesh&&) = default;
     StaticMesh(const StaticMesh&) = default;
     StaticMesh& operator=(StaticMesh&&) = default;

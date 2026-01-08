@@ -1,4 +1,5 @@
 #include "GameUI.h"
+#include "DrawableEntity.h"
 #include "Entity.h"
 #include "GameManager.h"
 #include "Log.h"
@@ -8,13 +9,14 @@
 int GameUI::s_Score;
 int GameUI::s_Health;
 
-GameUI::GameUI() {
-    SetRenderQueue(RenderQueue::UI);
+GameUI::GameUI()
+    : DrawableEntity(RenderQueue::UI)
+{
 }
 
-GameUI::~GameUI() {
-}
-void GameUI::Start() { 
+GameUI::~GameUI() { }
+void GameUI::Start()
+{
     s_Health = GameManager::Get().GetHealth();
     s_Score = GameManager::Get().GetScore();
     GameManager::Get().scoreChanged.connect(GameUI::ScoreChanged);
@@ -23,18 +25,19 @@ void GameUI::Start() {
 
 void GameUI::Update(float dT) { }
 
-void GameUI::Draw() const { 
-    //Show Score
+void GameUI::Draw() const
+{
+    // Show Score
     std::string scoreText = TextFormat("S: %d", s_Score);
     DrawText(scoreText.c_str(), -GetScreenWidth() / 2 + 40, -GetScreenHeight() / 2 + 40, 75, GRAY);
 
-    //Show Health
+    // Show Health
     std::string healthText = TextFormat("H: %d", s_Health);
     int textWidth = MeasureText(healthText.c_str(), 75);
     Color color = s_Health > 20 ? GREEN : RED;
     DrawText(healthText.c_str(), (GetScreenWidth() / 2) - textWidth - 40, -GetScreenHeight() / 2 + 40, 75, color);
 
-    //Show Combo UI
+    // Show Combo UI
     for (int i = 0; i < GameManager::Get().GetMaxComboLength(); i++) {
         Color color = GRAY;
         float radius = 10;
@@ -43,7 +46,7 @@ void GameUI::Draw() const {
 
         for (int j = 1; j < (int)ElementType::COUNT; j++) {
             int comboCount = GameManager::Get().GetComboCountForType((ElementType)j);
-            if (comboCount  > 0 && i < comboCount ) {
+            if (comboCount > 0 && i < comboCount) {
                 color = GetElementalColor((ElementType)j);
                 radius = 30;
             }
@@ -74,5 +77,3 @@ Color GameUI::GetElementalColor(ElementType type) const
 
     return result;
 }
-
-

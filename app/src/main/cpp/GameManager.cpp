@@ -70,12 +70,12 @@ void GameManager::DecreaseSpawnInterval(float amount)
 
 void GameManager::Start()
 {
-    LOGI("Game Manager Start");
     ResetGameValues();
     activeElementEffectChanged(m_ActiveEffect);
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
     spawnIntervalChanged(m_SpawnInterval, 0.f);
+    LOGI("Game Manager Start");
 }
 
 void GameManager::OnEnable()

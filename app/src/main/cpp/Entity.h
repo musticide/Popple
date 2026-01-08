@@ -1,8 +1,8 @@
 #pragma once
 
-enum class RenderQueue { SKY, OPAQUE, TRANSPARENT, UI };
-
 class Scene;
+
+class DrawableEntity;
 
 class Entity {
 public:
@@ -22,19 +22,16 @@ public:
 
     virtual void Update(float dT = 1.0f);
 
-    virtual void Draw() const;
-
     virtual void OnEnable();
 
     virtual void OnDisable();
 
+    virtual DrawableEntity* asDrawable() { return nullptr; }
+
     void SetActive(bool active);
     bool IsActive() const { return m_IsActive; }
 
-    RenderQueue GetRenderQueue() const { return m_RenderQueue; }
-    void SetRenderQueue(RenderQueue type) { m_RenderQueue = type; }
 
 private:
     bool m_IsActive;
-    RenderQueue m_RenderQueue = RenderQueue::OPAQUE;
 };

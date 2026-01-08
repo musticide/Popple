@@ -1,9 +1,9 @@
 #pragma once
-#include "Entity.h"
+#include "DrawableEntity.h"
 #include "GameManager.h"
 #include "raylib.h"
 
-class GameUI : public Entity {
+class GameUI : public DrawableEntity{
 public:
     GameUI();
     GameUI(GameUI&&) = default;

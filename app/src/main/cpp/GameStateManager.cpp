@@ -1,6 +1,6 @@
 #include "GameStateManager.h"
 
-GameStateManager::GameStateManager() 
+GameStateManager::  GameStateManager()
 : m_GameState(GameState::MAIN_MENU)
 {
 }

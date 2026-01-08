@@ -1,9 +1,10 @@
 #pragma once
 #include "Entity.h"
 #include "Singleton.h"
-#include "bubble.h"
 #include "raylib.h"
 #include <vector>
+
+struct Bubble;
 
 class SpatialGrid : public Entity, public Singleton<SpatialGrid> {
 private:

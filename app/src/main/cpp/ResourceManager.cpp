@@ -1,5 +1,6 @@
 #include "ResourceManager.h"
 #include "Log.h"
+#include "Renderer.h"
 #include "raylib.h"
 #include <memory>
 

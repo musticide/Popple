@@ -51,23 +51,23 @@ void SceneManager::UpdateScenes(float dT)
     }
 }
 
-void SceneManager::DrawScenes()
-{
-    for (auto& scene : m_Scenes) {
-        if (scene != nullptr)
-            if (scene->IsActive())
-                scene->Draw();
-    }
-}
+// void SceneManager::DrawScenes()
+// {
+//     for (auto& scene : m_Scenes) {
+//         if (scene != nullptr)
+//             if (scene->IsActive())
+//                 scene->Draw();
+//     }
+// }
 
-void SceneManager::DrawUI()
-{
-    for (auto& scene : m_Scenes) {
-        if (scene != nullptr)
-            if (scene->IsActive())
-                scene->DrawUI();
-    }
-}
+// void SceneManager::DrawUI()
+// {
+//     for (auto& scene : m_Scenes) {
+//         if (scene != nullptr)
+//             if (scene->IsActive())
+//                 scene->DrawUI();
+//     }
+// }
 
 Scene* SceneManager::GetScene(const char* name)
 {

@@ -16,11 +16,13 @@ public:
 
     void UpdateScenes(float dT);
 
-    void DrawScenes();
+    // void DrawScenes();
 
-    void DrawUI();
+    // void DrawUI();
 
     Scene* GetScene(const char* name);
+
+    const std::vector<Scene*>& GetScenes() const { return m_Scenes; }
 
     void ActivateScene(const char* name);
     void DeactivateScene(const char* name);

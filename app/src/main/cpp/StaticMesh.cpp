@@ -1,9 +1,11 @@
 #include "StaticMesh.h"
+#include "DrawableEntity.h"
 #include "ResourceManager.h"
 #include "raylib.h"
 
-StaticMesh::StaticMesh(const char* filepath)
-    : m_Filepath(filepath)
+StaticMesh::StaticMesh(const char* filepath, RenderQueue type)
+    : DrawableEntity(type),
+    m_Filepath(filepath)
 {
     m_Model = ResourceManager::GetModel(filepath);
 }

@@ -1,5 +1,5 @@
 #include "spatialGrid.h"
-#include "bubble.h"
+#include "bubbleManager.h"
 
 SpatialGrid::SpatialGrid() { m_Grid.resize(GRID_COLS * GRID_ROWS); }
 

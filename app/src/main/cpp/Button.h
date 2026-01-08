@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Entity.h"
+#include "DrawableEntity.h"
 #include "Signal.h"
 #include <raymob.h>
 #include <functional>
 
-class Button : public Entity{
+class Button : public DrawableEntity{
 public:
     Button(const char* filepath, Color color, Vector2 position);
     Button(Button &&) = default;

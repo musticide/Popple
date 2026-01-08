@@ -13,30 +13,12 @@ Scene::~Scene() { }
 void Scene::Start()
 {
     for (auto& e : m_SceneEntities) {
-        if (e != nullptr && e->IsActive() && !e->hasStarted){
-                e->Start();
-                LOGV("Scene Started: %s", m_Name);
-                e->hasStarted = true;
-            }
+        if (e != nullptr && e->IsActive() && !e->hasStarted) {
+            e->Start();
+            LOGV("Scene Started: %s", m_Name);
+            e->hasStarted = true;
+        }
     }
-}
-
-void Scene::Draw()
-{
-    for (auto e : m_Buckets.sky)
-        if (e != nullptr)
-            if (e->IsActive())
-                e->Draw();
-
-    for (auto e : m_Buckets.opaque)
-        if (e != nullptr)
-            if (e->IsActive())
-                e->Draw();
-
-    for (auto e : m_Buckets.transparent)
-        if (e != nullptr)
-            if (e->IsActive())
-                e->Draw();
 }
 
 void Scene::Update(float dT)
@@ -48,10 +30,33 @@ void Scene::Update(float dT)
     }
 }
 
-void Scene::DrawUI()
+void Scene::DrawSky() const
 {
-    for (auto e : m_Buckets.ui)
-        if (e != nullptr)
-            if (e->IsActive() && e->hasStarted)
-                e->Draw();
+    for (auto d : m_Buckets.sky)
+        if (d != nullptr)
+            if (d->IsActive())
+                d->Draw();
+}
+
+void Scene::DrawOpaque() const
+{
+    for (auto d : m_Buckets.opaque)
+        if (d != nullptr)
+            if (d->IsActive())
+                d->Draw();
+}
+
+void Scene::DrawTransparent() const
+{
+    for (auto d : m_Buckets.transparent)
+        if (d != nullptr)
+            if (d->IsActive())
+                d->Draw();
+}
+void Scene::DrawUI() const
+{
+    for (auto d : m_Buckets.ui)
+        if (d != nullptr)
+            if (d->IsActive() && d->hasStarted)
+                d->Draw();
 }
