@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <memory>
 #include <raymob.h>
+#include <sys/types.h>
 
 ElementType BubbleManager::s_ActiveEffect;
 float BubbleManager::s_SpawnInterval;
@@ -77,9 +78,11 @@ void BubbleManager::Update(float dT)
     SpatialGrid::Clear();
     SpawnBubbles();
 
+    uint activeBubbles = 0;
     // Process Bubbles
     for (int i = 0; i < m_Bubbles.size(); i++) {
         if (m_Bubbles[i] != nullptr && m_Bubbles[i]->isActive) {
+            activeBubbles++;
             // Physics and Collisions
             UpdateBubble(m_Bubbles[i].get());
 
@@ -123,6 +126,7 @@ void BubbleManager::Update(float dT)
             }
         }
     }
+    LOGI("Active Bubble Count: %d", activeBubbles);
     float time = GetTime();
     SetShaderValue(bubbleMaterials[(int)ElementType::NONE].shader, commonTimeId, &time, SHADER_UNIFORM_FLOAT);
     SetShaderValue(bubbleMaterials[(int)ElementType::ELECTRO].shader, electroTimeId, &time, SHADER_UNIFORM_FLOAT);
