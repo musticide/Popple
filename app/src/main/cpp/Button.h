@@ -1,15 +1,14 @@
 #pragma once
 
 #include "Entity.h"
+#include "DrawableEntity.h"
 #include "Signal.h"
 #include <raymob.h>
 #include <functional>
 
-class Button : public Entity{
+class Button : public DrawableEntity{
 public:
     Button(const char* filepath, Color color, Vector2 position);
-    Button(const char* filepath, Color color);
-    Button(const char* filepath);
     Button(Button &&) = default;
     Button(const Button &) = default;
     Button &operator=(Button &&) = default;
@@ -27,7 +26,7 @@ public:
 private:
     std::shared_ptr<Texture2D> m_Texture;
     const char* m_Filepath;
-    Rectangle m_Rectangle;
+    Rectangle m_Rectangle, m_RecDraw;
     Color m_Color;
 
    Signal<> onClick;

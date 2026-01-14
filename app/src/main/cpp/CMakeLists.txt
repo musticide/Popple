@@ -31,12 +31,11 @@ add_library(${APP_LIB_NAME} SHARED ${SOURCES})
 list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/main.cpp"
     "${CMAKE_SOURCE_DIR}/Game.cpp"
-    "${CMAKE_SOURCE_DIR}/bubble.cpp"
+    "${CMAKE_SOURCE_DIR}/Renderer.cpp"
     "${CMAKE_SOURCE_DIR}/input.cpp"
     "${CMAKE_SOURCE_DIR}/spatialGrid.cpp"
-    "${CMAKE_SOURCE_DIR}/score.cpp"
-    "${CMAKE_SOURCE_DIR}/gameData.cpp"
     "${CMAKE_SOURCE_DIR}/Entity.cpp"
+    "${CMAKE_SOURCE_DIR}/DrawableEntity.cpp"
     "${CMAKE_SOURCE_DIR}/bubbleManager.cpp"
     "${CMAKE_SOURCE_DIR}/Signal.cpp"
     "${CMAKE_SOURCE_DIR}/Button.cpp"
@@ -50,6 +49,8 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/GameUI.cpp"
     "${CMAKE_SOURCE_DIR}/ParticleSystem.cpp"
     "${CMAKE_SOURCE_DIR}/TouchFeedback.cpp"
+    "${CMAKE_SOURCE_DIR}/GameManager.cpp"
+    "${CMAKE_SOURCE_DIR}/Globals.cpp"
 )
 
 # Define compiler macros for the library

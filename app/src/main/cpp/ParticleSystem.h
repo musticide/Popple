@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "DrawableEntity.h"
 #include "raylib.h"
 #include "raymath.h"
 #include <memory>
@@ -11,7 +12,7 @@ struct ParticleProperties {
     float lifetime = 1.0f;
     float initialSpeed = 0.0f;
     float size = 1.0f;
-    float sizeVariation;
+    float sizeVariation = 0.0f;
 
     // Rendering
     Color startColor = WHITE;
@@ -41,7 +42,7 @@ enum class EmitType{
     BURST
 };
 
-class ParticleSystem : public Entity {
+class ParticleSystem : public DrawableEntity{
 public:
     ParticleSystem(int maxParticles);
     ~ParticleSystem();

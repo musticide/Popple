@@ -1,12 +1,15 @@
 #include "ParticleSystem.h"
+#include "DrawableEntity.h"
 #include "Log.h"
 #include "ResourceManager.h"
+#include "functionLibrary.h"
 #include "raylib.h"
 #include "raymath.h"
 #include <cmath>
 
 ParticleSystem::ParticleSystem(int maxParticles)
-    : maxParticles(maxParticles)
+    : DrawableEntity(RenderQueue::TRANSPARENT)
+    , maxParticles(maxParticles)
 {
     m_CurrentIndex = maxParticles - 1;
 }
@@ -14,7 +17,7 @@ ParticleSystem::~ParticleSystem() { }
 void ParticleSystem::Start()
 {
     // if (model == nullptr)
-        // model = LoadModel("models/Quad.glb");
+    // model = LoadModel("models/Quad.glb");
     model = LoadModelFromMesh(ResourceManager::GetModel("models/Quad.glb")->meshes[0]);
     model.materials[0].shader = *ResourceManager::GetShader("shaders/basicShader.vs", "shaders/basicShader.fs");
     model.materials[0].maps[0].texture = *ResourceManager::GetTexture("textures/GlowTight.png");
@@ -41,18 +44,21 @@ void ParticleSystem::Update(float dT)
         }
     }
 
-    //update particles
+    int activeParticleCount = 0;
+
+    // update particles
     for (size_t i = 0; i < m_ParticlePool.size(); i++) {
         Particle& particle = m_ParticlePool[i];
 
         if (!particle.isActive)
             continue;
 
+        // activeParticleCount++;
         particle.age += dT;
 
         if (particle.age >= particle.lifetime) {
             particle.isActive = false;
-            LOGI("ps: particle dead");
+            // activeParticleCount--;
             continue;
         }
         float life = particle.age / particle.lifetime;
@@ -62,12 +68,15 @@ void ParticleSystem::Update(float dT)
         particle.position += particle.velocity;
         // TODO: Transform paricles for local space emission
     }
+    // if (activeParticleCount != 0)
+    //     LOGI("Active Particle Count: %d", activeParticleCount);
 }
 
 void ParticleSystem::Draw() const
 {
-    for (const auto& particle : m_ParticlePool) {
+    for (const Particle& particle : m_ParticlePool) {
         if (particle.isActive) {
+            // LOGI("DrawingParticle");
             DrawModel(model, particle.position, particle.size, particle.color);
         }
     }
@@ -75,16 +84,18 @@ void ParticleSystem::Draw() const
 
 void ParticleSystem::Emit()
 {
-    LOGI("Particle Emitted");
+    // LOGI("Particle Emitted");
     Particle& particle = m_ParticlePool[m_CurrentIndex];
     particle.isActive = true;
     particle.lifetime = particleProperties.lifetime;
     particle.age = 0.0f;
     particle.color = particleProperties.startColor;
     particle.position = this->position;
-    particle.size = particleProperties.size;
-    switch (shape) {
 
+    particle.size = particleProperties.size
+        + RandomRangeFloat(-particleProperties.sizeVariation, particleProperties.sizeVariation);
+
+    switch (shape) {
     case EmitShape::NONE:
         particle.velocity = direction * particleProperties.initialSpeed;
     case EmitShape::CIRCLE:
@@ -93,14 +104,12 @@ void ParticleSystem::Emit()
     }
 
     m_CurrentIndex = (--m_CurrentIndex + m_ParticlePool.size()) % m_ParticlePool.size();
-    LOGI("Current index: %d", m_CurrentIndex);
 }
-void ParticleSystem::Burst(int amount) { 
+void ParticleSystem::Burst(int amount)
+{
     int count = 0;
-    while(count < amount)
-    {
+    while (count < amount) {
         Emit();
         count++;
     }
 }
-

@@ -1,10 +1,12 @@
 #include "Tower.h"
+#include "DrawableEntity.h"
 #include "Log.h"
 #include "ResourceManager.h"
 #include "raylib.h"
 
 Tower::Tower()
-    : position(Vector3Zero())
+    : DrawableEntity(RenderQueue::OPAQUE)
+    , position(Vector3Zero())
     , rotation({ 0.5f, 1.0f, 0.5f })
     , scale({ 2.0f, 2.0f, 2.0f })
     , color(BLUE)
@@ -21,9 +23,10 @@ Tower::Tower()
 
 Tower::~Tower() { }
 
-void Tower::Start() { 
+void Tower::Start()
+{
     LOGV("Tower start");
-    SetActive(true); 
+    SetActive(true);
 }
 
 void Tower::Update(float dT)

@@ -11,6 +11,7 @@
 
     <uses-permission android:name="android.permission.VIBRATE"
         android:required="${REQUIRE_VIBRATION}" />
+    <uses-permission android:name="android.permission.SET_DEBUG_APP"></uses-permission>
 
     <uses-feature android:name="android.hardware.sensor.gyroscope"
         android:required="${REQUIRE_GYROSCOPE}" />

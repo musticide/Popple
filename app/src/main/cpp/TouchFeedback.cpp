@@ -2,14 +2,12 @@
 #include "Entity.h"
 #include "Log.h"
 #include "ParticleSystem.h"
-#include "ResourceManager.h"
 #include "Scene.h"
 #include "input.h"
 #include "raylib.h"
 
 TouchFeedback::TouchFeedback()
 {
-    SetRenderQueue(RenderQueue::TRANSPARENT);
     // touchParticles.SetActive(true);
 }
 
@@ -20,7 +18,8 @@ void TouchFeedback::Start()
     touchParticles = parentScene->CreateEntity<ParticleSystem>(true, 15);
 
     touchParticles->particleProperties.lifetime = 0.6f;
-    touchParticles->particleProperties.size = 0.1f;
+    touchParticles->particleProperties.size = 0.08f;
+    touchParticles->particleProperties.sizeVariation = 0.05f;
     touchParticles->emitType = EmitType::BURST;
     touchParticles->shape = EmitShape::CIRCLE;
     touchParticles->particleProperties.initialSpeed = 0.3f;
@@ -36,8 +35,4 @@ void TouchFeedback::Update(float dT)
             touchParticles->Burst(15);
         }
     }
-}
-
-void TouchFeedback::Draw() const
-{
 }

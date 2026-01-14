@@ -1,7 +1,6 @@
-#include "Game.h"
 #include <raymob.h>
-
-int GetPercent(int a, int total) { return (a / total) * 100; }
+#include "Log.h"
+#include "Game.h"
 
 int main()
 {

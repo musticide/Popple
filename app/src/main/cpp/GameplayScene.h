@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameManager.h"
 #include "GameUI.h"
 #include "Scene.h"
 #include "StaticMesh.h"
@@ -16,6 +17,7 @@ public:
 private:
 
     //Entities
+    std::unique_ptr<GameManager> m_GameManager;
     std::unique_ptr<BubbleManager> m_BubbleManager;
     std::unique_ptr<Tower> m_Tower;
     std::unique_ptr<StaticMesh> m_Background;

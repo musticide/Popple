@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Entity.h"
+#include "DrawableEntity.h"
 #include "raylib.h"
 #include "raymath.h"
 #include <raymob.h>
 #include <memory>
 
-class Tower : public Entity{
+class Tower : public DrawableEntity {
 private:
     std::shared_ptr<Model> m_Model;
     float rotate;
