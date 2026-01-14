@@ -68,8 +68,6 @@ void ParticleSystem::Update(float dT)
         particle.position += particle.velocity;
         // TODO: Transform paricles for local space emission
     }
-    // if (activeParticleCount != 0)
-    //     LOGI("Active Particle Count: %d", activeParticleCount);
 }
 
 void ParticleSystem::Draw() const
@@ -113,3 +111,50 @@ void ParticleSystem::Burst(int amount)
         count++;
     }
 }
+Vector3 ParticleSystem::GetCircularDirection()
+{
+    float randAngle = GetRandomValue(0, 360);
+    return (Vector3) { (float)cos(randAngle), 0, (float)sin(randAngle) };
+}
+
+#ifdef DEBUG
+
+json ParticleSystem::GetCurrentParams() const
+{
+    return { { "lifetime", particleProperties.lifetime }, { "initialSpeed", particleProperties.initialSpeed },
+        { "size", particleProperties.size }, { "sizeVariation", particleProperties.sizeVariation },
+        { "emitRate", emitRate },
+        { "startColor",
+            { particleProperties.startColor.r, particleProperties.startColor.g, particleProperties.startColor.b,
+                particleProperties.startColor.a } },
+        { "endColor",
+            { particleProperties.endColor.r, particleProperties.endColor.g, particleProperties.endColor.b,
+                particleProperties.endColor.a } } };
+}
+
+void ParticleSystem::ApplyEditorParams(const json& data)
+{
+    if (data.contains("lifetime"))
+        particleProperties.lifetime = data["lifetime"];
+    if (data.contains("initialSpeed"))
+        particleProperties.initialSpeed = data["initialSpeed"];
+    if (data.contains("size"))
+        particleProperties.size = data["size"];
+    if (data.contains("sizeVariation"))
+        particleProperties.sizeVariation = data["sizeVariation"];
+    if (data.contains("emitRate"))
+        emitRate = data["emitRate"];
+
+    if (data.contains("startColor")) {
+        auto c = data["startColor"];
+        particleProperties.startColor = { c[0], c[1], c[2], c[3] };
+    }
+    if (data.contains("endColor")) {
+        auto c = data["endColor"];
+        particleProperties.endColor = { c[0], c[1], c[2], c[3] };
+    }
+
+    TraceLog(LOG_INFO, "Applied editor params");
+}
+#endif
+

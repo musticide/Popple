@@ -51,6 +51,8 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/TouchFeedback.cpp"
     "${CMAKE_SOURCE_DIR}/GameManager.cpp"
     "${CMAKE_SOURCE_DIR}/Globals.cpp"
+    "${CMAKE_SOURCE_DIR}/editor/NetworkReceiver.cpp"
+    "${CMAKE_SOURCE_DIR}/editor/EditorScene.cpp"
 )
 
 # Define compiler macros for the library
@@ -64,6 +66,7 @@ endif()
 # Include raylib and raymob header files
 target_include_directories(${APP_LIB_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/deps/raylib")
 target_include_directories(${APP_LIB_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/deps/raymob")
+target_include_directories(${APP_LIB_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/deps")
 
 # Link required libraries to the native application
 target_link_libraries(${APP_LIB_NAME} raylib raymoblib)

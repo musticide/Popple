@@ -1,12 +1,14 @@
 #pragma once
 
 #include <memory>
+// #include "editor/NetworkReceiver.h"
 #include "input.h"
 #include "SceneManager.h"
 #include "ResourceManager.h"
 #include "raylib.h"
 #include "HomeScene.h"
 #include "GameplayScene.h"
+#include "editor/EditorScene.h"
 #include "Renderer.h"
 
 class Game {
@@ -39,6 +41,9 @@ private:
 
     std::unique_ptr<HomeScene> m_HomeScene;
     std::unique_ptr<GameplayScene> m_GameplayScene;
+    std::unique_ptr<EditorScene> m_EditorScene;
+
+    // NetworkReceiver* netReceiver;
 
     RenderTexture2D renderTarget;
     Shader bloomShader;

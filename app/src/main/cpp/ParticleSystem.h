@@ -1,7 +1,7 @@
 #pragma once
-
-#include "Entity.h"
 #include "DrawableEntity.h"
+#include "Entity.h"
+#include "editor/NetworkReceiver.h"
 #include "raylib.h"
 #include "raymath.h"
 #include <memory>
@@ -32,17 +32,11 @@ struct Particle {
     Color color = WHITE;
 };
 
-enum class EmitShape{
-    NONE,
-    CIRCLE
-};
+enum class EmitShape { NONE, CIRCLE };
 
-enum class EmitType{
-    CONTINUOUS,
-    BURST
-};
+enum class EmitType { CONTINUOUS, BURST };
 
-class ParticleSystem : public DrawableEntity{
+class ParticleSystem : public DrawableEntity {
 public:
     ParticleSystem(int maxParticles);
     ~ParticleSystem();
@@ -50,21 +44,24 @@ public:
     ParticleProperties particleProperties;
     Vector3 position;
 
-    ///Default Continuous
+    /// Default Continuous
     EmitType emitType = EmitType::CONTINUOUS;
     /// Rate of emission per second
     int emitRate = 2;
     int maxParticles = 50;
 
     EmitShape shape;
-    ///Used when shape NONE
+    /// Used when shape NONE
     Vector3 direction = Vector3Zero();
 
-
-    // std::shared_ptr<Model> model;
     Model model;
     /// uses default material if not specified
     Material material;
+
+#ifdef DEBUG
+    void ApplyEditorParams(const json& data);
+    json GetCurrentParams() const;
+#endif
 
     void Start() override;
     void Update(float dT = 1.0f) override;
@@ -77,10 +74,6 @@ private:
     int m_CurrentIndex;
     float m_TimeElapsed;
 
-    Vector3 GetCircularDirection()
-    {
-        float randAngle = GetRandomValue(0, 360);
-        return (Vector3) { (float)cos(randAngle), 0, (float)sin(randAngle) };
-    }
     void Emit();
+    Vector3 GetCircularDirection();
 };
