@@ -1,4 +1,5 @@
 #include "GameManager.h"
+#include "EffectManager.h"
 #include "Log.h"
 #include "bubbleManager.h"
 
@@ -24,6 +25,7 @@ void GameManager::AddSpecialBubbleInternal(ElementType type)
                 m_ComboCount[(int)ElementType::ELECTRO] = 0;
                 m_ActiveEffect = ElementType::ELECTRO;
                 activeElementEffectChanged(ElementType::ELECTRO);
+                EffectManager::Get().ActivateElectroShield();
             }
             break;
         case ElementType::ANEMO:
@@ -99,6 +101,7 @@ void GameManager::Update(float dT)
             m_ActiveEffect = ElementType::NONE;
             activeElementEffectChanged(m_ActiveEffect);
             m_ElectroShieldTimer = 0.0f;
+            EffectManager::Get().DeactivateElectroShield();
         }
         break;
     case ElementType::ANEMO:

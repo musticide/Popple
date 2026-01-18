@@ -16,7 +16,7 @@ ElementType BubbleManager::s_ActiveEffect;
 float BubbleManager::s_SpawnInterval;
 
 BubbleManager::BubbleManager()
-    : DrawableEntity(RenderQueue::TRANSPARENT)
+    : DrawableEntity(RenderQueue::OPAQUE)
 {
     LOGI("Bubble Manager constructed");
 }
@@ -37,29 +37,32 @@ void BubbleManager::Start()
     GameManager::Get().spawnIntervalChanged.connect(BubbleManager::SpawnIntervalChanged);
 
     m_BubbleBaseModel = ResourceManager::GetModel("models/BubbleBase_01.glb");
+    m_BubbleBaseModel->materials[0].shader = *ResourceManager::GetShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
 
-    bubbleMaterials[(int)ElementType::NONE] = LoadMaterialDefault();
-    bubbleMaterials[(int)ElementType::NONE].shader
-        = *ResourceManager::GetShader("shaders/CommonBubble_VS.glsl", "shaders/CommonBubble_PS.glsl");
-    bubbleMaterials[(int)ElementType::NONE].maps[0].texture
-        = *ResourceManager::GetTexture("textures/CommonBubble_UTIL.png");
-    bubbleMaterials[(int)ElementType::NONE].maps[1].texture
-        = *ResourceManager::GetTexture("textures/ColorGradient_01.png");
-    commonTimeId = GetShaderLocation(bubbleMaterials[(int)ElementType::NONE].shader, "_Time");
+    // bubbleMaterials[(int)ElementType::NONE] = LoadMaterialDefault();
+    // bubbleMaterials[(int)ElementType::NONE].shader
+    //     = *ResourceManager::GetShader("shaders/CommonBubble_VS.glsl", "shaders/CommonBubble_PS.glsl");
+    // bubbleMaterials[(int)ElementType::NONE].maps[0].texture
+    //     = *ResourceManager::GetTexture("textures/CommonBubble_UTIL.png");
+    // bubbleMaterials[(int)ElementType::NONE].maps[1].texture
+    //     = *ResourceManager::GetTexture("textures/ColorGradient_01.png");
+    // commonTimeId = GetShaderLocation(bubbleMaterials[(int)ElementType::NONE].shader, "_Time");
 
-    bubbleMaterials[(int)ElementType::ELECTRO] = LoadMaterialDefault();
-    bubbleMaterials[(int)ElementType::ELECTRO].shader
-        = *ResourceManager::GetShader("shaders/ElectroBubble_VS.glsl", "shaders/ElectroBubble_PS.glsl");
-    bubbleMaterials[(int)ElementType::ELECTRO].maps[0].texture
-        = *ResourceManager::GetTexture("textures/ElectroBubble_UTIL.png");
-    electroTimeId = GetShaderLocation(bubbleMaterials[(int)ElementType::ELECTRO].shader, "_Time");
+    // bubbleMaterials[(int)ElementType::ELECTRO] = LoadMaterialDefault();
+    // bubbleMaterials[(int)ElementType::ELECTRO].shader
+    //     = *ResourceManager::GetShader("shaders/ElectroBubble_VS.glsl", "shaders/ElectroBubble_PS.glsl");
+    // bubbleMaterials[(int)ElementType::ELECTRO].maps[0].texture
+    //     = *ResourceManager::GetTexture("textures/ElectroBubble_UTIL.png");
+    // electroTimeId = GetShaderLocation(bubbleMaterials[(int)ElementType::ELECTRO].shader, "_Time");
 
-    bubbleMaterials[(int)ElementType::ANEMO] = LoadMaterialDefault();
-    bubbleMaterials[(int)ElementType::ANEMO].shader
-        = *ResourceManager::GetShader("shaders/AnemoBubble_VS.glsl", "shaders/AnemoBubble_PS.glsl");
-    bubbleMaterials[(int)ElementType::ANEMO].maps[0].texture
-        = *ResourceManager::GetTexture("textures/AnemoBubble_UTIL.png");
-    anemoTimeId = GetShaderLocation(bubbleMaterials[(int)ElementType::ANEMO].shader, "_Time");
+    // bubbleMaterials[(int)ElementType::ANEMO] = LoadMaterialDefault();
+    // bubbleMaterials[(int)ElementType::ANEMO].shader
+    //     = *ResourceManager::GetShader("shaders/AnemoBubble_VS.glsl", "shaders/AnemoBubble_PS.glsl");
+    // bubbleMaterials[(int)ElementType::ANEMO].maps[0].texture
+    //     = *ResourceManager::GetTexture("textures/AnemoBubble_UTIL.png");
+    // anemoTimeId = GetShaderLocation(bubbleMaterials[(int)ElementType::ANEMO].shader, "_Time");
+
+    electroShieldRadius = GameManager::Get().electroShieldRadius;
 }
 
 void BubbleManager::OnEnable() { ResetInternal(); }
@@ -102,7 +105,7 @@ void BubbleManager::Update(float dT)
             case ElementType::NONE:
                 break;
             case ElementType::ELECTRO:
-                if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + 4) {
+                if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + electroShieldRadius) {
                     m_Bubbles[i]->isActive = false;
                 }
                 break;
@@ -126,7 +129,7 @@ void BubbleManager::Update(float dT)
             }
         }
     }
-    LOGI("Active Bubble Count: %d", activeBubbles);
+    // LOGI("Active Bubble Count: %d", activeBubbles);
     float time = GetTime();
     SetShaderValue(bubbleMaterials[(int)ElementType::NONE].shader, commonTimeId, &time, SHADER_UNIFORM_FLOAT);
     SetShaderValue(bubbleMaterials[(int)ElementType::ELECTRO].shader, electroTimeId, &time, SHADER_UNIFORM_FLOAT);
@@ -135,17 +138,18 @@ void BubbleManager::Update(float dT)
 
 void BubbleManager::Draw() const
 {
+    Color tint;
     for (size_t i = 0; i < m_Bubbles.size(); i++) {
         if (m_Bubbles[i] != nullptr && m_Bubbles[i]->isActive) {
             // Change Bubble Material based on bubble element type
-            if ((int)m_Bubbles[i]->type < (int)ElementType::COUNT)
-                m_BubbleBaseModel->materials[0] = bubbleMaterials[(int)m_Bubbles[i]->type];
-            else {
-                m_BubbleBaseModel->materials[0] = bubbleMaterials[(int)ElementType::NONE];
-                LOGE("Bubble type out of bounds");
-            }
+            // if ((int)m_Bubbles[i]->type < (int)ElementType::COUNT)
+            //     m_BubbleBaseModel->materials[0] = bubbleMaterials[(int)m_Bubbles[i]->type];
+            // else {
+            //     m_BubbleBaseModel->materials[0] = bubbleMaterials[(int)ElementType::NONE];
+            //     LOGE("Bubble type out of bounds");
+            // }
 
-            DrawModel(*m_BubbleBaseModel, m_Bubbles[i]->position, m_Bubbles[i]->radius, WHITE);
+            DrawModel(*m_BubbleBaseModel, m_Bubbles[i]->position, m_Bubbles[i]->radius, bubbleColors[(int)m_Bubbles[i]->type]);
         }
     }
 }

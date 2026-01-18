@@ -39,7 +39,4 @@ private:
 
     std::unique_ptr<HomeScene> m_HomeScene;
     std::unique_ptr<GameplayScene> m_GameplayScene;
-
-    RenderTexture2D renderTarget;
-    Shader bloomShader;
 };

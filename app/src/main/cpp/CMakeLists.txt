@@ -51,6 +51,7 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/TouchFeedback.cpp"
     "${CMAKE_SOURCE_DIR}/GameManager.cpp"
     "${CMAKE_SOURCE_DIR}/Globals.cpp"
+    "${CMAKE_SOURCE_DIR}/EffectManager.cpp"
 )
 
 # Define compiler macros for the library

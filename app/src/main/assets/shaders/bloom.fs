@@ -20,9 +20,9 @@ const float quality = 2.5; // Defines size factor: Lower = smaller glow, better 
 
 void main()
 {
-    vec2 size = _ScreenSize;
-    vec4 sum = vec4(0);
-    vec2 sizeFactor = vec2(1) / size * quality;
+    // vec2 size = _ScreenSize;
+    // vec4 sum = vec4(0);
+    // vec2 sizeFactor = vec2(1) / size * quality;
 
     // Texel color fetching from texture sampler
     vec4 source = texture(texture0, fragTexCoord);

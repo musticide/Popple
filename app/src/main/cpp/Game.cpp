@@ -35,20 +35,11 @@ void Game::Init()
     mainCamera3D.fovy       = 80.0f;
     mainCamera3D.projection = CAMERA_ORTHOGRAPHIC;
 
-    renderTarget = LoadRenderTexture(screenWidth, screenHeight);
-
     // Managers/Systems
     m_InputManager    = std::make_unique<Input>(&mainCamera3D, &uiCamera);
     m_ResourceManager = std::make_unique<ResourceManager>();
     m_SceneManager    = std::make_unique<SceneManager>();
-    m_Renderer        = std::make_unique<Renderer>();
-
-    bloomShader = *ResourceManager::GetShader(0, "shaders/bloom.fs");
-
-    float screenSize[2] = { (float)screenWidth, (float)screenHeight };
-
-    SetShaderValue(bloomShader, GetShaderLocation(bloomShader, "_ScreenSize"), &screenSize,
-        SHADER_UNIFORM_VEC2);
+    m_Renderer        = std::make_unique<Renderer>(mainCamera3D, uiCamera);
 
     m_HomeScene     = SceneManager::Get().RegisterScene<HomeScene>();
     m_GameplayScene = SceneManager::Get().RegisterScene<GameplayScene>();
@@ -64,38 +55,13 @@ void Game::Run()
         SceneManager::Get().StartScenes();
         SceneManager::Get().UpdateScenes(GetFrameTime());
 
-        BeginTextureMode(renderTarget); //====================
+        Renderer::Get().Render();
 
-        ClearBackground(BLACK);
-
-        BeginMode3D(mainCamera3D);
-        // SceneManager::Get().DrawScenes();
-        Renderer::Get().DrawScenes();
-        EndMode3D();
-
-        BeginMode2D(uiCamera);
-        // SceneManager::Get().DrawUI();
-        Renderer::Get().DrawUI();
-        EndMode2D();
-
-        EndTextureMode(); //===================================
-
-        BeginDrawing(); //====================================
-
-        ClearBackground(BLACK);
-        BeginShaderMode(bloomShader);
-        DrawTextureRec(renderTarget.texture,
-            (Rectangle) {
-                0, 0, (float)renderTarget.texture.width, (float)-renderTarget.texture.height },
-            (Vector2) { 0, 0 }, WHITE);
-        EndShaderMode();
-
-        EndDrawing(); //======================================
     }
 }
 
 void Game::Shutdown()
 {
-    UnloadRenderTexture(renderTarget);
+    Renderer::Get().Cleanup();
     CloseWindow();
 }

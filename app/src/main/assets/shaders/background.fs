@@ -36,5 +36,5 @@ void main()
 
     // finalColor = fragColor * vec4(col, 1);
     vec4 blue = vec4(.27f, .74f, .9f, 1.f);
-    finalColor = texelColor + glow * blue;
+    finalColor = texelColor; // + glow * blue;
 }

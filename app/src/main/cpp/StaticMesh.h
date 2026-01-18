@@ -8,7 +8,8 @@
 class StaticMesh : public DrawableEntity{
 private:
     const char* m_Filepath;
-    std::shared_ptr<Model> m_Model;
+    // std::shared_ptr<Model> m_Model;
+    Model m_Model;
     Material m_Material;
 
 public:
@@ -23,7 +24,7 @@ public:
     Vector3 rotation = { 0, 0, 0 };
     Vector3 scale = { 1, 1, 1 };
 
-    Model& GetModel() { return *m_Model; }
+    Model& GetModel() { return m_Model; }
 
     void Draw() const override;
 };

@@ -58,6 +58,6 @@ void main() {
     noise *= .18f;
     float rim = length(((uv + noise) * 2.f) - 1.f);
 
-    fnl.rgb = color;
+    fnl.rgb = color * 5.f;
     fnl.a = (lightningTexA + lightningTexB + rim);
 }

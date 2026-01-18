@@ -34,6 +34,6 @@ void main()
     vec3 envColor = texture(environmentMap, R).rgb;
 
     finalColor = fragColor * colDiffuse;
-    finalColor += vec4(envColor, 1.0);
-    finalColor.a = fresnel;
+    // finalColor += vec4(envColor, 1.0);
+    // finalColor.a = fresnel;
 }

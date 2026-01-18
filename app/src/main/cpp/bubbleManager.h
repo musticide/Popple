@@ -73,9 +73,16 @@ private:
 
     static ElementType s_ActiveEffect;
     static float s_SpawnInterval;
+    float electroShieldRadius;
 
     std::shared_ptr<Model> m_BubbleBaseModel;
-    std::array<Material, (size_t)ElementType::COUNT> bubbleMaterials; 
+    std::array<Material, (size_t)ElementType::COUNT> bubbleMaterials;
+    std::array<Color, (size_t)ElementType::COUNT> bubbleColors = 
+    {
+        WHITE,
+        (Color){139, 66, 255, 255},//PURPLE
+        (Color){66, 255, 195, 255} //Green
+    };
     int commonTimeId, electroTimeId, anemoTimeId;
 
 public:

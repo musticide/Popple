@@ -5,8 +5,10 @@
 #include "SceneManager.h"
 #include "Signal.h"
 #include "Singleton.h"
+#include "StaticMesh.h"
 #include <algorithm>
 #include <array>
+#include <memory>
 #include <raymob.h>
 #include <raymath.h>
 
@@ -52,6 +54,8 @@ public:
     int GetComboCountForType(ElementType type) { return m_ComboCount[(int)type]; }
     const int GetMaxComboLength() const { return MAX_COMBO_LENGTH; }
 
+    const float electroShieldRadius = 10.f;
+
 
 private:
     const int MAX_COMBO_LENGTH = 3;
@@ -75,4 +79,6 @@ private:
     void EndGame();
 
     void ResetGameValues();
+
+    void SetElectroShield(bool active);
 };
