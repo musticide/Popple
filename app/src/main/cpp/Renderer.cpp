@@ -3,6 +3,8 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "raylib.h"
+#include "utils.h"
+#include <algorithm>
 #include <cstddef>
 
 Renderer::Renderer(Camera3D& mainCam, Camera2D& uiCam)
@@ -21,29 +23,36 @@ Renderer::Renderer(Camera3D& mainCam, Camera2D& uiCam)
     copyShader = *ResourceManager::GetShader(0, "shaders/copy.fs");
     outlineShader = *ResourceManager::GetShader(0, "shaders/outline.fs");
     tonemapShader = *ResourceManager::GetShader(0, "shaders/tonemap.fs");
+    backgroundShader = *ResourceManager::GetShader(0, "shaders/defaultBackground.fs");
+
+    Utils::SetUniformValue(backgroundShader, "_ScreenSize", &screenSize, SHADER_UNIFORM_VEC2);
+    backgroundTexture = *ResourceManager::GetTexture("textures/T_CheckerBackground.png");
 
     if (doBloom) {
         bloomFilterRT = LoadRenderTexture(screenSize.x, screenSize.y);
         SetTextureFilter(bloomFilterRT.texture, TEXTURE_FILTER_BILINEAR);
         bloomFilterRT.texture.format = PIXELFORMAT_UNCOMPRESSED_R16G16B16;
+
         bloomResultRT = LoadRenderTexture(screenSize.x, screenSize.y);
         SetTextureFilter(bloomResultRT.texture, TEXTURE_FILTER_BILINEAR);
+        bloomResultRT.texture.format = PIXELFORMAT_UNCOMPRESSED_R16G16B16;
 
         for (size_t i = 0; i < bloomPyramidRT.size(); i++) {
-            // float scale = 1.f / (i + 1) * 4.f;
-            bloomPyramidRT[i] = LoadRenderTexture(screenSize.x / (i + 2), screenSize.y / (i + 2));
+            // last two RT should be of same size for ping-pong
+            float scale = 1.f / ((std::min(i, bloomPyramidRT.size() - 2) + 1) * 4.f);
+
+            bloomPyramidRT[i] = LoadRenderTexture(screenSize.x * scale, screenSize.y * scale);
             SetTextureFilter(bloomPyramidRT[i].texture, TEXTURE_FILTER_BILINEAR);
+            bloomPyramidRT[i].texture.format = PIXELFORMAT_UNCOMPRESSED_R16G16B16;
         }
 
-        float bloomThreshold = 1.f;
         bloomFilterShader = *ResourceManager::GetShader(0, "shaders/bloomFilter.fs");
-        SetShaderValue(bloomFilterShader, GetShaderLocation(bloomFilterShader, "_Threshold"), &bloomThreshold,
-            SHADER_UNIFORM_FLOAT);
+        Utils::SetUniformValue(bloomFilterShader, "_Threshold", &bloomThreshold, SHADER_UNIFORM_FLOAT);
         bloomBlurShader = *ResourceManager::GetShader(0, "shaders/bloomBlur.fs");
+        bloomComposeShader = *ResourceManager::GetShader(0, "shaders/bloomCompose.fs");
+        Utils::SetUniformValue(bloomComposeShader, "_ScreenSize", &screenSize, SHADER_UNIFORM_VEC2);
         bloomBlurDirectionId = GetShaderLocation(bloomBlurShader, "_Direction");
     }
-
-    // float screenSize[2] = { (float)GetScreenWidth(), (float)GetScreenHeight() };
 
     SetShaderValue(copyShader, GetShaderLocation(copyShader, "_ScreenSize"), &screenSize, SHADER_UNIFORM_VEC2);
 }
@@ -96,21 +105,17 @@ void Renderer::Render()
     EndTextureMode(); //===================================
 
     BeginTextureMode(colorRT); //=== HDR Color ===
-    ClearBackground(BLACK);
+    ClearBackground(BLANK);
     BeginMode3D(mainCamera3D);
 
-    DrawSky();
+    // DrawSky();
     DrawOpaqueGeometry();
 
     BeginBlendMode(BLEND_ALPHA);
 
     EndMode3D();
 
-    BeginShaderMode(outlineShader);
-    DrawTextureRec(outlineRT.texture,
-        (Rectangle) { 0, 0, (float)outlineRT.texture.width, (float)-outlineRT.texture.height }, (Vector2) { 0, 0 },
-        WHITE);
-    EndShaderMode();
+    DrawRTToScreen(outlineShader, outlineRT, false);
 
     BeginMode3D(mainCamera3D);
     DrawTransparentGeometry();
@@ -121,35 +126,41 @@ void Renderer::Render()
 
     if (doBloom) {
         // BLOOM
-        DrawTextureToTexture(bloomFilterShader, colorRT, bloomFilterRT, true);
+        DrawRTtoRT(bloomFilterShader, colorRT, bloomFilterRT, true);
         RenderTexture2D from = bloomFilterRT;
         // Downscale
-        for (size_t i = 0; i < bloomPyramidRT.size(); i++) {
-            SetShaderValue(bloomBlurShader, bloomBlurDirectionId, &horizontal, SHADER_UNIFORM_VEC2);
-            DrawTextureToTexture(bloomBlurShader, from, bloomPyramidRT[i], true);
-
-            SetShaderValue(bloomBlurShader, bloomBlurDirectionId, &vertical, SHADER_UNIFORM_VEC2);
-            BeginBlendMode(BLEND_ADDITIVE);
-            DrawTextureToTexture(bloomBlurShader, from, bloomPyramidRT[i], false);
-            EndBlendMode();
+        for (size_t i = 0; i < bloomPyramidRT.size() - 2; i++) {
+            DrawRTtoRT(copyShader, from, bloomPyramidRT[i], false);
 
             from = bloomPyramidRT[i];
         }
-        // Upscale
-        DrawTextureToTexture(copyShader, bloomPyramidRT[bloomPyramidRT.size() - 1], bloomResultRT, false);
+        //blur horizontal
+        SetShaderValue(bloomBlurShader, bloomBlurDirectionId, &horizontal, SHADER_UNIFORM_VEC2);
+        DrawRTtoRT(bloomBlurShader, from, bloomPyramidRT[bloomPyramidRT.size() - 2], true);
+
+        //blur vertical
+        SetShaderValue(bloomBlurShader, bloomBlurDirectionId, &vertical, SHADER_UNIFORM_VEC2);
+        DrawRTtoRT(bloomBlurShader, bloomPyramidRT[bloomPyramidRT.size() - 2], bloomPyramidRT[bloomPyramidRT.size() - 1], false);
+
+        // Upscale and compose
+        DrawRTtoRT(bloomComposeShader, bloomPyramidRT[bloomPyramidRT.size() - 1], bloomResultRT, true);
     }
 
+    /* FINAL COMPOSITION */
     BeginDrawing(); //====================================
     ClearBackground(BLACK);
 
-    DrawTextureToScreen(tonemapShader, colorRT, false);
+    DrawTextureToScreen(backgroundShader, backgroundTexture, false);
 
     if (doBloom) {
         BeginBlendMode(BLEND_ADDITIVE);
-        // DrawTextureToScreen(copyShader, bloomPyramidRT[bloomPyramidRT.size() - 1], false);
-        DrawTextureToScreen(copyShader, bloomResultRT, false);
+        DrawRTToScreen(copyShader, bloomResultRT, false);
         EndBlendMode();
     }
+
+    BeginBlendMode(BLEND_ALPHA);
+    DrawRTToScreen(tonemapShader, colorRT, false);
+    EndBlendMode();
 
     BeginMode2D(uiCamera); // ui overlay
     DrawUI();
@@ -165,7 +176,7 @@ void Renderer::Cleanup()
     UnloadRenderTexture(outlineRT);
 }
 
-void Renderer::DrawTextureToScreen(Shader shader, RenderTexture2D from, bool clear)
+void Renderer::DrawRTToScreen(Shader shader, RenderTexture2D from, bool clear)
 {
     BeginShaderMode(shader);
     if (clear)
@@ -175,7 +186,20 @@ void Renderer::DrawTextureToScreen(Shader shader, RenderTexture2D from, bool cle
     EndShaderMode();
 }
 
-void Renderer::DrawTextureToTexture(Shader shader, RenderTexture2D from, RenderTexture2D to, bool clear)
+
+void Renderer::DrawTextureToScreen(Shader shader, Texture2D texture, bool clear)
+{
+    BeginShaderMode(shader);
+    if (clear)
+        ClearBackground(BLACK);
+    Rectangle src = { 0, 0, (float)texture.width, (float)-texture.height };
+    Rectangle dst = { 0, 0, (float)screenSize.x, (float)screenSize.y };
+
+    DrawTexturePro(texture, src, dst, { 0, 0 }, 0.0f, WHITE);
+    EndShaderMode();
+}
+
+void Renderer::DrawRTtoRT(Shader shader, RenderTexture2D from, RenderTexture2D to, bool clear)
 {
     BeginTextureMode(to);
 

@@ -16,6 +16,11 @@ public:
     void Render();
     void Cleanup();
 
+    Texture2D backgroundTexture;
+    Shader backgroundShader;
+
+    bool doBloom = true;
+    float bloomThreshold = .85f;
 private:
     std::vector<std::weak_ptr<Shader>> m_Shaders;
     Camera3D mainCamera3D;
@@ -25,10 +30,9 @@ private:
     RenderTexture2D colorRT, outlineRT;
     Shader copyShader, outlineShader, tonemapShader;
 
-    bool doBloom = true;
     RenderTexture2D bloomFilterRT, bloomResultRT;
-    std::array<RenderTexture2D, 3> bloomPyramidRT;
-    Shader bloomBlurShader, bloomFilterShader;
+    std::array<RenderTexture2D, 4> bloomPyramidRT;
+    Shader bloomBlurShader, bloomFilterShader, bloomComposeShader;
     int bloomBlurDirectionId;
     Vector2 horizontal = {1.f, 0.f}, vertical = {0.f, 1.f};
 
@@ -37,6 +41,7 @@ private:
     void DrawTransparentGeometry() const;
     void DrawUI() const;
 
-    void DrawTextureToScreen(Shader shader, RenderTexture2D from, bool clear);
-    void DrawTextureToTexture(Shader shader, RenderTexture2D from, RenderTexture2D to, bool clear);
+    void DrawRTToScreen(Shader shader, RenderTexture2D from, bool clear);
+    void DrawTextureToScreen(Shader shader, Texture2D texture, bool clear);
+    void DrawRTtoRT(Shader shader, RenderTexture2D from, RenderTexture2D to, bool clear);
 };

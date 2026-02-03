@@ -52,6 +52,7 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/GameManager.cpp"
     "${CMAKE_SOURCE_DIR}/Globals.cpp"
     "${CMAKE_SOURCE_DIR}/EffectManager.cpp"
+    "${CMAKE_SOURCE_DIR}/utils.cpp"
 )
 
 # Define compiler macros for the library
