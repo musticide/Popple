@@ -23,8 +23,8 @@ public:
     float bloomThreshold = .85f;
 private:
     std::vector<std::weak_ptr<Shader>> m_Shaders;
-    Camera3D mainCamera3D;
-    Camera2D uiCamera;
+    Camera3D& mainCamera3D;
+    Camera2D& uiCamera;
     Vector2 screenSize;
 
     RenderTexture2D colorRT, outlineRT;
