@@ -1,14 +1,9 @@
 #pragma once
 
 #include "Entity.h"
-#include "Log.h"
-#include "SceneManager.h"
 #include "Signal.h"
 #include "Singleton.h"
-#include "StaticMesh.h"
-#include <algorithm>
 #include <array>
-#include <memory>
 #include <raymob.h>
 #include <raymath.h>
 
@@ -56,6 +51,10 @@ public:
 
     const float electroShieldRadius = 10.f;
 
+    static void PauseBubbleSpawn(bool pause);
+
+    float electroShieldTimer = 0.0f;
+    const float ELECTRO_SHIELD_DURATION = 5.0f;
 
 private:
     const int MAX_COMBO_LENGTH = 3;
@@ -67,9 +66,6 @@ private:
 
     float m_SpawnInterval = 1.5f;
     float m_MinSpawnInterval = 0.20f;
-
-    float m_ElectroShieldTimer = 0.0f;
-    const float ELECTRO_SHIELD_DURATION = 5.0f;
 
     float m_AnemoEffectTimer = 0.0f;
     const float ANEMO_EFFECT_DURATION = 1.0f;

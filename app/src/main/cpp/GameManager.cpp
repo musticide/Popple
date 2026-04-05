@@ -1,4 +1,5 @@
 #include "GameManager.h"
+#include "SceneManager.h"
 #include "EffectManager.h"
 #include "Log.h"
 #include "bubbleManager.h"
@@ -96,11 +97,11 @@ void GameManager::Update(float dT)
     case ElementType::NONE:
         break;
     case ElementType::ELECTRO:
-        m_ElectroShieldTimer += dT;
-        if (m_ElectroShieldTimer > ELECTRO_SHIELD_DURATION) {
+        electroShieldTimer += dT;
+        if (electroShieldTimer > ELECTRO_SHIELD_DURATION) {
             m_ActiveEffect = ElementType::NONE;
             activeElementEffectChanged(m_ActiveEffect);
-            m_ElectroShieldTimer = 0.0f;
+            electroShieldTimer = 0.0f;
             EffectManager::Get().DeactivateElectroShield();
         }
         break;
@@ -138,7 +139,15 @@ void GameManager::ResetGameValues()
     m_SpawnInterval = 1.5f;
     m_MinSpawnInterval = 0.20f;
 
-    m_ElectroShieldTimer = 0.0f;
+    electroShieldTimer = 0.0f;
 
     m_AnemoEffectTimer = 0.0f;
+}
+void GameManager::PauseBubbleSpawn(bool pause)
+{
+    if (pause) {
+        BubbleManager::Get().PauseSpawn();
+    } else {
+        BubbleManager::Get().ContinueSpawn();
+    }
 }

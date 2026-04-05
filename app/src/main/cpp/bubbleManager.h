@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.h"
+#include "DrawableEntity.h"
 #include "GameManager.h"
 #include "Singleton.h"
 #include "raylib.h"

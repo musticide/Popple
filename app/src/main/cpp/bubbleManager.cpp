@@ -123,7 +123,7 @@ void BubbleManager::Update(float dT)
                         GameManager::Get().DecreaseHealth(10);
                     }
                     m_Bubbles[i]->isActive = false;
-                    LOGI("Bubble Reset");
+                    // LOGI("Bubble Reset");
                     continue;
                 }
             }
