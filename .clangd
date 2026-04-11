@@ -1,35 +1,34 @@
 CompileFlags:
   Add:
-    CompileFlags:
-  Add:
-    - --query-driver=C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\bin\*
+    # Forces clangd to treat .h files as C++ headers
+    - -x
+    - c++-header
 
-    # --- Use NDK's clang toolchain headers (C++ first, then sysroot) ---
+    # Existing NDK Toolchain & Driver settings
+    - "--query-driver=C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\bin\*"
+
+    # NDK Headers [cite: 1, 2]
     - -isystem
     - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\sources\cxx-stl\llvm-libc++\include
     - -isystem
     - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\sources\cxx-stl\llvm-libc++abi\include
     - -isystem
     - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include
-
-    # --- Android-specific headers ---
     - -isystem
     - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\android
     - -isystem
     - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\sysroot\usr\include
-
-    # --- OpenGL ES headers (optional but fine) ---
     - -isystem
     - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\GLES2
 
-    # --- Project-specific headers ---
-    - -I.\app\src\main\cpp\deps\raylib
-    - -I.\app\src\main\cpp\deps\raymob
+    # Project-specific headers [cite: 2]
+    - -Iapp/src/main/cpp/deps/raylib
+    - -Iapp/src/main/cpp/deps/raymob
 
-    # --- Compiler settings ---
+    # Compiler settings [cite: 2]
     - -DANDROID
     - -D__ANDROID_API__=24
     - -std=c++17
 
-  Remove:
+  Remove: 
     - -W*
