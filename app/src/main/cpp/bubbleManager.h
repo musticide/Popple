@@ -59,7 +59,7 @@ private:
 
     void ResetInternal();
 
-    static void ActiveEffectChanged(ElementType type);
+    // static void ActiveEffectChanged(ElementType type);
     static void SpawnIntervalChanged(float spawnInterval, float amount);
     bool IsPointInBubble(Bubble* bubble, Vector3 point) const;
 
@@ -71,7 +71,7 @@ private:
 
     void UpdateBubble(Bubble* bubble);
 
-    static ElementType s_ActiveEffect;
+    // static ElementType s_ActiveEffect;
     static float s_SpawnInterval;
     float electroShieldRadius;
 

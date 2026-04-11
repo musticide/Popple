@@ -1,7 +1,7 @@
 #version 300 es
 precision mediump float;
 
-uniform float _Time;
+uniform highp float _Time;
 
 in vec4 color;
 in vec2 uv;

@@ -16,7 +16,7 @@ public:
 
 
     Signal<ElementType> activeElementEffectChanged;
-    ElementType GetActiveEffect() const { return m_ActiveEffect; }
+    ElementType activeEffect = ElementType::NONE;
     void AddSpecialBubbleInternal(ElementType type);
 
     /// 1st arg current score
@@ -56,10 +56,12 @@ public:
     float electroShieldTimer = 0.0f;
     const float ELECTRO_SHIELD_DURATION = 5.0f;
 
+    float anemoEffectTimer = 0.0f;
+    const float ANEMO_EFFECT_DURATION = 1.0f;
+
 private:
     const int MAX_COMBO_LENGTH = 3;
 
-    ElementType m_ActiveEffect = ElementType::NONE;
     int m_Score = 0;
     int m_Health = 100;
     std::array<int, (int)ElementType::COUNT> m_ComboCount;
@@ -67,8 +69,6 @@ private:
     float m_SpawnInterval = 1.5f;
     float m_MinSpawnInterval = 0.20f;
 
-    float m_AnemoEffectTimer = 0.0f;
-    const float ANEMO_EFFECT_DURATION = 1.0f;
 
     void ResetComboCount();
 

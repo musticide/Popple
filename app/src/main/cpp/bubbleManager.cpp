@@ -12,32 +12,28 @@
 #include <raymob.h>
 #include <sys/types.h>
 
-ElementType BubbleManager::s_ActiveEffect;
 float BubbleManager::s_SpawnInterval;
 
-BubbleManager::BubbleManager()
-    : DrawableEntity(RenderQueue::OPAQUE)
-{
+BubbleManager::BubbleManager() : DrawableEntity(RenderQueue::OPAQUE) {
     LOGI("Bubble Manager constructed");
 }
 
-BubbleManager::~BubbleManager() { }
+BubbleManager::~BubbleManager() {
+}
 
-void BubbleManager::Start()
-{
+void BubbleManager::Start() {
     m_Bubbles.resize(INITIAL_POOL_SIZE);
     for (int i = 0; i < m_Bubbles.size(); i++) {
         m_Bubbles[i] = std::make_unique<Bubble>();
     }
 
-    s_ActiveEffect = GameManager::Get().GetActiveEffect();
     s_SpawnInterval = GameManager::Get().GetSpawnInterval();
 
-    GameManager::Get().activeElementEffectChanged.connect(BubbleManager::ActiveEffectChanged);
     GameManager::Get().spawnIntervalChanged.connect(BubbleManager::SpawnIntervalChanged);
 
     m_BubbleBaseModel = ResourceManager::GetModel("models/BubbleBase_01.glb");
-    m_BubbleBaseModel->materials[0].shader = *ResourceManager::GetShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
+    m_BubbleBaseModel->materials[0].shader =
+        *ResourceManager::GetShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
 
     // bubbleMaterials[(int)ElementType::NONE] = LoadMaterialDefault();
     // bubbleMaterials[(int)ElementType::NONE].shader
@@ -65,19 +61,19 @@ void BubbleManager::Start()
     electroShieldRadius = GameManager::Get().electroShieldRadius;
 }
 
-void BubbleManager::OnEnable() { ResetInternal(); }
+void BubbleManager::OnEnable() {
+    ResetInternal();
+}
 
-void BubbleManager::DoAnemoBlast(Bubble* bubble)
-{
+void BubbleManager::DoAnemoBlast(Bubble* bubble) {
     // LOGI("Anemo Blast Force applied");
     Vector3 force = Vector3Normalize(bubble->position);
-    force = Vector3Scale(force, 500);
+    force         = Vector3Scale(force, 500);
     // bubble->AddForce(force);
     bubble->velocity += force;
 }
 
-void BubbleManager::Update(float dT)
-{
+void BubbleManager::Update(float dT) {
     SpatialGrid::Clear();
     SpawnBubbles();
 
@@ -101,19 +97,15 @@ void BubbleManager::Update(float dT)
                 }
             }
 
-            switch (s_ActiveEffect) {
-            case ElementType::NONE:
-                break;
+            switch (GameManager::Get().activeEffect) {
+            case ElementType::NONE: break;
             case ElementType::ELECTRO:
                 if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + electroShieldRadius) {
                     m_Bubbles[i]->isActive = false;
                 }
                 break;
-            case ElementType::ANEMO:
-                DoAnemoBlast(m_Bubbles[i].get());
-                break;
-            default:
-                break;
+            case ElementType::ANEMO: DoAnemoBlast(m_Bubbles[i].get()); break;
+            default: break;
             }
 
             // Check if bubble has reached center
@@ -136,8 +128,7 @@ void BubbleManager::Update(float dT)
     SetShaderValue(bubbleMaterials[(int)ElementType::ANEMO].shader, anemoTimeId, &time, SHADER_UNIFORM_FLOAT);
 }
 
-void BubbleManager::Draw() const
-{
+void BubbleManager::Draw() const {
     Color tint;
     for (size_t i = 0; i < m_Bubbles.size(); i++) {
         if (m_Bubbles[i] != nullptr && m_Bubbles[i]->isActive) {
@@ -149,34 +140,32 @@ void BubbleManager::Draw() const
             //     LOGE("Bubble type out of bounds");
             // }
 
-            DrawModel(*m_BubbleBaseModel, m_Bubbles[i]->position, m_Bubbles[i]->radius, bubbleColors[(int)m_Bubbles[i]->type]);
+            DrawModel(*m_BubbleBaseModel, m_Bubbles[i]->position, m_Bubbles[i]->radius,
+                bubbleColors[(int)m_Bubbles[i]->type]);
         }
     }
 }
 
-void BubbleManager::ActiveEffectChanged(ElementType type) { s_ActiveEffect = type; }
+// void BubbleManager::ActiveEffectChanged(ElementType type) { s_ActiveEffect = type; }
 
-bool BubbleManager::IsPointInBubble(Bubble* bubble, Vector3 point) const
-{
-    return Vector3Length((Vector3) { point.x, 0, point.z } - bubble->position) <= bubble->radius;
+bool BubbleManager::IsPointInBubble(Bubble* bubble, Vector3 point) const {
+    return Vector3Length((Vector3){ point.x, 0, point.z } - bubble->position) <= bubble->radius;
 }
 
 /// returns position at a defined radius
-Vector3 BubbleManager::GetRandomSpawnPos()
-{
+Vector3 BubbleManager::GetRandomSpawnPos() {
     // TODO: decrease distance
-    float distance = GetRandomValue(40, 35);
+    float distance  = GetRandomValue(40, 35);
     float randAngle = GetRandomValue(0, 360);
-    return (Vector3) { (float)cos(randAngle) * distance, 0, (float)sin(randAngle) * distance };
+    return (Vector3){ (float)cos(randAngle) * distance, 0, (float)sin(randAngle) * distance };
 }
-void BubbleManager::SpawnBubble(Bubble* bubble)
-{
+void BubbleManager::SpawnBubble(Bubble* bubble) {
     if (bubble == nullptr) {
         LOGW("Unable to spawn bubble : nullptr");
         return;
     }
     bubble->position = GetRandomSpawnPos();
-    bubble->radius = GetRandomValue(20, 25) / 10.f;
+    bubble->radius   = GetRandomValue(20, 25) / 10.f;
     bubble->velocity = Vector3Scale(Vector3Normalize(Vector3Zero() - bubble->position), bubble->CENTER_FORCE);
 
     if (RollPercentage(40)) {
@@ -184,10 +173,10 @@ void BubbleManager::SpawnBubble(Bubble* bubble)
     } else {
         bubble->type = ElementType::NONE;
     }
+    bubble->type = ElementType::ANEMO;
 }
 /// Update Bubble posiiton and check for collisions with other bubbles
-void BubbleManager::UpdateBubble(Bubble* bubble)
-{
+void BubbleManager::UpdateBubble(Bubble* bubble) {
     bubble->velocity += Vector3Scale(Vector3Normalize(Vector3Zero() - bubble->position), bubble->CENTER_FORCE);
     bubble->ApplyForces();
     SpatialGrid::AddEntity(bubble);
@@ -197,8 +186,7 @@ void BubbleManager::UpdateBubble(Bubble* bubble)
         }
     }
 }
-void BubbleManager::SpawnBubbles()
-{
+void BubbleManager::SpawnBubbles() {
     if (m_PauseSpawn)
         return;
     m_SpawnTimer += GetFrameTime();
@@ -219,12 +207,17 @@ void BubbleManager::SpawnBubbles()
         }
     }
 }
-void BubbleManager::PauseSpawn() { m_PauseSpawn = true; }
-void BubbleManager::ContinueSpawn() { m_PauseSpawn = false; }
-void BubbleManager::SpawnIntervalChanged(float spawnInterval, float amount) { s_SpawnInterval = spawnInterval; }
+void BubbleManager::PauseSpawn() {
+    m_PauseSpawn = true;
+}
+void BubbleManager::ContinueSpawn() {
+    m_PauseSpawn = false;
+}
+void BubbleManager::SpawnIntervalChanged(float spawnInterval, float amount) {
+    s_SpawnInterval = spawnInterval;
+}
 
-void BubbleManager::ResetInternal()
-{
+void BubbleManager::ResetInternal() {
     for (int i = 0; i < m_Bubbles.size(); i++) {
         m_Bubbles[i]->isActive = false;
     }

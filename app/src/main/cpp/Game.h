@@ -8,6 +8,7 @@
 #include "HomeScene.h"
 #include "GameplayScene.h"
 #include "Renderer.h"
+#include "scheduler.h"
 
 class Game {
 public:
@@ -36,6 +37,7 @@ private:
     std::unique_ptr<ResourceManager> m_ResourceManager;
     std::unique_ptr<SceneManager> m_SceneManager;
     std::unique_ptr<Renderer> m_Renderer;
+    std::unique_ptr<Scheduler> m_Scheduler;
 
     std::unique_ptr<HomeScene> m_HomeScene;
     std::unique_ptr<GameplayScene> m_GameplayScene;

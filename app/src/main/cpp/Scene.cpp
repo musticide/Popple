@@ -1,18 +1,18 @@
 #include "Scene.h"
 #include "Entity.h"
 #include "Log.h"
+#include <cstddef>
 
-Scene::Scene(const char* name)
-    : m_Name(name)
-{
+Scene::Scene(const char* name) : m_Name(name) {
     LOGV("Scene created: %s", name);
 }
 
-Scene::~Scene() { }
+Scene::~Scene() {
+}
 
-void Scene::Start()
-{
-    for (auto& e : m_SceneEntities) {
+void Scene::Start() {
+    for (size_t i = 0; i < m_SceneEntities.size(); i++) {
+        Entity* e = m_SceneEntities[i];
         if (e != nullptr && e->IsActive() && !e->hasStarted) {
             e->Start();
             LOGV("Scene Started: %s", m_Name);
@@ -21,8 +21,7 @@ void Scene::Start()
     }
 }
 
-void Scene::Update(float dT)
-{
+void Scene::Update(float dT) {
     for (auto& e : m_SceneEntities) {
         if (e != nullptr)
             if (e->IsActive() && e->hasStarted)
@@ -30,31 +29,27 @@ void Scene::Update(float dT)
     }
 }
 
-void Scene::DrawSky() const
-{
+void Scene::DrawSky() const {
     for (auto d : m_Buckets.sky)
         if (d != nullptr)
             if (d->IsActive())
                 d->Draw();
 }
 
-void Scene::DrawOpaque() const
-{
+void Scene::DrawOpaque() const {
     for (auto d : m_Buckets.opaque)
         if (d != nullptr)
             if (d->IsActive())
                 d->Draw();
 }
 
-void Scene::DrawTransparent() const
-{
+void Scene::DrawTransparent() const {
     for (auto d : m_Buckets.transparent)
         if (d != nullptr)
             if (d->IsActive())
                 d->Draw();
 }
-void Scene::DrawUI() const
-{
+void Scene::DrawUI() const {
     for (auto d : m_Buckets.ui)
         if (d != nullptr)
             if (d->IsActive() && d->hasStarted)

@@ -53,6 +53,7 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/Globals.cpp"
     "${CMAKE_SOURCE_DIR}/EffectManager.cpp"
     "${CMAKE_SOURCE_DIR}/utils.cpp"
+    "${CMAKE_SOURCE_DIR}/scheduler.cpp"
 )
 
 # Define compiler macros for the library

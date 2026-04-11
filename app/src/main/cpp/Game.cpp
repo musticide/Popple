@@ -4,35 +4,35 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "raylib.h"
+#include "scheduler.h"
 #include <cassert>
 #include <memory>
 
-Game::Game()
-{
+Game::Game() {
     assert(!s_Instance && "Game already exists");
     s_Instance = this;
 }
 
-Game::~Game() { }
-void Game::Init()
-{
+Game::~Game() {
+}
+void Game::Init() {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(0, 0, "Popple");
 
     screenWidth = Globals::screenWidth = GetScreenWidth();
     screenHeight = Globals::screenHeight = GetScreenHeight();
 
     uiCamera          = { 0 };
-    uiCamera.target   = (Vector2) { 0.0f, 0.0f };
-    uiCamera.offset   = (Vector2) { screenWidth / 2.0f, screenHeight / 2.0f };
+    uiCamera.target   = (Vector2){ 0.0f, 0.0f };
+    uiCamera.offset   = (Vector2){ screenWidth / 2.0f, screenHeight / 2.0f };
     uiCamera.rotation = 0.0f;
     uiCamera.zoom     = 1.0f;
 
     mainCamera3D          = { 0 };
-    mainCamera3D.position = (Vector3) { 0.0f, 20.0f, 0.0f }; // Camera position
-    mainCamera3D.target   = (Vector3) { 0.0f, 0.0f, 0.0f }; // Looking at the origin
-    mainCamera3D.up
-        = (Vector3) { 0.0f, 0.0f, 1.0f }; // "Up" points toward +Z since we're looking down Y
-    mainCamera3D.fovy       = 80.0f;
+    mainCamera3D.position = (Vector3){ 0.0f, 20.0f, 0.0f }; // Camera position
+    mainCamera3D.target   = (Vector3){ 0.0f, 0.0f, 0.0f };  // Looking at the origin
+    mainCamera3D.up       = (Vector3){ 0.0f, 0.0f, 1.0f }; // "Up" points toward +Z since we're looking down Y
+    mainCamera3D.fovy     = 80.0f;
     mainCamera3D.projection = CAMERA_ORTHOGRAPHIC;
 
     // Managers/Systems
@@ -40,6 +40,7 @@ void Game::Init()
     m_ResourceManager = std::make_unique<ResourceManager>();
     m_SceneManager    = std::make_unique<SceneManager>();
     m_Renderer        = std::make_unique<Renderer>(mainCamera3D, uiCamera);
+    m_Scheduler       = std::make_unique<Scheduler>();
 
     m_HomeScene     = SceneManager::Get().RegisterScene<HomeScene>();
     m_GameplayScene = SceneManager::Get().RegisterScene<GameplayScene>();
@@ -49,19 +50,17 @@ void Game::Init()
     SetTargetFPS(60);
 }
 
-void Game::Run()
-{
+void Game::Run() {
     while (!WindowShouldClose()) {
         SceneManager::Get().StartScenes();
+        Scheduler::Get().Update(GetFrameTime());
         SceneManager::Get().UpdateScenes(GetFrameTime());
 
         Renderer::Get().Render();
-
     }
 }
 
-void Game::Shutdown()
-{
+void Game::Shutdown() {
     Renderer::Get().Cleanup();
     CloseWindow();
 }
