@@ -173,7 +173,6 @@ void BubbleManager::SpawnBubble(Bubble* bubble) {
     } else {
         bubble->type = ElementType::NONE;
     }
-    bubble->type = ElementType::ANEMO;
 }
 /// Update Bubble posiiton and check for collisions with other bubbles
 void BubbleManager::UpdateBubble(Bubble* bubble) {

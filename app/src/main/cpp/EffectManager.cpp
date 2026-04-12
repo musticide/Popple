@@ -42,7 +42,6 @@ void EffectManager::Update(float dT) {
     if (m_AnemoShieldMesh && m_AnemoShieldMesh->IsActive()) {
         anemoTime += dT;
         m_AnemoShieldMesh->scale *= 1.0f + (5.5 * dT);
-        LOGI("EM: Anemo Scale: %f", m_AnemoShieldMesh->scale.x);
         if (m_AnemoTimeId >= 0) {
             SetShaderValue(m_AnemoShieldMesh->GetModel().materials[0].shader, m_AnemoTimeId,
                 &anemoTime, SHADER_UNIFORM_FLOAT);
