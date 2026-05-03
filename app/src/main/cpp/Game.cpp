@@ -4,6 +4,7 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "raylib.h"
+#include "raymath.h"
 #include "scheduler.h"
 #include <cassert>
 #include <memory>
@@ -24,7 +25,7 @@ void Game::Init() {
 
     uiCamera          = { 0 };
     uiCamera.target   = (Vector2){ 0.0f, 0.0f };
-    uiCamera.offset   = (Vector2){ screenWidth / 2.0f, screenHeight / 2.0f };
+    uiCamera.offset   = Vector2Zero();
     uiCamera.rotation = 0.0f;
     uiCamera.zoom     = 1.0f;
 

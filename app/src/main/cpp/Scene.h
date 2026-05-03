@@ -14,50 +14,45 @@ enum class SceneType { HOME, GAMEPLAY };
 
 class Scene {
 public:
-    Scene(const char* name);
-    Scene(Scene&&) = default;
-    Scene(const Scene&) = default;
-    Scene& operator=(Scene&&) = default;
-    Scene& operator=(const Scene&) = default;
-    ~Scene();
+    // Scene(const char* name);
+  Scene(SceneType type);
+  Scene(Scene&&)                 = default;
+  Scene(const Scene&)            = default;
+  Scene& operator=(Scene&&)      = default;
+  Scene& operator=(const Scene&) = default;
+  ~Scene();
 
-    template <typename T, typename... Args> std::unique_ptr<T> CreateEntity(bool active, Args&&... args)
-    {
-        static_assert(std::is_base_of<Entity, T>::value, "T must derive from Entity");
+  template <typename T, typename... Args>
+  std::unique_ptr<T> CreateEntity(bool active, Args&&... args) {
+      static_assert(std::is_base_of<Entity, T>::value, "T must derive from Entity");
 
-        LOGV("%s is creating entity", m_Name);
-        auto entity = std::make_unique<T>(std::forward<Args>(args)...);
+      LOGV("%s is creating entity", m_Name);
+      auto entity = std::make_unique<T>(std::forward<Args>(args)...);
 
-        entity->parentScene = this;
-        entity->SetActive(active);
+      entity->parentScene = this;
+      entity->SetActive(active);
 
-        LOGV("Entity added to %s", m_Name);
-        m_SceneEntities.push_back(entity.get());
+      LOGV("Entity added to %s", m_Name);
+      m_SceneEntities.push_back(entity.get());
 
-        if (DrawableEntity* d = entity->asDrawable()) {
-            LOGV("Entity is Drawable");
-            switch (d->GetRenderQueue()) {
-            case RenderQueue::SKY:
-                m_Buckets.sky.push_back(d);
-                break;
-            case RenderQueue::OPAQUE:
-                m_Buckets.opaque.push_back(d);
-                break;
-            case RenderQueue::TRANSPARENT:
-                // if (dynamic_cast<ParticleSystem*>(d))
-                //     LOGI("Particle System added");
-                m_Buckets.transparent.push_back(d);
-                break;
-            case RenderQueue::UI:
-                m_Buckets.ui.push_back(d);
-                break;
-            }
-        }
+      if (DrawableEntity* d = entity->asDrawable()) {
+          LOGV("Entity is Drawable");
+          switch (d->GetRenderQueue()) {
+          case RenderQueue::SKY: m_Buckets.sky.push_back(d); break;
+          case RenderQueue::OPAQUE: m_Buckets.opaque.push_back(d); break;
+          case RenderQueue::TRANSPARENT:
+              // if (dynamic_cast<ParticleSystem*>(d))
+              //     LOGI("Particle System added");
+              m_Buckets.transparent.push_back(d);
+              break;
+          case RenderQueue::UI: m_Buckets.ui.push_back(d); break;
+          }
+      }
 
-        return std::move(entity);
-    }
+      return std::move(entity);
+  }
 
-    const char* const GetName() const { return m_Name; }
+    SceneType GetType() const { return m_Type; }
 
     bool IsActive() const { return m_IsActive; }
     void SetActive(bool active)
@@ -89,7 +84,8 @@ public:
     void DrawUI() const;
 
 protected:
-    const char* m_Name;
+    const char* m_Name = "scene";
+    SceneType m_Type;
     std::vector<Entity*> m_SceneEntities;
 
     struct RenderBuckets {

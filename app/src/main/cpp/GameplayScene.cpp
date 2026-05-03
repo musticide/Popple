@@ -1,10 +1,13 @@
 #include "GameplayScene.h"
 #include "DrawableEntity.h"
+#include "GameCanvas.h"
+#include "GameManager.h"
 #include "Log.h"
 #include "ResourceManager.h"
 
+
 GameplayScene::GameplayScene() 
-:Scene("GameplayScene")
+:Scene(SceneType::GAMEPLAY)
 {
     m_GameManager = CreateEntity<GameManager>(true);
     m_EffectManager = CreateEntity<EffectManager>(true);
@@ -20,8 +23,7 @@ GameplayScene::GameplayScene()
     m_Background->position = { 0.f, -20.f, 0.f };
     m_Background->scale = Vector3Scale(Vector3One(), 2.f);
 
-    m_GameUI = CreateEntity<GameUI>(true);
-    // m_GameUI->SetActive(true);
+    m_GameCanvas = CreateEntity<GameCanvas>(true);
 }
 
 GameplayScene::~GameplayScene() {

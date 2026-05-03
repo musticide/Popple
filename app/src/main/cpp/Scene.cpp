@@ -3,8 +3,11 @@
 #include "Log.h"
 #include <cstddef>
 
-Scene::Scene(const char* name) : m_Name(name) {
-    LOGV("Scene created: %s", name);
+// Scene::Scene(const char* name) : m_Name(name) {
+//     LOGV("Scene created: %s", name);
+// }
+Scene::Scene(SceneType type) : m_Type(type){
+    // LOGV("Scene created: %s", type);
 }
 
 Scene::~Scene() {
@@ -55,3 +58,4 @@ void Scene::DrawUI() const {
             if (d->IsActive() && d->hasStarted)
                 d->Draw();
 }
+

@@ -69,19 +69,28 @@ void SceneManager::UpdateScenes(float dT)
 //     }
 // }
 
-Scene* SceneManager::GetScene(const char* name)
+// Scene* SceneManager::GetScene(const char* name)
+Scene* SceneManager::GetScene(SceneType type)
 {
     Scene* result;
     for (auto& scene : m_Scenes) {
         if (scene != nullptr) {
-            if (scene->GetName() == name)
+            if (scene->GetType() == type)
                 result = scene;
         } else {
-            LOGE("Could not find scene with name: %s", name);
+            // LOGE("Could not find scene with name: %s", name);
         }
     }
     return result;
 }
-void SceneManager::DeactivateScene(const char* name) { m_ScenesToDeactivate.push_back(GetScene(name)); }
+// void SceneManager::DeactivateScene(const char* name) { m_ScenesToDeactivate.push_back(GetScene(name)); }
 
-void SceneManager::ActivateScene(const char* name) { m_ScenesToActivate.push_back(GetScene(name)); }
+// void SceneManager::ActivateScene(const char* name) { m_ScenesToActivate.push_back(GetScene(name)); }
+void SceneManager::ActivateScene(SceneType type) {
+    m_ScenesToActivate.push_back(GetScene(type));
+}
+
+void SceneManager::DeactivateScene(SceneType type) {
+    m_ScenesToDeactivate.push_back(GetScene(type));
+}
+

@@ -1,14 +1,15 @@
 #include "HomeScene.h"
 #include "Globals.h"
+#include "Scene.h"
+#include "uiCanvas.h"
 #include <memory>
 
-HomeScene::HomeScene()
-    : Scene("HomeScene")
+HomeScene::HomeScene() 
+    : Scene(SceneType::HOME) 
 {
-    // playButton = std::make_unique<Button>("textures/start_button.png", WHITE, (Vector2) { 0, 0 });
-    playButton = CreateEntity<Button>(true, "textures/start_button.png", WHITE, (Vector2) { 0, 0 });
-    playButton->AddOnClickListener(Globals::StartGame);
     touchFeedback = CreateEntity<TouchFeedback>(true);
+    homeCanvas = CreateEntity<HomeCanvas>(true);
 }
 
-HomeScene::~HomeScene() { }
+HomeScene::~HomeScene() {
+}

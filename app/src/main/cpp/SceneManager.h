@@ -20,12 +20,15 @@ public:
 
     // void DrawUI();
 
-    Scene* GetScene(const char* name);
+    // Scene* GetScene(const char* name);
+    Scene* GetScene(SceneType type);
 
     const std::vector<Scene*>& GetScenes() const { return m_Scenes; }
 
-    void ActivateScene(const char* name);
-    void DeactivateScene(const char* name);
+    void ActivateScene(SceneType type);
+    void DeactivateScene(SceneType type);
+    // void ActivateScene(const char* name);
+    // void DeactivateScene(const char* name);
 
     template <typename T> std::unique_ptr<T> RegisterScene()
     {

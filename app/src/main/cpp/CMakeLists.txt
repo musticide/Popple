@@ -54,6 +54,13 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/EffectManager.cpp"
     "${CMAKE_SOURCE_DIR}/utils.cpp"
     "${CMAKE_SOURCE_DIR}/scheduler.cpp"
+    "${CMAKE_SOURCE_DIR}/uiElement.cpp"
+    "${CMAKE_SOURCE_DIR}/uiImage.cpp"
+    "${CMAKE_SOURCE_DIR}/uiCanvas.cpp"
+    "${CMAKE_SOURCE_DIR}/uiButton.cpp"
+    "${CMAKE_SOURCE_DIR}/uiText.cpp"
+    "${CMAKE_SOURCE_DIR}/uiImage.cpp"
+    "${CMAKE_SOURCE_DIR}/HomeCanvas.cpp"
 )
 
 # Define compiler macros for the library

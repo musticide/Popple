@@ -1,6 +1,7 @@
 #include "GameManager.h"
 #include "EffectManager.h"
 #include "Log.h"
+#include "Scene.h"
 #include "SceneManager.h"
 #include "bubbleManager.h"
 
@@ -118,8 +119,8 @@ void GameManager::ResetComboCount() {
 }
 
 void GameManager::EndGame() {
-    SceneManager::Get().ActivateScene("HomeScene");
-    SceneManager::Get().DeactivateScene("GameplayScene");
+    SceneManager::Get().ActivateScene(SceneType::HOME);
+    SceneManager::Get().DeactivateScene(SceneType::GAMEPLAY);
 }
 
 void GameManager::ResetGameValues() {

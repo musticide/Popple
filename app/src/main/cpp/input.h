@@ -21,7 +21,8 @@ public:
 
     static Vector2 GetTouchPositionCS(int index = 0)
     {
-        return GetScreenToWorld2D(GetTouchPosition(index), *Get().m_Camera2D);
+        return GetTouchPosition(index);
+        // return GetScreenToWorld2D(GetTouchPosition(index), *Get().m_Camera2D);
     }
     static int GetTouchPointCount() { return GetTouchPointCount(); }
 

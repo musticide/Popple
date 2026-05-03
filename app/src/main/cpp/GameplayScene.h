@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameCanvas.h"
 #include "GameManager.h"
 #include "GameUI.h"
 #include "Scene.h"
@@ -9,6 +10,7 @@
 #include "spatialGrid.h"
 #include "EffectManager.h"
 #include <memory>
+#include <string>
 
 class GameplayScene : public Scene{
 public:
@@ -24,7 +26,7 @@ private:
     std::unique_ptr<Tower> m_Tower;
     std::unique_ptr<StaticMesh> m_Background;
     std::unique_ptr<SpatialGrid> m_SpatialGrid;
-    std::unique_ptr<GameUI> m_GameUI;
+    std::unique_ptr<GameCanvas> m_GameCanvas;
 
 };
 

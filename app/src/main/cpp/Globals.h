@@ -5,6 +5,7 @@
 namespace Globals {
 
 extern int screenWidth , screenHeight ;
+extern const int baseScreenWidth, baseScreenHeight;
 
 void StartGame();
 }
