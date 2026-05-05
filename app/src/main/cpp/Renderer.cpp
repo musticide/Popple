@@ -26,7 +26,7 @@ Renderer::Renderer(Camera3D& mainCam, Camera2D& uiCam)
     backgroundShader = *ResourceManager::GetShader(0, "shaders/defaultBackground.fs");
 
     Utils::SetUniformValue(backgroundShader, "_ScreenSize", &screenSize, SHADER_UNIFORM_VEC2);
-    backgroundTexture = *ResourceManager::GetTexture("textures/T_CheckerBackground.png");
+    backgroundTexture = *ResourceManager::GetTexture("textures/T_GameBG.png");
 
     if (doBloom) {
         bloomFilterRT = LoadRenderTexture(screenSize.x, screenSize.y);

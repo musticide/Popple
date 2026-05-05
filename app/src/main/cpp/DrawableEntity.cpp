@@ -1,7 +1,7 @@
 #include "DrawableEntity.h"
 
 DrawableEntity::DrawableEntity(RenderQueue type)
-:m_RenderQueue(type)
+:renderQueue(type)
 { }
 
 DrawableEntity::~DrawableEntity() { }

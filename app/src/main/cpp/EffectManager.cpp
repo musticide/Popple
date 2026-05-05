@@ -43,8 +43,7 @@ void EffectManager::Update(float dT) {
         anemoTime += dT;
         m_AnemoShieldMesh->scale *= 1.0f + (5.5 * dT);
         if (m_AnemoTimeId >= 0) {
-            SetShaderValue(m_AnemoShieldMesh->GetModel().materials[0].shader, m_AnemoTimeId,
-                &anemoTime, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(m_AnemoShieldMesh->GetModel().materials[0].shader, m_AnemoTimeId, &anemoTime, SHADER_UNIFORM_FLOAT);
         }
     }
 }
@@ -65,7 +64,14 @@ void EffectManager::InitElectroShield() {
 }
 
 void EffectManager::ActivateElectroShield() {
+    if (!electroShieldAvailable)
+        return;
+
+    LOGI("Electro Shield Activated");
     m_ElectroShieldMesh->SetActive(true);
+    GameManager::Get().ResetComboCount(ElementType::ELECTRO);
+    GameManager::Get().activeEffect = ElementType::ELECTRO;
+    electroShieldAvailable = false;
 }
 void EffectManager::DeactivateElectroShield() {
     m_ElectroShieldMesh->SetActive(false);
@@ -84,14 +90,20 @@ void EffectManager::InitAnemoShield() {
 }
 
 void EffectManager::ActivateAnemoShield() {
+    if (!anemoShieldAvailable)
+        return;
+
+    LOGI("EM: Anemo Shield Activated");
     m_AnemoShieldMesh->SetActive(true);
-    LOGV("EM: Anemo Shield Activated");
+    GameManager::Get().ResetComboCount(ElementType::ANEMO);
+    GameManager::Get().activeEffect = ElementType::ANEMO;
+    anemoShieldAvailable = false;
 }
 
 void EffectManager::DeactivateAnemoShield() {
     LOGI("EM: Deactivate Anemo Shield");
-        if (this->m_AnemoShieldMesh) {
-            this->m_AnemoShieldMesh->scale = { 1.f, 1.f, 1.f };
-            this->m_AnemoShieldMesh->SetActive(false);
+    if (this->m_AnemoShieldMesh) {
+        this->m_AnemoShieldMesh->scale = { 1.f, 1.f, 1.f };
+        this->m_AnemoShieldMesh->SetActive(false);
     }
 }

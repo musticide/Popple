@@ -15,7 +15,7 @@ public:
     ~GameManager();
 
 
-    Signal<ElementType> activeElementEffectChanged;
+    // Signal<ElementType> activeElementEffectChanged;
     ElementType activeEffect = ElementType::NONE;
     void AddSpecialBubbleInternal(ElementType type);
 
@@ -48,6 +48,7 @@ public:
 
     int GetComboCountForType(ElementType type) { return m_ComboCount[(int)type]; }
     const int GetMaxComboLength() const { return MAX_COMBO_LENGTH; }
+    void ResetComboCount(ElementType type);
 
     const float electroShieldRadius = 10.f;
 
@@ -66,7 +67,7 @@ private:
     int m_Health = 100;
     std::array<int, (int)ElementType::COUNT> m_ComboCount;
 
-    float m_SpawnInterval = 1.5f;
+    float m_SpawnInterval = 1.4f;
     float m_MinSpawnInterval = 0.20f;
 
 

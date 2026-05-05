@@ -13,12 +13,12 @@ public:
     DrawableEntity& operator=(const DrawableEntity&) = default;
     ~DrawableEntity();
 
-    RenderQueue GetRenderQueue() const { return m_RenderQueue; }
+    RenderQueue GetRenderQueue() const { return renderQueue; }
 
     DrawableEntity* asDrawable() override { return this; }
 
     virtual void Draw() const;
 
+    RenderQueue renderQueue = RenderQueue::OPAQUE;
 private:
-    RenderQueue m_RenderQueue = RenderQueue::OPAQUE;
 };

@@ -4,20 +4,25 @@
 #include "DrawableEntity.h"
 #include "raylib.h"
 #include "raymath.h"
+#include <functional>
 #include <memory>
 #include <vector>
 
 struct ParticleProperties {
     // Particle
     float lifetime = 1.0f;
+
     float initialSpeed = 0.0f;
-    float size = 1.0f;
+    float speedVariation = 0.0f;
+    float damping = 0.1f;
+
+    float startSize = 1.0f;
+    float endSize = 1.0f;
     float sizeVariation = 0.0f;
 
     // Rendering
     Color startColor = WHITE;
     Color endColor = WHITE;
-    /// uses default quad if not specified
 };
 
 struct Particle {
@@ -34,7 +39,9 @@ struct Particle {
 
 enum class EmitShape{
     NONE,
-    CIRCLE
+    CIRCLE,
+    LINE,
+    CUSTOM
 };
 
 enum class EmitType{
@@ -71,6 +78,8 @@ public:
     void Draw() const override;
 
     void Burst(int amount);
+
+    std::function<Vector3()> customShapeFunc;
 
 private:
     std::vector<Particle> m_ParticlePool;

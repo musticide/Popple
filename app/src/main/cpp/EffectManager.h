@@ -20,12 +20,15 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
 
     void Update(float dT = 1.0f) override;
 
+    bool electroShieldAvailable = false;
+    bool anemoShieldAvailable   = false;
+
   private:
     float m_Time;
 
     std::unique_ptr<StaticMesh> m_ElectroShieldMesh;
     int m_ElectroTimeId, m_ElectroBlinkId;
-    bool m_ElectroBlink = false;
+    bool m_ElectroBlink                = false;
     const float ELECTRO_BLINK_DURATION = 1.0f;
 
     std::unique_ptr<StaticMesh> m_AnemoShieldMesh;

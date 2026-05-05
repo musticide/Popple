@@ -1,4 +1,6 @@
 #include "bubbleManager.h"
+#include "Game.h"
+#include "GameCanvas.h"
 #include "GameManager.h"
 #include "Log.h"
 #include "ResourceManager.h"
@@ -14,7 +16,8 @@
 
 float BubbleManager::s_SpawnInterval;
 
-BubbleManager::BubbleManager() : DrawableEntity(RenderQueue::OPAQUE) {
+BubbleManager::BubbleManager()
+: DrawableEntity(RenderQueue::OPAQUE) {
     LOGI("Bubble Manager constructed");
 }
 
@@ -45,7 +48,7 @@ void BubbleManager::OnEnable() {
 void BubbleManager::DoAnemoBlast(Bubble* bubble) {
     // LOGI("Anemo Blast Force applied");
     Vector3 force = Vector3Normalize(bubble->position);
-    force         = Vector3Scale(force, 500);
+    force         = Vector3Scale(force, 300);
     // bubble->AddForce(force);
     bubble->velocity += force;
 }
@@ -69,20 +72,26 @@ void BubbleManager::Update(float dT) {
                     GameManager::Get().AddScore(5);
                     GameManager::Get().DecreaseSpawnInterval(0.01f);
                     GameManager::Get().AddSpecialBubbleInternal(m_Bubbles[i]->type);
+                    GameCanvas::Get().ShowScorePop(
+                        5, GetWorldToScreen(m_Bubbles[i].get()->position, Game::Get().mainCamera3D));
                     m_Bubbles[i]->isActive = false;
-                    continue;
+                    break;
                 }
             }
 
             switch (GameManager::Get().activeEffect) {
-            case ElementType::NONE: break;
-            case ElementType::ELECTRO:
-                if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + electroShieldRadius) {
-                    m_Bubbles[i]->isActive = false;
-                }
-                break;
-            case ElementType::ANEMO: DoAnemoBlast(m_Bubbles[i].get()); break;
-            default: break;
+                case ElementType::NONE:
+                    break;
+                case ElementType::ELECTRO:
+                    if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + electroShieldRadius) {
+                        m_Bubbles[i]->isActive = false;
+                    }
+                    break;
+                case ElementType::ANEMO:
+                    DoAnemoBlast(m_Bubbles[i].get());
+                    break;
+                default:
+                    break;
             }
 
             // Check if bubble has reached center
@@ -110,7 +119,9 @@ void BubbleManager::Draw() const {
     for (size_t i = 0; i < m_Bubbles.size(); i++) {
         if (m_Bubbles[i] != nullptr && m_Bubbles[i]->isActive) {
 
-            DrawModel(*m_BubbleBaseModel, m_Bubbles[i]->position, m_Bubbles[i]->radius,
+            DrawModel(*m_BubbleBaseModel,
+                m_Bubbles[i]->position,
+                m_Bubbles[i]->radius,
                 bubbleColors[(int)m_Bubbles[i]->type]);
         }
     }
@@ -156,8 +167,7 @@ void BubbleManager::UpdateBubble(Bubble* bubble) {
     }
 }
 void BubbleManager::SpawnBubbles() {
-    if (m_PauseSpawn)
-        return;
+    if (m_PauseSpawn) return;
     m_SpawnTimer += GetFrameTime();
 
     if (m_SpawnTimer > s_SpawnInterval) {

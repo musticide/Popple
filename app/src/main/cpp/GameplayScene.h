@@ -5,6 +5,7 @@
 #include "GameUI.h"
 #include "Scene.h"
 #include "StaticMesh.h"
+#include "TouchFeedback.h"
 #include "Tower.h"
 #include "bubbleManager.h"
 #include "spatialGrid.h"
@@ -27,6 +28,7 @@ private:
     std::unique_ptr<StaticMesh> m_Background;
     std::unique_ptr<SpatialGrid> m_SpatialGrid;
     std::unique_ptr<GameCanvas> m_GameCanvas;
+    std::unique_ptr<TouchFeedback> m_TouchFeedback;
 
 };
 

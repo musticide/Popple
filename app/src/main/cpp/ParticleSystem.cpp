@@ -8,14 +8,12 @@
 #include <cmath>
 
 ParticleSystem::ParticleSystem(int maxParticles)
-    : DrawableEntity(RenderQueue::TRANSPARENT)
-    , maxParticles(maxParticles)
-{
+: DrawableEntity(RenderQueue::TRANSPARENT), maxParticles(maxParticles) {
     m_CurrentIndex = maxParticles - 1;
 }
-ParticleSystem::~ParticleSystem() { }
-void ParticleSystem::Start()
-{
+ParticleSystem::~ParticleSystem() {
+}
+void ParticleSystem::Start() {
     // if (model == nullptr)
     // model = LoadModel("models/Quad.glb");
     model = LoadModelFromMesh(ResourceManager::GetModel("models/Quad.glb")->meshes[0]);
@@ -29,8 +27,7 @@ void ParticleSystem::Start()
     LOGI("particle pool size: %zu", m_ParticlePool.size());
 }
 
-void ParticleSystem::Update(float dT)
-{
+void ParticleSystem::Update(float dT) {
     // emit particles
     if (emitType == EmitType::CONTINUOUS) {
         m_TimeElapsed += dT;
@@ -61,10 +58,10 @@ void ParticleSystem::Update(float dT)
             // activeParticleCount--;
             continue;
         }
-        float life = particle.age / particle.lifetime;
+        float life     = particle.age / particle.lifetime;
         particle.color = ColorLerp(particleProperties.startColor, particleProperties.endColor, life);
-        particle.size = Lerp(particleProperties.size, 0.0f, life);
-        particle.velocity *= 0.95f;
+        particle.size  = Lerp(particleProperties.startSize, particleProperties.endSize, life);
+        particle.velocity *= 1.f - particleProperties.damping;
         particle.position += particle.velocity;
         // TODO: Transform paricles for local space emission
     }
@@ -72,8 +69,7 @@ void ParticleSystem::Update(float dT)
     //     LOGI("Active Particle Count: %d", activeParticleCount);
 }
 
-void ParticleSystem::Draw() const
-{
+void ParticleSystem::Draw() const {
     for (const Particle& particle : m_ParticlePool) {
         if (particle.isActive) {
             // LOGI("DrawingParticle");
@@ -82,31 +78,40 @@ void ParticleSystem::Draw() const
     }
 }
 
-void ParticleSystem::Emit()
-{
+void ParticleSystem::Emit() {
     // LOGI("Particle Emitted");
     Particle& particle = m_ParticlePool[m_CurrentIndex];
-    particle.isActive = true;
-    particle.lifetime = particleProperties.lifetime;
-    particle.age = 0.0f;
-    particle.color = particleProperties.startColor;
-    particle.position = this->position;
+    particle.isActive  = true;
+    particle.lifetime  = particleProperties.lifetime;
+    particle.age       = 0.0f;
+    particle.color     = particleProperties.startColor;
+    particle.position  = this->position;
 
-    particle.size = particleProperties.size
-        + RandomRangeFloat(-particleProperties.sizeVariation, particleProperties.sizeVariation);
+    particle.size = particleProperties.startSize +
+        RandomRangeFloat(-particleProperties.sizeVariation, particleProperties.sizeVariation);
+
+    float speed = particleProperties.initialSpeed +
+        RandomRangeFloat(-particleProperties.speedVariation, particleProperties.speedVariation);
 
     switch (shape) {
     case EmitShape::NONE:
-        particle.velocity = direction * particleProperties.initialSpeed;
+        particle.velocity = direction * speed;
+        break;
     case EmitShape::CIRCLE:
-        particle.velocity = GetCircularDirection() * particleProperties.initialSpeed;
+        particle.velocity = GetCircularDirection() * speed;
+        break;
+    case EmitShape::LINE:
+        particle.velocity = direction * speed;
+        break;
+    case EmitShape::CUSTOM:
+        if (customShapeFunc)
+            customShapeFunc();
         break;
     }
 
     m_CurrentIndex = (--m_CurrentIndex + m_ParticlePool.size()) % m_ParticlePool.size();
 }
-void ParticleSystem::Burst(int amount)
-{
+void ParticleSystem::Burst(int amount) {
     int count = 0;
     while (count < amount) {
         Emit();

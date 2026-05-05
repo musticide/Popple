@@ -9,8 +9,8 @@ namespace ui {
 enum FitType {
     FIXED_H   = (1 << 0),
     FIXED_V   = (1 << 1),
-    STRETCH_H = (1 << 1),
-    STRETCH_V = (1 << 1)
+    STRETCH_H = (1 << 2),
+    STRETCH_V = (1 << 3)
 };
 
 class UIElement : public DrawableEntity {

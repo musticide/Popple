@@ -17,14 +17,16 @@ void TouchFeedback::Start()
 {
     touchParticles = parentScene->CreateEntity<ParticleSystem>(true, 15);
 
-    touchParticles->particleProperties.lifetime = 0.6f;
-    touchParticles->particleProperties.size = 0.08f;
+    touchParticles->particleProperties.lifetime = 0.2f;
+    touchParticles->particleProperties.startSize = 0.08f;
+    touchParticles->particleProperties.endSize = 0.02f;
     touchParticles->particleProperties.sizeVariation = 0.05f;
     touchParticles->emitType = EmitType::BURST;
     touchParticles->shape = EmitShape::CIRCLE;
-    touchParticles->particleProperties.initialSpeed = 0.3f;
-    touchParticles->particleProperties.startColor = WHITE;
-    touchParticles->particleProperties.endColor = BLACK;
+    touchParticles->particleProperties.initialSpeed = 0.6f;
+    touchParticles->particleProperties.speedVariation = 0.1f;
+    touchParticles->particleProperties.startColor = color;
+    touchParticles->particleProperties.endColor = {255, 255, 255, 0};
 }
 
 void TouchFeedback::Update(float dT)
