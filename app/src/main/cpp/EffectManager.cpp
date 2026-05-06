@@ -4,6 +4,7 @@
 #include "Log.h"
 #include "ResourceManager.h"
 #include "Scene.h"
+#include "bubbleManager.h"
 #include "raylib.h"
 #include "raymath.h"
 
@@ -21,29 +22,46 @@ void EffectManager::Start() {
 }
 
 void EffectManager::Update(float dT) {
-    if (m_ElectroShieldMesh && m_ElectroShieldMesh->IsActive()) {
+    if (effectActive[(int)ElementType::ELECTRO]) {
+        electroShieldTimer += dT;
 
-        if (GameManager::Get().electroShieldTimer > GameManager::Get().ELECTRO_SHIELD_DURATION - ELECTRO_BLINK_DURATION) {
-            m_ElectroBlink = true;
-        } else {
-            m_ElectroBlink = false;
-        }
-        if (m_ElectroBlinkId >= 0) {
-            SetShaderValue(m_ElectroShieldMesh->GetModel().materials[0].shader, m_ElectroBlinkId,
-                &m_ElectroBlink, SHADER_UNIFORM_FLOAT);
+        if (electroShieldTimer > GameData::ELECTRO_SHIELD_DURATION) {
+            effectActive[(int)ElementType::ELECTRO] = false;
+            electroShieldTimer                      = 0.0f;
+            DeactivateElectroShield();
         }
 
-        if (m_ElectroTimeId >= 0) {
-            SetShaderValue(m_ElectroShieldMesh->GetModel().materials[0].shader, m_ElectroTimeId,
-                &GameManager::Get().electroShieldTimer, SHADER_UNIFORM_FLOAT);
+        if (m_ElectroShieldMesh && m_ElectroShieldMesh->IsActive()) {
+
+            if (electroShieldTimer > GameData::ELECTRO_SHIELD_DURATION - ELECTRO_BLINK_DURATION) {
+                m_ElectroBlink = true;
+            } else {
+                m_ElectroBlink = false;
+            }
+            if (m_ElectroBlinkId >= 0) {
+                SetShaderValue(m_ElectroShieldMesh->GetModel().materials[0].shader, m_ElectroBlinkId, &m_ElectroBlink, SHADER_UNIFORM_FLOAT);
+            }
+
+            if (m_ElectroTimeId >= 0) {
+                SetShaderValue(m_ElectroShieldMesh->GetModel().materials[0].shader, m_ElectroTimeId, &electroShieldTimer, SHADER_UNIFORM_FLOAT);
+            }
         }
     }
-
-    if (m_AnemoShieldMesh && m_AnemoShieldMesh->IsActive()) {
-        anemoTime += dT;
-        m_AnemoShieldMesh->scale *= 1.0f + (5.5 * dT);
-        if (m_AnemoTimeId >= 0) {
-            SetShaderValue(m_AnemoShieldMesh->GetModel().materials[0].shader, m_AnemoTimeId, &anemoTime, SHADER_UNIFORM_FLOAT);
+    if (effectActive[(int)ElementType::ANEMO]) {
+        anemoEffectTimer += dT;
+        if (anemoEffectTimer > GameData::ANEMO_EFFECT_DURATION) {
+            effectActive[(int)ElementType::ANEMO] = false;
+            BubbleManager::Get().ContinueSpawn();
+            EffectManager::Get().DeactivateAnemoShield();
+            anemoEffectTimer = 0.0f;
+            LOGI("Anemo Deactivated");
+        }
+        if (m_AnemoShieldMesh && m_AnemoShieldMesh->IsActive()) {
+            anemoTime += dT;
+            m_AnemoShieldMesh->scale *= 1.0f + (5.5 * dT);
+            if (m_AnemoTimeId >= 0) {
+                SetShaderValue(m_AnemoShieldMesh->GetModel().materials[0].shader, m_AnemoTimeId, &anemoTime, SHADER_UNIFORM_FLOAT);
+            }
         }
     }
 }
@@ -59,19 +77,14 @@ void EffectManager::InitElectroShield() {
 
     m_ElectroTimeId  = GetShaderLocation(m_ElectroShieldMesh->GetModel().materials[0].shader, "_Time");
     m_ElectroBlinkId = GetShaderLocation(m_ElectroShieldMesh->GetModel().materials[0].shader, "_Blink");
-    m_ElectroShieldMesh->scale = Vector3Scale(Vector3One(), GameManager::Get().electroShieldRadius);
+    m_ElectroShieldMesh->scale = Vector3Scale(Vector3One(), GameData::electroShieldRadius);
     m_ElectroShieldMesh->SetActive(false);
 }
 
 void EffectManager::ActivateElectroShield() {
-    if (!electroShieldAvailable)
-        return;
-
     LOGI("Electro Shield Activated");
     m_ElectroShieldMesh->SetActive(true);
-    GameManager::Get().ResetComboCount(ElementType::ELECTRO);
-    GameManager::Get().activeEffect = ElementType::ELECTRO;
-    electroShieldAvailable = false;
+    ActivateEffect(ElementType::ELECTRO);
 }
 void EffectManager::DeactivateElectroShield() {
     m_ElectroShieldMesh->SetActive(false);
@@ -90,14 +103,8 @@ void EffectManager::InitAnemoShield() {
 }
 
 void EffectManager::ActivateAnemoShield() {
-    if (!anemoShieldAvailable)
-        return;
-
     LOGI("EM: Anemo Shield Activated");
     m_AnemoShieldMesh->SetActive(true);
-    GameManager::Get().ResetComboCount(ElementType::ANEMO);
-    GameManager::Get().activeEffect = ElementType::ANEMO;
-    anemoShieldAvailable = false;
 }
 
 void EffectManager::DeactivateAnemoShield() {
@@ -107,3 +114,36 @@ void EffectManager::DeactivateAnemoShield() {
         this->m_AnemoShieldMesh->SetActive(false);
     }
 }
+void EffectManager::ActivateEffect(ElementType type) {
+    if (!effectCharged[(int)type]) return;
+    effectActive[(int)type]  = true;
+    effectCharged[(int)type] = false;
+    GameManager::Get().ResetComboCount(type);
+
+    switch (type) {
+
+        case ElementType::NONE:
+            break;
+        case ElementType::ELECTRO:
+            ActivateElectroShield();
+            break;
+        case ElementType::ANEMO:
+            ActivateAnemoShield();
+            BubbleManager::Get().PauseSpawn();
+            break;
+        default:
+            break;
+    }
+}
+void EffectManager::ChargeEffect(ElementType type) {
+    effectCharged[(int)type] = true;
+}
+
+void EffectManager::DischargeEffect(ElementType type) {
+    effectCharged[(int)type] = false;
+}
+
+bool EffectManager::IsEffectCharged(ElementType type) {
+    return effectCharged[(int)type];
+}
+

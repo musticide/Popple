@@ -1,4 +1,5 @@
 #include "bubbleManager.h"
+#include "EffectManager.h"
 #include "Game.h"
 #include "GameCanvas.h"
 #include "GameManager.h"
@@ -38,7 +39,21 @@ void BubbleManager::Start() {
     m_BubbleBaseModel->materials[0].shader =
         *ResourceManager::GetShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
 
-    electroShieldRadius = GameManager::Get().electroShieldRadius;
+    electroShieldRadius = GameData::electroShieldRadius;
+
+    burstParticles = parentScene->CreateEntity<ParticleSystem>(true, 15);
+
+    burstParticles->particleProperties.lifetime = 0.2f;
+    burstParticles->particleProperties.startSize = 0.08f;
+    burstParticles->particleProperties.endSize = 0.005f;
+    burstParticles->particleProperties.sizeVariation = 0.05f;
+    burstParticles->emitType = EmitType::BURST;
+    burstParticles->shape = EmitShape::CIRCLE;
+    burstParticles->particleProperties.initialSpeed = 0.8f;
+    burstParticles->particleProperties.speedVariation = 0.3f;
+    burstParticles->particleProperties.damping = 0.25f;
+    burstParticles->particleProperties.startColor = bubbleColors[0];
+    burstParticles->particleProperties.endColor = {255, 255, 255, 0};
 }
 
 void BubbleManager::OnEnable() {
@@ -57,11 +72,9 @@ void BubbleManager::Update(float dT) {
     SpatialGrid::Clear();
     SpawnBubbles();
 
-    uint activeBubbles = 0;
     // Process Bubbles
     for (int i = 0; i < m_Bubbles.size(); i++) {
         if (m_Bubbles[i] != nullptr && m_Bubbles[i]->isActive) {
-            activeBubbles++;
             // Physics and Collisions
             UpdateBubble(m_Bubbles[i].get());
 
@@ -73,25 +86,27 @@ void BubbleManager::Update(float dT) {
                     GameManager::Get().DecreaseSpawnInterval(0.01f);
                     GameManager::Get().AddSpecialBubbleInternal(m_Bubbles[i]->type);
                     GameCanvas::Get().ShowScorePop(
-                        5, GetWorldToScreen(m_Bubbles[i].get()->position, Game::Get().mainCamera3D));
+                        5, GetWorldToScreen(m_Bubbles[i]->position, Game::Get().mainCamera3D));
+
+                    burstParticles->position = m_Bubbles[i]->position;
+                    burstParticles->particleProperties.startColor = bubbleColors[(int)m_Bubbles[i]->type];
+                    burstParticles->particleProperties.endColor = bubbleColors[(int)m_Bubbles[i]->type];
+                    burstParticles->particleProperties.endColor.a = 0;
+                    burstParticles->Burst(10);
+
                     m_Bubbles[i]->isActive = false;
                     break;
                 }
             }
 
-            switch (GameManager::Get().activeEffect) {
-                case ElementType::NONE:
-                    break;
-                case ElementType::ELECTRO:
-                    if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + electroShieldRadius) {
-                        m_Bubbles[i]->isActive = false;
-                    }
-                    break;
-                case ElementType::ANEMO:
-                    DoAnemoBlast(m_Bubbles[i].get());
-                    break;
-                default:
-                    break;
+            if (EffectManager::Get().IsEffectActive(ElementType::ELECTRO)) {
+                if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + electroShieldRadius) {
+                    m_Bubbles[i]->isActive = false;
+                }
+            }
+
+            if (EffectManager::Get().IsEffectActive(ElementType::ANEMO)) {
+                DoAnemoBlast(m_Bubbles[i].get());
             }
 
             // Check if bubble has reached center
@@ -99,15 +114,15 @@ void BubbleManager::Update(float dT) {
                 if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + 2) {
                     if (m_Bubbles[i]->type == ElementType::NONE) {
                         GameManager::Get().DecreaseHealth(10);
+                        GameCanvas::Get().ShowHealthPop(10);
                     }
+
                     m_Bubbles[i]->isActive = false;
-                    // LOGI("Bubble Reset");
                     continue;
                 }
             }
         }
     }
-    // LOGI("Active Bubble Count: %d", activeBubbles);
     float time = GetTime();
     SetShaderValue(bubbleMaterials[(int)ElementType::NONE].shader, commonTimeId, &time, SHADER_UNIFORM_FLOAT);
     SetShaderValue(bubbleMaterials[(int)ElementType::ELECTRO].shader, electroTimeId, &time, SHADER_UNIFORM_FLOAT);

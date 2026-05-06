@@ -24,9 +24,17 @@ GameCanvas::GameCanvas() {
     scoreText->hAlign = ui::ALIGN_CENTER;
     scoreText->vAlign = ui::ALIGN_MIDDLE;
 
-    scorePopText = CreateElement<ui::Text>(false, Rectangle{ 0, 0, 100, 86 }, ui::FIXED_H | ui::FIXED_V);
-    scoreText->hAlign = ui::ALIGN_LEFT;
-    scorePopText->vAlign = ui::ALIGN_TOP;
+    for (auto& scorePopText : scorePopTexts) {
+        scorePopText = CreateElement<ui::Text>(false, Rectangle{ 0, 0, 100, 86 }, ui::FIXED_H | ui::FIXED_V);
+        scoreText->hAlign    = ui::ALIGN_LEFT;
+        scorePopText->vAlign = ui::ALIGN_TOP;
+    }
+
+    for (auto& healthPopText : healthPopTexts) {
+        healthPopText = CreateElement<ui::Text>(false, Rectangle{ 530, 1170, 100, 86 }, ui::FIXED_H | ui::FIXED_V);
+        scoreText->hAlign     = ui::ALIGN_LEFT;
+        healthPopText->vAlign = ui::ALIGN_TOP;
+    }
 
 
     healthBox = CreateElement<ui::Image>(
@@ -54,7 +62,7 @@ GameCanvas::GameCanvas() {
 
     electroShieldBtn = CreateElement<ui::Button>(
         true, "textures/GameplayAtlas.png", Rectangle{ 375, 2129, 130, 130 }, ui::FIXED_H | ui::FIXED_V);
-    electroShieldBtn->onClick.connect([]() { EffectManager::Get().ActivateElectroShield(); });
+    electroShieldBtn->onClick.connect([]() { EffectManager::Get().ActivateEffect(ElementType::ELECTRO); });
     electroShieldBtn->drawRect = electroOffOnRect[0];
 
     electroChargeImg = CreateElement<ui::Image>(
@@ -63,7 +71,7 @@ GameCanvas::GameCanvas() {
 
     anemoShieldBtn = CreateElement<ui::Button>(
         true, "textures/GameplayAtlas.png", Rectangle{ 575, 2129, 130, 130 }, ui::FIXED_H | ui::FIXED_V);
-    anemoShieldBtn->onClick.connect([]() { EffectManager::Get().ActivateAnemoShield(); });
+    anemoShieldBtn->onClick.connect([]() { EffectManager::Get().ActivateEffect(ElementType::ANEMO); });
     anemoShieldBtn->drawRect = anemoOffOnRect[0];
 
     anemoChargeImg = CreateElement<ui::Image>(
@@ -105,38 +113,66 @@ void GameCanvas::Update(float dT) {
     //     }
     // }
 
-    electroShieldBtn->drawRect = electroOffOnRect[EffectManager::Get().electroShieldAvailable];
-    if (!EffectManager::Get().electroShieldAvailable)
-        electroChargeImg->drawRect = chargeCountRects[std::min(
-            GameManager::Get().GetComboCountForType(ElementType::ELECTRO), GameManager::Get().GetMaxComboLength())];
+    electroShieldBtn->drawRect = electroOffOnRect[EffectManager::Get().IsEffectCharged(ElementType::ELECTRO)];
+    if (!EffectManager::Get().IsEffectCharged(ElementType::ELECTRO))
+        electroChargeImg->drawRect =
+            chargeCountRects[std::min(GameManager::Get().GetComboCountForType(ElementType::ELECTRO), GameData::MAX_COMBO_LENGTH)];
     else
         electroChargeImg->drawRect = chargeCountRects[3];
 
 
-    anemoShieldBtn->drawRect = anemoOffOnRect[EffectManager::Get().anemoShieldAvailable];
-    if (!EffectManager::Get().anemoShieldAvailable)
-        anemoChargeImg->drawRect = chargeCountRects[std::min(
-            GameManager::Get().GetComboCountForType(ElementType::ANEMO), GameManager::Get().GetMaxComboLength())];
+    anemoShieldBtn->drawRect = anemoOffOnRect[EffectManager::Get().IsEffectCharged(ElementType::ANEMO)];
+    if (!EffectManager::Get().IsEffectCharged(ElementType::ANEMO))
+        anemoChargeImg->drawRect =
+            chargeCountRects[std::min(GameManager::Get().GetComboCountForType(ElementType::ANEMO), GameData::MAX_COMBO_LENGTH)];
     else
         anemoChargeImg->drawRect = chargeCountRects[3];
 
-    if (scorePopText->IsActive()) {
-        // scorePopText->fRect.y += 10;
-        // scorePopText->color.a -= dT;
-        if ((scorePopTime -= dT) <= 0) {
-            // scorePopText->SetActive(false);
-            LOGI("Score pop false");
+    for (auto& scorePopText : scorePopTexts) {
+        if (scorePopText->IsActive()) {
+            scorePopText->Move({ 0, -2 });
+            scorePopText->color.a -= dT * 8.f;
+            if ((scorePopTime -= dT) <= 0) {
+                scorePopText->SetActive(false);
+            }
         }
     }
 
+    for (auto& healthPopText : healthPopTexts) {
+        if (healthPopText->IsActive()) {
+            healthPopText->Move({ 0, +2 });
+            healthPopText->color.a -= dT * 8.f;
+            if ((healthPopTime -= dT) <= 0) {
+                healthPopText->SetActive(false);
+            }
+        }
+    }
 
     ui::Canvas::Update(dT);
 }
+
 void GameCanvas::ShowScorePop(int score, Vector2 position) {
-    scorePopText->SetText("+" + std::to_string(score));
-    scorePopText->SetActive(true);
-    scorePopText->fRect.x = position.x;
-    scorePopText->fRect.y = position.y;
-    scorePopTime          = 1.0f;
-    LOGI("Score pop, %f, %f", position.x, position.y);
+    for (auto& scorePopText : scorePopTexts) {
+        if (scorePopText->IsActive()) continue;
+
+        scorePopText->SetPosition(position);
+        scorePopText->SetText("+" + std::to_string(score));
+        scorePopText->color.a = 255;
+        scorePopText->SetActive(true);
+        scorePopTime = 0.5f;
+        break;
+    }
+}
+
+void GameCanvas::ShowHealthPop(int health) {
+    for (auto& healthPopText : healthPopTexts) {
+        if (healthPopText->IsActive()) continue;
+
+        healthPopText->color = RED;
+        healthPopText->SetText("-" + std::to_string(health));
+        healthPopText->color.a = 255;
+        healthPopText->SetActive(true);
+        healthPopTime = 0.5f;
+        break;
+    }
 }

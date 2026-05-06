@@ -38,7 +38,7 @@ void GameUI::Draw() const
     DrawText(healthText.c_str(), (GetScreenWidth() / 2) - textWidth - 40, -GetScreenHeight() / 2 + 40, 75, color);
 
     // Show Combo UI
-    for (int i = 0; i < GameManager::Get().GetMaxComboLength(); i++) {
+    for (int i = 0; i < GameData::MAX_COMBO_LENGTH; i++) {
         Color color = GRAY;
         float radius = 10;
         Vector2 center = { -80, (float)-GetScreenHeight() / 2 + 200 };

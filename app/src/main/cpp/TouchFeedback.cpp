@@ -19,12 +19,12 @@ void TouchFeedback::Start()
 
     touchParticles->particleProperties.lifetime = 0.2f;
     touchParticles->particleProperties.startSize = 0.08f;
-    touchParticles->particleProperties.endSize = 0.02f;
+    touchParticles->particleProperties.endSize = 0.01f;
     touchParticles->particleProperties.sizeVariation = 0.05f;
     touchParticles->emitType = EmitType::BURST;
     touchParticles->shape = EmitShape::CIRCLE;
     touchParticles->particleProperties.initialSpeed = 0.6f;
-    touchParticles->particleProperties.speedVariation = 0.1f;
+    touchParticles->particleProperties.speedVariation = 0.3f;
     touchParticles->particleProperties.startColor = color;
     touchParticles->particleProperties.endColor = {255, 255, 255, 0};
 }
@@ -34,7 +34,7 @@ void TouchFeedback::Update(float dT)
     if (touchParticles != nullptr) {
         if (GetTouchPointCount() > 0) {
             touchParticles->position = Input::GetTouchPositionWS();
-            touchParticles->Burst(15);
+            touchParticles->Burst(10);
         }
     }
 }

@@ -23,25 +23,25 @@ void GameManager::AddSpecialBubbleInternal(ElementType type) {
 
         switch (type) {
             case ElementType::ELECTRO:
-                if (m_ComboCount[(int)ElementType::ELECTRO] >= MAX_COMBO_LENGTH) {
+                if (m_ComboCount[(int)ElementType::ELECTRO] >= GameData::MAX_COMBO_LENGTH) {
                     // LOGI("Electro Shield Activated");
                     // m_ComboCount[(int)ElementType::ELECTRO] = 0;
                     // activeEffect                            = ElementType::ELECTRO;
                     // activeElementEffectChanged(ElementType::ELECTRO);
                     // EffectManager::Get().ActivateElectroShield();
                     // NOTE:^^^ MOVED TO Effect Manager
-                    EffectManager::Get().electroShieldAvailable = true;
+                    EffectManager::Get().ChargeEffect(ElementType::ELECTRO);
                 }
                 break;
             case ElementType::ANEMO:
-                if (m_ComboCount[(int)ElementType::ANEMO] >= MAX_COMBO_LENGTH) {
+                if (m_ComboCount[(int)ElementType::ANEMO] >= GameData::MAX_COMBO_LENGTH) {
                     // LOGI("Anemo Activated");
                     // m_ComboCount[(int)ElementType::ANEMO] = 0;
                     // activeEffect                          = ElementType::ANEMO;
                     // activeElementEffectChanged(ElementType::ANEMO);
                     // EffectManager::Get().ActivateAnemoShield();
                     // NOTE:^^^ MOVED TO Effect Manager
-                    EffectManager::Get().anemoShieldAvailable = true;
+                    EffectManager::Get().ChargeEffect(ElementType::ANEMO);
                 }
                 break;
             default:
@@ -94,33 +94,6 @@ void GameManager::OnEnable() {
 }
 
 void GameManager::Update(float dT) {
-    switch (activeEffect) {
-        case ElementType::NONE:
-            break;
-        case ElementType::ELECTRO:
-            electroShieldTimer += dT;
-            if (electroShieldTimer > ELECTRO_SHIELD_DURATION) {
-                activeEffect = ElementType::NONE;
-                // activeElementEffectChanged(activeEffect);
-                electroShieldTimer = 0.0f;
-                EffectManager::Get().DeactivateElectroShield();
-            }
-            break;
-        case ElementType::ANEMO:
-            anemoEffectTimer += dT;
-            BubbleManager::Get().PauseSpawn();
-            if (anemoEffectTimer > ANEMO_EFFECT_DURATION) {
-                activeEffect = ElementType::NONE;
-                // activeElementEffectChanged(activeEffect);
-                BubbleManager::Get().ContinueSpawn();
-                EffectManager::Get().DeactivateAnemoShield();
-                anemoEffectTimer = 0.0f;
-            }
-            break;
-        default:
-            LOGE("Active effect index out of bounds");
-            break;
-    }
 }
 
 void GameManager::ResetComboCount() {
@@ -137,17 +110,13 @@ void GameManager::EndGame() {
 }
 
 void GameManager::ResetGameValues() {
-    activeEffect = ElementType::NONE;
-    m_Score      = 0;
-    m_Health     = 100;
+    m_Score  = 0;
+    m_Health = 100;
     ResetComboCount();
 
     m_SpawnInterval    = 1.5f;
     m_MinSpawnInterval = 0.20f;
-
-    electroShieldTimer = 0.0f;
-
-    anemoEffectTimer = 0.0f;
+    EffectManager::Get().Reset();
 }
 void GameManager::PauseBubbleSpawn(bool pause) {
     if (pause) {

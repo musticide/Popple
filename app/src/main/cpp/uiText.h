@@ -33,17 +33,17 @@ class Text : public UIElement {
     int fontSize      = 72;
 
     void Draw() const override;
-    void SetText(std::string text) {
-        this->text = text;
-        textSize   = MeasureTextEx(aceBold, text.c_str(), (float)fontSize, 2);
-        textPos    = (Vector2){ fRect.x + Lerp(0.0f, fRect.width - textSize.x, ((float)hAlign) * 0.5f),
-               fRect.y + Lerp(0.0f, fRect.height - textSize.y, ((float)vAlign) * 0.5f) };
-    }
+
+    void SetText(std::string text);
+
+    void SetPosition(Vector2 pos);
+    void SetPositionOffset(Vector2 pos);
+    void Move(Vector2 pos);
 
   private:
     std::string text = "Sample Text";
     Vector2 textSize = MeasureTextEx(aceBold, text.c_str(), (float)fontSize, 2);
-    Vector2 textPos  = { 0, 0 };
+    Vector2 textPos = { 0, 0 }, textPosOffset = { 0, 0 };
 };
 
 } // namespace ui

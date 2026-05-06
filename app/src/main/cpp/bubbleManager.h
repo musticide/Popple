@@ -2,6 +2,7 @@
 
 #include "DrawableEntity.h"
 #include "GameManager.h"
+#include "ParticleSystem.h"
 #include "Singleton.h"
 #include "raylib.h"
 #include <array>
@@ -51,6 +52,8 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
 private:
     const int INITIAL_POOL_SIZE = 30;
     std::vector<std::unique_ptr<Bubble>> m_Bubbles;
+
+    std::unique_ptr<ParticleSystem> burstParticles = nullptr;
 
     float m_SpawnTimer = 0.0f;
     bool m_PauseSpawn = false;
