@@ -58,7 +58,7 @@ void EffectManager::Update(float dT) {
         }
         if (m_AnemoShieldMesh && m_AnemoShieldMesh->IsActive()) {
             anemoTime += dT;
-            m_AnemoShieldMesh->scale *= 1.0f + (5.5 * dT);
+            m_AnemoShieldMesh->scale *= 1.0f + (6.5 * dT);
             if (m_AnemoTimeId >= 0) {
                 SetShaderValue(m_AnemoShieldMesh->GetModel().materials[0].shader, m_AnemoTimeId, &anemoTime, SHADER_UNIFORM_FLOAT);
             }
@@ -98,7 +98,7 @@ void EffectManager::InitAnemoShield() {
         *ResourceManager::GetTexture("textures/AnemoBubble_UTIL.png");
 
     m_AnemoTimeId            = GetShaderLocation(m_AnemoShieldMesh->GetModel().materials[0].shader, "_Time");
-    m_AnemoShieldMesh->scale = { 1.f, 1.f, 1.f };
+    m_AnemoShieldMesh->scale = { 2.f, 2.f, 2.f };
     m_AnemoShieldMesh->SetActive(false);
 }
 

@@ -4,12 +4,14 @@
 #include "GameCanvas.h"
 #include "GameManager.h"
 #include "Log.h"
+#include "ParticleSystem.h"
 #include "ResourceManager.h"
 #include "functionLibrary.h"
 #include "input.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "spatialGrid.h"
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <raymob.h>
@@ -43,17 +45,17 @@ void BubbleManager::Start() {
 
     burstParticles = parentScene->CreateEntity<ParticleSystem>(true, 15);
 
-    burstParticles->particleProperties.lifetime = 0.2f;
-    burstParticles->particleProperties.startSize = 0.08f;
-    burstParticles->particleProperties.endSize = 0.005f;
-    burstParticles->particleProperties.sizeVariation = 0.05f;
-    burstParticles->emitType = EmitType::BURST;
-    burstParticles->shape = EmitShape::CIRCLE;
-    burstParticles->particleProperties.initialSpeed = 0.8f;
+    burstParticles->particleProperties.lifetime       = 0.2f;
+    burstParticles->particleProperties.startSize      = 0.08f;
+    burstParticles->particleProperties.endSize        = 0.005f;
+    burstParticles->particleProperties.sizeVariation  = 0.05f;
+    burstParticles->emitType                          = EmitType::BURST;
+    burstParticles->shape                             = EmitShape::CIRCLE;
+    burstParticles->particleProperties.initialSpeed   = 0.8f;
     burstParticles->particleProperties.speedVariation = 0.3f;
-    burstParticles->particleProperties.damping = 0.25f;
-    burstParticles->particleProperties.startColor = bubbleColors[0];
-    burstParticles->particleProperties.endColor = {255, 255, 255, 0};
+    burstParticles->particleProperties.damping        = 0.25f;
+    burstParticles->particleProperties.startColor     = bubbleColors[0];
+    burstParticles->particleProperties.endColor       = { 255, 255, 255, 0 };
 }
 
 void BubbleManager::OnEnable() {
@@ -63,7 +65,7 @@ void BubbleManager::OnEnable() {
 void BubbleManager::DoAnemoBlast(Bubble* bubble) {
     // LOGI("Anemo Blast Force applied");
     Vector3 force = Vector3Normalize(bubble->position);
-    force         = Vector3Scale(force, 300);
+    force         = Vector3Scale(force, 10);
     // bubble->AddForce(force);
     bubble->velocity += force;
 }
@@ -85,13 +87,22 @@ void BubbleManager::Update(float dT) {
                     GameManager::Get().AddScore(5);
                     GameManager::Get().DecreaseSpawnInterval(0.01f);
                     GameManager::Get().AddSpecialBubbleInternal(m_Bubbles[i]->type);
-                    GameCanvas::Get().ShowScorePop(
-                        5, GetWorldToScreen(m_Bubbles[i]->position, Game::Get().mainCamera3D));
+                    GameCanvas::Get().ShowScorePop(5, GetWorldToScreen(m_Bubbles[i]->position, Game::Get().mainCamera3D));
 
-                    burstParticles->position = m_Bubbles[i]->position;
+                    burstParticles->position                      = m_Bubbles[i]->position;
                     burstParticles->particleProperties.startColor = bubbleColors[(int)m_Bubbles[i]->type];
-                    burstParticles->particleProperties.endColor = bubbleColors[(int)m_Bubbles[i]->type];
+                    burstParticles->particleProperties.endColor   = bubbleColors[(int)m_Bubbles[i]->type];
                     burstParticles->particleProperties.endColor.a = 0;
+
+                    if (m_Bubbles[i]->type == ElementType::NONE)
+                        burstParticles->shape = EmitShape::CIRCLE;
+                    else {
+
+                        Vector3 vecToSlots = Vector3{0,0,-27} - m_Bubbles[i]->position;
+                        burstParticles->direction = Vector3Normalize(vecToSlots) * std::min(Vector3Length(vecToSlots), 5.f);//- Vector3{ 0, 25, 0 };
+                        burstParticles->shape = EmitShape::NONE;
+                    }
+
                     burstParticles->Burst(10);
 
                     m_Bubbles[i]->isActive = false;

@@ -50,11 +50,11 @@ GameCanvas::GameCanvas() {
     healthText->vAlign = ui::ALIGN_MIDDLE;
 
     comboCircles[0] = CreateElement<ui::Image>(
-        false, "textures/GameplayAtlas.png", Rectangle{ 376, 277, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
+        true, "textures/GameplayAtlas.png", Rectangle{ 376, 1980, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
     comboCircles[1] = CreateElement<ui::Image>(
-        false, "textures/GameplayAtlas.png", Rectangle{ 494, 277, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
+        true, "textures/GameplayAtlas.png", Rectangle{ 494, 1980, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
     comboCircles[2] = CreateElement<ui::Image>(
-        false, "textures/GameplayAtlas.png", Rectangle{ 612, 277, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
+        true, "textures/GameplayAtlas.png", Rectangle{ 612, 1980, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
 
     comboCircles[0]->drawRect = elementRects[(int)ElementType::NONE];
     comboCircles[1]->drawRect = elementRects[(int)ElementType::NONE];
@@ -66,7 +66,7 @@ GameCanvas::GameCanvas() {
     electroShieldBtn->drawRect = electroOffOnRect[0];
 
     electroChargeImg = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 368, 2072, 144, 57 }, ui::FIXED_H | ui::FIXED_V);
+        false, "textures/GameplayAtlas.png", Rectangle{ 368, 2072, 144, 57 }, ui::FIXED_H | ui::FIXED_V);
     electroChargeImg->drawRect = chargeCountRects[0];
 
     anemoShieldBtn = CreateElement<ui::Button>(
@@ -75,7 +75,7 @@ GameCanvas::GameCanvas() {
     anemoShieldBtn->drawRect = anemoOffOnRect[0];
 
     anemoChargeImg = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 568, 2072, 144, 57 }, ui::FIXED_H | ui::FIXED_V);
+        false, "textures/GameplayAtlas.png", Rectangle{ 568, 2072, 144, 57 }, ui::FIXED_H | ui::FIXED_V);
     anemoChargeImg->drawRect = chargeCountRects[0];
 }
 
@@ -103,15 +103,15 @@ void GameCanvas::HealthChanged(int health, int amount) {
 }
 
 void GameCanvas::Update(float dT) {
-    // for (int i = 0; i < GameManager::Get().GetMaxComboLength(); i++) {
-    //     comboCircles[i]->drawRect = elementRects[0];
-    //     for (int j = 1; j < (int)ElementType::COUNT; j++) {
-    //         int comboCount = GameManager::Get().GetComboCountForType((ElementType)j);
-    //         if (comboCount > 0 && i < comboCount) {
-    //             comboCircles[i]->drawRect = elementRects[j];
-    //         }
-    //     }
-    // }
+    for (int i = 0; i < GameData::MAX_COMBO_LENGTH; i++) {
+        comboCircles[i]->drawRect = elementRects[0];
+        for (int j = 1; j < (int)ElementType::COUNT; j++) {
+            int comboCount = GameManager::Get().GetComboCountForType((ElementType)j);
+            if (comboCount > 0 && i < comboCount) {
+                comboCircles[i]->drawRect = elementRects[j];
+            }
+        }
+    }
 
     electroShieldBtn->drawRect = electroOffOnRect[EffectManager::Get().IsEffectCharged(ElementType::ELECTRO)];
     if (!EffectManager::Get().IsEffectCharged(ElementType::ELECTRO))

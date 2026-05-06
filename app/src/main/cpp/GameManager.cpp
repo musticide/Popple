@@ -13,7 +13,7 @@ GameManager::~GameManager() {
 void GameManager::AddSpecialBubbleInternal(ElementType type) {
     if (type != ElementType::NONE) {
         for (int i = 1; i < (int)ElementType::COUNT; i++) {
-            if (i == (int)type) {
+            if (i == (int)type && !EffectManager::Get().IsEffectCharged(type)) {
                 m_ComboCount[i]++;
             } else
                 m_ComboCount[i] = 0;
@@ -25,22 +25,22 @@ void GameManager::AddSpecialBubbleInternal(ElementType type) {
             case ElementType::ELECTRO:
                 if (m_ComboCount[(int)ElementType::ELECTRO] >= GameData::MAX_COMBO_LENGTH) {
                     // LOGI("Electro Shield Activated");
-                    // m_ComboCount[(int)ElementType::ELECTRO] = 0;
                     // activeEffect                            = ElementType::ELECTRO;
                     // activeElementEffectChanged(ElementType::ELECTRO);
                     // EffectManager::Get().ActivateElectroShield();
                     // NOTE:^^^ MOVED TO Effect Manager
+                    m_ComboCount[(int)ElementType::ELECTRO] = 0;
                     EffectManager::Get().ChargeEffect(ElementType::ELECTRO);
                 }
                 break;
             case ElementType::ANEMO:
                 if (m_ComboCount[(int)ElementType::ANEMO] >= GameData::MAX_COMBO_LENGTH) {
                     // LOGI("Anemo Activated");
-                    // m_ComboCount[(int)ElementType::ANEMO] = 0;
                     // activeEffect                          = ElementType::ANEMO;
                     // activeElementEffectChanged(ElementType::ANEMO);
                     // EffectManager::Get().ActivateAnemoShield();
                     // NOTE:^^^ MOVED TO Effect Manager
+                    m_ComboCount[(int)ElementType::ANEMO] = 0;
                     EffectManager::Get().ChargeEffect(ElementType::ANEMO);
                 }
                 break;

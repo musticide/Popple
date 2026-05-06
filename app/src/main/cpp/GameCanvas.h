@@ -15,9 +15,9 @@ class GameCanvas : public ui::Canvas, public Singleton<GameCanvas> {
     ~GameCanvas();
 
     Rectangle elementRects[3] = {
-        Rectangle{ 224, 136, 90, 90 }, // NONE
-        Rectangle{ 381, 19, 90, 90 },  // ELECTRO
-        Rectangle{ 336, 136, 90, 90 }  // ANEMO
+        Rectangle{ 408, 411, 90, 90 }, // NONE
+        Rectangle{ 408, 316, 90, 90 },  // ELECTRO
+        Rectangle{ 408, 218, 90, 90 }  // ANEMO
     };
 
     Rectangle chargeCountRects[4] = { Rectangle{ 362, 0, 144, 57 },
@@ -35,7 +35,7 @@ class GameCanvas : public ui::Canvas, public Singleton<GameCanvas> {
     std::unique_ptr<ui::Image> scoreBox                   = nullptr;
     std::unique_ptr<ui::Image> scoreIcon                  = nullptr;
     std::unique_ptr<ui::Text> scoreText                   = nullptr;
-    std::unique_ptr<ui::Image> comboCircles[3]            = { 0 }; // TODO: REMOVE THIS <<<<<
+    std::unique_ptr<ui::Image> comboCircles[3]            = { 0 };
     std::unique_ptr<ui::Image> electroChargeImg           = nullptr;
     std::unique_ptr<ui::Button> electroShieldBtn          = nullptr;
     std::unique_ptr<ui::Image> anemoChargeImg             = nullptr;
