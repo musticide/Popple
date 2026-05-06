@@ -110,7 +110,7 @@ AllowShortBlocksOnASingleLine: false
 
 # AllowShortCaseLabelsOnASingleLine (bool)
 # If true, short case labels will be contracted to a single line.
-AllowShortCaseLabelsOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: false
 
 # AllowShortFunctionsOnASingleLine (ShortFunctionStyle)
 # Dependent on the value, int f() { return 0; } can be put on a single line.
@@ -123,7 +123,7 @@ AllowShortFunctionsOnASingleLine: false
 
 # AllowShortIfStatementsOnASingleLine (bool)
 # If true, if (a) return; can be put on a single line.
-AllowShortIfStatementsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: true
 
 # AllowShortLoopsOnASingleLine (bool)
 # If true, while (true) continue; can be put on a single line.
@@ -140,7 +140,7 @@ AlwaysBreakTemplateDeclarations: true
 
 # BinPackArguments (bool)
 # If false, a function call’s arguments will either be all on the same line or will have one line each.
-#BinPackArguments: false
+BinPackArguments: false
 
 # BinPackParameters (bool)
 # If false, a function declaration’s or function definition’s parameters will either all be on the same line or will have one line each.
@@ -194,7 +194,7 @@ BreakBeforeTernaryOperators: false
 
 # BreakConstructorInitializersBeforeComma (bool)
 # Always break constructor initializers before commas and align the commas with the colon.
-BreakConstructorInitializersBeforeComma: false
+BreakConstructorInitializersBeforeComma: true
 
 # BreakStringLiterals (bool)
 # Allow breaking string literals when formatting.
@@ -268,7 +268,7 @@ DerivePointerBinding: false
 # IndentCaseLabels (bool)
 # Indent case labels one level from the switch statement.
 # When false, use the same indentation level as for the switch statement. Switch statement body is always indented one level more than case labels.
-IndentCaseLabels: false
+IndentCaseLabels: true
 
 # IndentFunctionDeclarationAfterType (bool)
 # If true, indent when breaking function declarations which are not also definitions after the type.
