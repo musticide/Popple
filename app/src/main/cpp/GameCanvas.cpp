@@ -65,18 +65,11 @@ GameCanvas::GameCanvas() {
     electroShieldBtn->onClick.connect([]() { EffectManager::Get().ActivateEffect(ElementType::ELECTRO); });
     electroShieldBtn->drawRect = electroOffOnRect[0];
 
-    electroChargeImg = CreateElement<ui::Image>(
-        false, "textures/GameplayAtlas.png", Rectangle{ 368, 2072, 144, 57 }, ui::FIXED_H | ui::FIXED_V);
-    electroChargeImg->drawRect = chargeCountRects[0];
 
     anemoShieldBtn = CreateElement<ui::Button>(
         true, "textures/GameplayAtlas.png", Rectangle{ 575, 2129, 130, 130 }, ui::FIXED_H | ui::FIXED_V);
     anemoShieldBtn->onClick.connect([]() { EffectManager::Get().ActivateEffect(ElementType::ANEMO); });
     anemoShieldBtn->drawRect = anemoOffOnRect[0];
-
-    anemoChargeImg = CreateElement<ui::Image>(
-        false, "textures/GameplayAtlas.png", Rectangle{ 568, 2072, 144, 57 }, ui::FIXED_H | ui::FIXED_V);
-    anemoChargeImg->drawRect = chargeCountRects[0];
 }
 
 GameCanvas::~GameCanvas() {
@@ -114,19 +107,8 @@ void GameCanvas::Update(float dT) {
     }
 
     electroShieldBtn->drawRect = electroOffOnRect[EffectManager::Get().IsEffectCharged(ElementType::ELECTRO)];
-    if (!EffectManager::Get().IsEffectCharged(ElementType::ELECTRO))
-        electroChargeImg->drawRect =
-            chargeCountRects[std::min(GameManager::Get().GetComboCountForType(ElementType::ELECTRO), GameData::MAX_COMBO_LENGTH)];
-    else
-        electroChargeImg->drawRect = chargeCountRects[3];
-
 
     anemoShieldBtn->drawRect = anemoOffOnRect[EffectManager::Get().IsEffectCharged(ElementType::ANEMO)];
-    if (!EffectManager::Get().IsEffectCharged(ElementType::ANEMO))
-        anemoChargeImg->drawRect =
-            chargeCountRects[std::min(GameManager::Get().GetComboCountForType(ElementType::ANEMO), GameData::MAX_COMBO_LENGTH)];
-    else
-        anemoChargeImg->drawRect = chargeCountRects[3];
 
     for (auto& scorePopText : scorePopTexts) {
         if (scorePopText->IsActive()) {
