@@ -18,28 +18,28 @@ struct Bubble {
     float radius;
 
     constexpr static float maxMoveSpeed = 15;
-    constexpr static float moveSpeed = 1.0;
+    constexpr static float moveSpeed    = 1.0;
 
     constexpr static const float DRAG = 0.1;
-    ///Force multiplier  to be pulled towards center
+    /// Force multiplier  to be pulled towards center
     constexpr static const float CENTER_FORCE = 0.01;
+    static float speedMultiplier;
 
-    void ApplyForces()
-    {
+    void ApplyForces() {
         velocity *= moveSpeed;
         if (Vector3Length(velocity) > maxMoveSpeed) {
             velocity = Vector3Normalize(velocity) * maxMoveSpeed;
         }
 
-        velocity = Vector3Lerp(velocity, Vector3Zero(), DRAG);
-        position += velocity;
+        // velocity = Vector3Lerp(velocity, Vector3Zero(), DRAG);
+        velocity *= 1.f - DRAG;
+        position += velocity * speedMultiplier;
     }
-    ///Moves the collider and the bubble so that they dont intersect anymore
-    void ResolveCollision(Bubble* collider)
-    {
-        Vector3 aMinusB = position - collider->position;
+    /// Moves the collider and the bubble so that they dont intersect anymore
+    void ResolveCollision(Bubble* collider) {
+        Vector3 aMinusB   = position - collider->position;
         float totalRadius = radius + collider->radius;
-        float distance = Vector3Length(aMinusB);
+        float distance    = Vector3Length(aMinusB);
         float penetration = totalRadius - distance;
 
         Vector3 collisionNormal = Vector3Normalize(aMinusB); /// distance);
@@ -49,16 +49,15 @@ struct Bubble {
 };
 
 class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
-private:
-    const int INITIAL_POOL_SIZE = 30;
+  private:
+    const int INITIAL_POOL_SIZE = 50;
+    const int MIN_SPAWN_DIST = 35, MAX_SPAWN_DIST = 40;
     std::vector<std::unique_ptr<Bubble>> m_Bubbles;
 
     std::unique_ptr<ParticleSystem> burstParticles = nullptr;
 
     float m_SpawnTimer = 0.0f;
-    bool m_PauseSpawn = false;
-
-    void DoAnemoBlast(Bubble* bubble);
+    bool m_PauseSpawn  = false;
 
     void ResetInternal();
 
@@ -66,9 +65,9 @@ private:
     static void SpawnIntervalChanged(float spawnInterval, float amount);
     bool IsPointInBubble(Bubble* bubble, Vector3 point) const;
 
-    ///Randomly Spawns bubbles in a circular ring based on spawn interval 
+    /// Randomly Spawns bubbles in a circular ring based on spawn interval
     void SpawnBubbles();
-    ///activates and sets up bubble from the bubble pool
+    /// activates and sets up bubble from the bubble pool
     void SpawnBubble(Bubble* bubble);
     Vector3 GetRandomSpawnPos();
 
@@ -80,15 +79,14 @@ private:
 
     std::shared_ptr<Model> m_BubbleBaseModel;
     std::array<Material, (size_t)ElementType::COUNT> bubbleMaterials;
-    std::array<Color, (size_t)ElementType::COUNT> bubbleColors = 
-    {
+    std::array<Color, (size_t)ElementType::COUNT> bubbleColors = {
         WHITE,
-        (Color){139, 66, 255, 255},//PURPLE
-        (Color){66, 255, 195, 255} //Green
+        (Color){ 139, 66, 255, 255 }, // PURPLE
+        (Color){ 66, 255, 195, 255 }  // Green
     };
     int commonTimeId, electroTimeId, anemoTimeId;
 
-public:
+  public:
     BubbleManager();
     ~BubbleManager();
 
@@ -99,8 +97,11 @@ public:
 
     void Draw() const override;
 
-    static void Reset() { Get().ResetInternal(); }
+    static void Reset() {
+        Get().ResetInternal();
+    }
 
     void PauseSpawn();
     void ContinueSpawn();
+    void AnemoPushBack(bool active);
 };

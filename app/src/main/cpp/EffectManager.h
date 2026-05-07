@@ -42,7 +42,6 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
 
     std::unique_ptr<StaticMesh> m_AnemoShieldMesh;
     int m_AnemoTimeId;
-    float anemoTime;
     float electroShieldTimer = 0.0f;
     float anemoEffectTimer   = 0.0f;
 

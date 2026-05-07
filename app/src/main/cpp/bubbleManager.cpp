@@ -18,6 +18,7 @@
 #include <sys/types.h>
 
 float BubbleManager::s_SpawnInterval;
+float Bubble::speedMultiplier = 1.f;
 
 BubbleManager::BubbleManager()
 : DrawableEntity(RenderQueue::OPAQUE) {
@@ -62,14 +63,6 @@ void BubbleManager::OnEnable() {
     ResetInternal();
 }
 
-void BubbleManager::DoAnemoBlast(Bubble* bubble) {
-    // LOGI("Anemo Blast Force applied");
-    Vector3 force = Vector3Normalize(bubble->position);
-    force         = Vector3Scale(force, 10);
-    // bubble->AddForce(force);
-    bubble->velocity += force;
-}
-
 void BubbleManager::Update(float dT) {
     SpatialGrid::Clear();
     SpawnBubbles();
@@ -98,8 +91,9 @@ void BubbleManager::Update(float dT) {
                         burstParticles->shape = EmitShape::CIRCLE;
                     else {
 
-                        Vector3 vecToSlots = Vector3{0,0,-27} - m_Bubbles[i]->position;
-                        burstParticles->direction = Vector3Normalize(vecToSlots) * std::min(Vector3Length(vecToSlots), 5.f);//- Vector3{ 0, 25, 0 };
+                        Vector3 vecToSlots        = Vector3{ 0, 0, -27 } - m_Bubbles[i]->position;
+                        burstParticles->direction = Vector3Normalize(vecToSlots) *
+                            std::min(Vector3Length(vecToSlots), 5.f); //- Vector3{ 0, 25, 0 };
                         burstParticles->shape = EmitShape::NONE;
                     }
 
@@ -116,18 +110,20 @@ void BubbleManager::Update(float dT) {
                 }
             }
 
-            if (EffectManager::Get().IsEffectActive(ElementType::ANEMO)) {
-                DoAnemoBlast(m_Bubbles[i].get());
-            }
-
-            // Check if bubble has reached center
+            // Check if bubble has reached center or strayed away
             if (m_Bubbles[i]->isActive) {
+                //If bubbles have gone too far away
+                if (Vector3Length(m_Bubbles[i]->position) > MAX_SPAWN_DIST + 5.f) {
+                    m_Bubbles[i]->isActive = false;
+                    continue;
+                }
+
+                //If bubbles have reached the center
                 if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + 2) {
                     if (m_Bubbles[i]->type == ElementType::NONE) {
                         GameManager::Get().DecreaseHealth(10);
                         GameCanvas::Get().ShowHealthPop(10);
                     }
-
                     m_Bubbles[i]->isActive = false;
                     continue;
                 }
@@ -153,16 +149,13 @@ void BubbleManager::Draw() const {
     }
 }
 
-// void BubbleManager::ActiveEffectChanged(ElementType type) { s_ActiveEffect = type; }
-
 bool BubbleManager::IsPointInBubble(Bubble* bubble, Vector3 point) const {
     return Vector3Length((Vector3){ point.x, 0, point.z } - bubble->position) <= bubble->radius;
 }
 
 /// returns position at a defined radius
 Vector3 BubbleManager::GetRandomSpawnPos() {
-    // TODO: decrease distance
-    float distance  = GetRandomValue(40, 35);
+    float distance  = GetRandomValue(MAX_SPAWN_DIST, MIN_SPAWN_DIST);
     float randAngle = GetRandomValue(0, 360);
     return (Vector3){ (float)cos(randAngle) * distance, 0, (float)sin(randAngle) * distance };
 }
@@ -196,6 +189,9 @@ void BubbleManager::SpawnBubbles() {
     if (m_PauseSpawn) return;
     m_SpawnTimer += GetFrameTime();
 
+    bool hasSpawned      = false;
+    size_t activeBubbles = 0;
+
     if (m_SpawnTimer > s_SpawnInterval) {
         for (int i = 0; i < m_Bubbles.size(); i++) {
             if (!m_Bubbles[i]->isActive) {
@@ -204,19 +200,24 @@ void BubbleManager::SpawnBubbles() {
                 // m_Bubbles[i]->Spawn();
                 SpawnBubble(m_Bubbles[i].get());
                 m_SpawnTimer = 0.0f;
+                hasSpawned   = true;
                 break;
+            } else {
+                activeBubbles++;
             }
         }
-        if (m_SpawnTimer > 0.0001f) {
-            LOGE("Bubble Pool Exhaused");
+        if (!hasSpawned) {
+            LOGE("Bubble Pool Exhausted, Active Bubbles: %zu", activeBubbles);
         }
     }
 }
 void BubbleManager::PauseSpawn() {
     m_PauseSpawn = true;
+    LOGI("Bubble Spawn Paused");
 }
 void BubbleManager::ContinueSpawn() {
     m_PauseSpawn = false;
+    LOGI("Bubble Spawn Resumed");
 }
 void BubbleManager::SpawnIntervalChanged(float spawnInterval, float amount) {
     s_SpawnInterval = spawnInterval;
@@ -227,3 +228,14 @@ void BubbleManager::ResetInternal() {
         m_Bubbles[i]->isActive = false;
     }
 }
+void BubbleManager::AnemoPushBack(bool active) {
+    if (active) {
+        Bubble::speedMultiplier = -5.f;
+        PauseSpawn();
+
+    } else {
+        Bubble::speedMultiplier = 1.f;
+        ContinueSpawn();
+    }
+}
+

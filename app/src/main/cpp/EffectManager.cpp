@@ -28,6 +28,7 @@ void EffectManager::Update(float dT) {
         if (electroShieldTimer > GameData::ELECTRO_SHIELD_DURATION) {
             effectActive[(int)ElementType::ELECTRO] = false;
             electroShieldTimer                      = 0.0f;
+            m_ElectroBlink = false;
             DeactivateElectroShield();
         }
 
@@ -47,20 +48,20 @@ void EffectManager::Update(float dT) {
             }
         }
     }
+
     if (effectActive[(int)ElementType::ANEMO]) {
         anemoEffectTimer += dT;
         if (anemoEffectTimer > GameData::ANEMO_EFFECT_DURATION) {
             effectActive[(int)ElementType::ANEMO] = false;
-            BubbleManager::Get().ContinueSpawn();
+            BubbleManager::Get().AnemoPushBack(false);
             EffectManager::Get().DeactivateAnemoShield();
             anemoEffectTimer = 0.0f;
             LOGI("Anemo Deactivated");
         }
         if (m_AnemoShieldMesh && m_AnemoShieldMesh->IsActive()) {
-            anemoTime += dT;
             m_AnemoShieldMesh->scale *= 1.0f + (6.5 * dT);
             if (m_AnemoTimeId >= 0) {
-                SetShaderValue(m_AnemoShieldMesh->GetModel().materials[0].shader, m_AnemoTimeId, &anemoTime, SHADER_UNIFORM_FLOAT);
+                SetShaderValue(m_AnemoShieldMesh->GetModel().materials[0].shader, m_AnemoTimeId, &anemoEffectTimer, SHADER_UNIFORM_FLOAT);
             }
         }
     }
@@ -129,7 +130,7 @@ void EffectManager::ActivateEffect(ElementType type) {
             break;
         case ElementType::ANEMO:
             ActivateAnemoShield();
-            BubbleManager::Get().PauseSpawn();
+            BubbleManager::Get().AnemoPushBack(true);
             break;
         default:
             break;
