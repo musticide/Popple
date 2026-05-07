@@ -16,7 +16,7 @@ uniform bool _Blink;
 #define FLICKER_SPEED 2.0f
 #define LINE_AMOUNT 50.0f
 #define LINE_SPEED 10.0f
-#define INTENSITY 5.0f
+#define INTENSITY 2.0f
 #define BLINK_SPEED 8.0f
 
 vec2 Polar(vec2 uv) {

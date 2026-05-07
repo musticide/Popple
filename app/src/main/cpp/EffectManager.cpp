@@ -70,7 +70,7 @@ void EffectManager::Update(float dT) {
 void EffectManager::InitElectroShield() {
 
     m_ElectroShieldMesh =
-        parentScene->CreateEntity<StaticMesh>(true, "models/BubbleBase_01.glb", RenderQueue::TRANSPARENT);
+        parentScene->CreateEntity<StaticMesh>(true, "models/ElectroShield.glb", RenderQueue::TRANSPARENT);
     m_ElectroShieldMesh->GetModel().materials[0].shader =
         *ResourceManager::GetShader("shaders/ElectroBubble_VS.glsl", "shaders/ElectroBubble_PS.glsl");
     m_ElectroShieldMesh->GetModel().materials[0].maps[0].texture =
