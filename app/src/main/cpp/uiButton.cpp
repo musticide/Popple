@@ -1,7 +1,5 @@
 #include "uiButton.h"
-#include "DrawableEntity.h"
 #include "Log.h"
-#include "ResourceManager.h"
 #include "input.h"
 #include "raylib.h"
 using namespace ui;
@@ -18,7 +16,6 @@ void Button::Update(float dT) {
         // LOGI("Touch Pos: x %f, y %f", touchPos.x, touchPos.y);
         if (CheckCollisionPointRec(Input::GetTouchPositionCS(i), fRect)) {
             onClick();
-            LOGI("ui Button Pressed");
             break;
         }
     }
