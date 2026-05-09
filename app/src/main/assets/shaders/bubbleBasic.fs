@@ -12,6 +12,8 @@ in vec3 fragPosWS;
 uniform vec4 colDiffuse;
 uniform samplerCube environmentMap;
 
+#define INTENSITY 1.f
+
 // Output fragment color
 out vec4 finalColor;
 
@@ -33,7 +35,5 @@ void main()
 
     vec3 envColor = texture(environmentMap, R).rgb;
 
-    finalColor = fragColor * colDiffuse;
-    // finalColor += vec4(envColor, 1.0);
-    // finalColor.a = fresnel;
+    finalColor = fragColor * colDiffuse * INTENSITY;
 }

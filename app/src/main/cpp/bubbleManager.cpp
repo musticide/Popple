@@ -70,70 +70,66 @@ void BubbleManager::Update(float dT) {
     // Process Bubbles
     for (int i = 0; i < m_Bubbles.size(); i++) {
         if (m_Bubbles[i] != nullptr && m_Bubbles[i]->isActive) {
+            Bubble* bubble = m_Bubbles[i].get();
             // Physics and Collisions
-            UpdateBubble(m_Bubbles[i].get());
+            UpdateBubble(bubble);
 
             // Check if Bubble was tapped
             for (int j = 0; j < GetTouchPointCount(); j++) {
                 // LOGI("Touch Pos: %f, %f, %f", touchPos.x, touchPos.y, touchPos.z);
-                if (IsPointInBubble(m_Bubbles[i].get(), Input::GetTouchPositionWS(j))) {
+                if (IsPointInBubble(bubble, Input::GetTouchPositionWS(j))) {
                     GameManager::Get().AddScore(5);
                     GameManager::Get().DecreaseSpawnInterval(0.01f);
-                    GameManager::Get().AddSpecialBubbleInternal(m_Bubbles[i]->type);
-                    GameCanvas::Get().ShowScorePop(5, GetWorldToScreen(m_Bubbles[i]->position, Game::Get().mainCamera3D));
+                    GameManager::Get().AddSpecialBubbleInternal(bubble->type);
+                    GameCanvas::Get().ShowScorePop(5, GetWorldToScreen(bubble->position, Game::Get().mainCamera3D));
 
-                    burstParticles->position                      = m_Bubbles[i]->position;
-                    burstParticles->particleProperties.startColor = bubbleColors[(int)m_Bubbles[i]->type];
-                    burstParticles->particleProperties.endColor   = bubbleColors[(int)m_Bubbles[i]->type];
+                    burstParticles->position                      = bubble->position;
+                    burstParticles->particleProperties.startColor = bubbleColors[(int)bubble->type];
+                    burstParticles->particleProperties.endColor   = bubbleColors[(int)bubble->type];
                     burstParticles->particleProperties.endColor.a = 0;
 
-                    if (m_Bubbles[i]->type == ElementType::NONE)
+                    if (bubble->type == ElementType::NONE || EffectManager::Get().IsEffectCharged(bubble->type))
                         burstParticles->shape = EmitShape::CIRCLE;
                     else {
-
-                        Vector3 vecToSlots        = Vector3{ 0, 0, -27 } - m_Bubbles[i]->position;
+                        Vector3 vecToSlots        = Vector3{ 0, 0, -27 } - bubble->position;
                         burstParticles->direction = Vector3Normalize(vecToSlots) *
-                            std::min(Vector3Length(vecToSlots), 5.f); //- Vector3{ 0, 25, 0 };
+                            std::min(Vector3Length(vecToSlots), 5.f) * .5f;
                         burstParticles->shape = EmitShape::NONE;
                     }
 
                     burstParticles->Burst(10);
 
-                    m_Bubbles[i]->isActive = false;
+                    bubble->isActive = false;
                     break;
                 }
             }
 
             if (EffectManager::Get().IsEffectActive(ElementType::ELECTRO)) {
-                if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + electroShieldRadius) {
-                    m_Bubbles[i]->isActive = false;
+                if (Vector3Length(bubble->position) <= bubble->radius + electroShieldRadius) {
+                    bubble->isActive = false;
                 }
             }
 
             // Check if bubble has reached center or strayed away
-            if (m_Bubbles[i]->isActive) {
+            if (bubble->isActive) {
                 //If bubbles have gone too far away
-                if (Vector3Length(m_Bubbles[i]->position) > MAX_SPAWN_DIST + 5.f) {
-                    m_Bubbles[i]->isActive = false;
+                if (Vector3Length(bubble->position) > MAX_SPAWN_DIST + 5.f) {
+                    bubble->isActive = false;
                     continue;
                 }
 
                 //If bubbles have reached the center
-                if (Vector3Length(m_Bubbles[i]->position) <= m_Bubbles[i]->radius + 2) {
-                    if (m_Bubbles[i]->type == ElementType::NONE) {
+                if (Vector3Length(bubble->position) <= bubble->radius + 2) {
+                    if (bubble->type == ElementType::NONE) {
                         GameManager::Get().DecreaseHealth(10);
                         GameCanvas::Get().ShowHealthPop(10);
                     }
-                    m_Bubbles[i]->isActive = false;
+                    bubble->isActive = false;
                     continue;
                 }
             }
         }
     }
-    float time = GetTime();
-    SetShaderValue(bubbleMaterials[(int)ElementType::NONE].shader, commonTimeId, &time, SHADER_UNIFORM_FLOAT);
-    SetShaderValue(bubbleMaterials[(int)ElementType::ELECTRO].shader, electroTimeId, &time, SHADER_UNIFORM_FLOAT);
-    SetShaderValue(bubbleMaterials[(int)ElementType::ANEMO].shader, anemoTimeId, &time, SHADER_UNIFORM_FLOAT);
 }
 
 void BubbleManager::Draw() const {
@@ -168,8 +164,10 @@ void BubbleManager::SpawnBubble(Bubble* bubble) {
     bubble->radius   = GetRandomValue(20, 25) / 10.f;
     bubble->velocity = Vector3Scale(Vector3Normalize(Vector3Zero() - bubble->position), bubble->CENTER_FORCE);
 
+    //SET Bubble type
     if (RollPercentage(40)) {
-        bubble->type = RollPercentage(50) ? ElementType::ANEMO : ElementType::ELECTRO;
+        // bubble->type = RollPercentage(50) ? ElementType::ANEMO : ElementType::ELECTRO;
+        bubble->type = (ElementType)GetRandomValue(0, (int)ElementType::NONE);
     } else {
         bubble->type = ElementType::NONE;
     }
@@ -231,6 +229,17 @@ void BubbleManager::ResetInternal() {
 void BubbleManager::AnemoPushBack(bool active) {
     if (active) {
         Bubble::speedMultiplier = -5.f;
+        PauseSpawn();
+
+    } else {
+        Bubble::speedMultiplier = 1.f;
+        ContinueSpawn();
+    }
+}
+
+void BubbleManager::CryoFreeze(bool active) {
+    if (active) {
+        Bubble::speedMultiplier = 0.1f;
         PauseSpawn();
 
     } else {

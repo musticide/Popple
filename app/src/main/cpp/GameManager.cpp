@@ -1,9 +1,13 @@
 #include "GameManager.h"
 #include "EffectManager.h"
+#include "Game.h"
 #include "Log.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "bubbleManager.h"
+#include "raymob.h"
+
+int GameData::availableElementCount = 3;
 
 GameManager::GameManager() {
 }
@@ -12,7 +16,7 @@ GameManager::~GameManager() {
 
 void GameManager::AddSpecialBubbleInternal(ElementType type) {
     if (type != ElementType::NONE) {
-        for (int i = 1; i < (int)ElementType::COUNT; i++) {
+        for (int i = 0; i < (int)ElementType::COUNT - 1; i++) {
             if (i == (int)type && !EffectManager::Get().IsEffectCharged(type)) {
                 m_ComboCount[i]++;
             } else
@@ -21,32 +25,9 @@ void GameManager::AddSpecialBubbleInternal(ElementType type) {
             LOGI("Combo Count %d = %d", i, m_ComboCount[i]);
         }
 
-        switch (type) {
-            case ElementType::ELECTRO:
-                if (m_ComboCount[(int)ElementType::ELECTRO] >= GameData::MAX_COMBO_LENGTH) {
-                    // LOGI("Electro Shield Activated");
-                    // activeEffect                            = ElementType::ELECTRO;
-                    // activeElementEffectChanged(ElementType::ELECTRO);
-                    // EffectManager::Get().ActivateElectroShield();
-                    // NOTE:^^^ MOVED TO Effect Manager
-                    m_ComboCount[(int)ElementType::ELECTRO] = 0;
-                    EffectManager::Get().ChargeEffect(ElementType::ELECTRO);
-                }
-                break;
-            case ElementType::ANEMO:
-                if (m_ComboCount[(int)ElementType::ANEMO] >= GameData::MAX_COMBO_LENGTH) {
-                    // LOGI("Anemo Activated");
-                    // activeEffect                          = ElementType::ANEMO;
-                    // activeElementEffectChanged(ElementType::ANEMO);
-                    // EffectManager::Get().ActivateAnemoShield();
-                    // NOTE:^^^ MOVED TO Effect Manager
-                    m_ComboCount[(int)ElementType::ANEMO] = 0;
-                    EffectManager::Get().ChargeEffect(ElementType::ANEMO);
-                }
-                break;
-            default:
-                LOGE("Bubble Type Out of range");
-                break;
+        if (m_ComboCount[(int)type] >= GameData::MAX_COMBO_LENGTH) {
+            m_ComboCount[(int)type] = 0;
+            EffectManager::Get().ChargeEffect(type);
         }
     }
 }

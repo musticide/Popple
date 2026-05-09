@@ -5,7 +5,7 @@
 #include "ResourceManager.h"
 #include "Scene.h"
 #include "bubbleManager.h"
-#include "raylib.h"
+#include <raymob.h>
 #include "raymath.h"
 
 EffectManager::EffectManager() {
@@ -28,7 +28,7 @@ void EffectManager::Update(float dT) {
         if (electroShieldTimer > GameData::ELECTRO_SHIELD_DURATION) {
             effectActive[(int)ElementType::ELECTRO] = false;
             electroShieldTimer                      = 0.0f;
-            m_ElectroBlink = false;
+            m_ElectroBlink                          = false;
             DeactivateElectroShield();
         }
 
@@ -65,12 +65,22 @@ void EffectManager::Update(float dT) {
             }
         }
     }
+    if (effectActive[(int)ElementType::CRYO]) {
+        cryoEffectTimer += dT;
+        if (cryoEffectTimer > GameData::CRYO_SHIELD_DURATION) {
+            effectActive[(int)ElementType::CRYO] = false;
+            BubbleManager::Get().CryoFreeze(false);
+            cryoEffectTimer = 0.0f;
+            DeactivateCryoShield();
+        }
+    }
 }
 
 void EffectManager::InitElectroShield() {
 
     m_ElectroShieldMesh =
         parentScene->CreateEntity<StaticMesh>(true, "models/ElectroShield.glb", RenderQueue::TRANSPARENT);
+    // parentScene->CreateEntity<StaticMesh>(true, "models/BubbleBase_01.glb", RenderQueue::TRANSPARENT);
     m_ElectroShieldMesh->GetModel().materials[0].shader =
         *ResourceManager::GetShader("shaders/ElectroBubble_VS.glsl", "shaders/ElectroBubble_PS.glsl");
     m_ElectroShieldMesh->GetModel().materials[0].maps[0].texture =
@@ -83,11 +93,13 @@ void EffectManager::InitElectroShield() {
 }
 
 void EffectManager::ActivateElectroShield() {
+    VibrateMS(200);
     LOGI("Electro Shield Activated");
     m_ElectroShieldMesh->SetActive(true);
     ActivateEffect(ElementType::ELECTRO);
 }
 void EffectManager::DeactivateElectroShield() {
+    VibrateMS(400);
     m_ElectroShieldMesh->SetActive(false);
 }
 
@@ -104,6 +116,7 @@ void EffectManager::InitAnemoShield() {
 }
 
 void EffectManager::ActivateAnemoShield() {
+    VibrateMS(200);
     LOGI("EM: Anemo Shield Activated");
     m_AnemoShieldMesh->SetActive(true);
 }
@@ -122,7 +135,6 @@ void EffectManager::ActivateEffect(ElementType type) {
     GameManager::Get().ResetComboCount(type);
 
     switch (type) {
-
         case ElementType::NONE:
             break;
         case ElementType::ELECTRO:
@@ -132,11 +144,15 @@ void EffectManager::ActivateEffect(ElementType type) {
             ActivateAnemoShield();
             BubbleManager::Get().AnemoPushBack(true);
             break;
+        case ElementType::CRYO:
+            ActivateCryoShield();
+            BubbleManager::Get().CryoFreeze(true);
         default:
             break;
     }
 }
 void EffectManager::ChargeEffect(ElementType type) {
+    VibrateMS(200);
     effectCharged[(int)type] = true;
 }
 
@@ -148,3 +164,13 @@ bool EffectManager::IsEffectCharged(ElementType type) {
     return effectCharged[(int)type];
 }
 
+void EffectManager::InitCryoShield() {
+}
+
+void EffectManager::ActivateCryoShield() {
+    VibrateMS(200);
+}
+
+void EffectManager::DeactivateCryoShield() {
+    VibrateMS(400);
+}

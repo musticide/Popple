@@ -8,6 +8,7 @@
 #include "uiElement.h"
 #include "uiImage.h"
 #include "uiText.h"
+#include <cstddef>
 #include <stdbool.h>
 #include <string>
 
@@ -60,16 +61,27 @@ GameCanvas::GameCanvas() {
     comboCircles[1]->drawRect = elementRects[(int)ElementType::NONE];
     comboCircles[2]->drawRect = elementRects[(int)ElementType::NONE];
 
-    electroShieldBtn = CreateElement<ui::Button>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 375, 2129, 130, 130 }, ui::FIXED_H | ui::FIXED_V);
-    electroShieldBtn->onClick.connect([]() { EffectManager::Get().ActivateEffect(ElementType::ELECTRO); });
-    electroShieldBtn->drawRect = electroOffOnRect[0];
+    size_t buttonSpacing   = 70;
+    size_t buttonCount     = shieldButtons.size();
+    float buttonSize = 130;
 
+    // total width of the row
+    float totalWidth = buttonCount * buttonSize + (buttonCount - 1) * buttonSpacing;
 
-    anemoShieldBtn = CreateElement<ui::Button>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 575, 2129, 130, 130 }, ui::FIXED_H | ui::FIXED_V);
-    anemoShieldBtn->onClick.connect([]() { EffectManager::Get().ActivateEffect(ElementType::ANEMO); });
-    anemoShieldBtn->drawRect = anemoOffOnRect[0];
+    // leftmost starting point (so that it's centered)
+    float startX = (1080 - totalWidth) * 0.5f;
+
+    for (size_t i = 0; i < buttonCount; i++) {
+        auto& button = shieldButtons[i];
+
+        float x = startX + i * (buttonSize + buttonSpacing);
+
+        Rectangle transform = Rectangle{ x, 2129, buttonSize, buttonSize };
+
+        button = CreateElement<ui::Button>(true, "textures/GameplayAtlas.png", transform, ui::FIXED_H | ui::FIXED_V);
+        button->onClick.connect([i]() { EffectManager::Get().ActivateEffect((ElementType)i); });
+        button->drawRect = offOnRects[i][0];
+    }
 }
 
 GameCanvas::~GameCanvas() {
@@ -97,8 +109,8 @@ void GameCanvas::HealthChanged(int health, int amount) {
 
 void GameCanvas::Update(float dT) {
     for (int i = 0; i < GameData::MAX_COMBO_LENGTH; i++) {
-        comboCircles[i]->drawRect = elementRects[0];
-        for (int j = 1; j < (int)ElementType::COUNT; j++) {
+        comboCircles[i]->drawRect = elementRects[(int)ElementType::NONE];
+        for (int j = 0; j < (int)ElementType::COUNT - 1; j++) {
             int comboCount = GameManager::Get().GetComboCountForType((ElementType)j);
             if (comboCount > 0 && i < comboCount) {
                 comboCircles[i]->drawRect = elementRects[j];
@@ -106,10 +118,9 @@ void GameCanvas::Update(float dT) {
         }
     }
 
-    electroShieldBtn->drawRect = electroOffOnRect[EffectManager::Get().IsEffectCharged(ElementType::ELECTRO)];
-
-    anemoShieldBtn->drawRect = anemoOffOnRect[EffectManager::Get().IsEffectCharged(ElementType::ANEMO)];
-
+    for (size_t i = 0; i < shieldButtons.size(); i++) {
+        shieldButtons[i]->drawRect = offOnRects[i][EffectManager::Get().IsEffectCharged((ElementType)i)];
+    }
     for (auto& scorePopText : scorePopTexts) {
         if (scorePopText->IsActive()) {
             scorePopText->Move({ 0, -2 });

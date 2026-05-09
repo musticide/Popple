@@ -59,6 +59,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     float m_SpawnTimer = 0.0f;
     bool m_PauseSpawn  = false;
 
+
     void ResetInternal();
 
     // static void ActiveEffectChanged(ElementType type);
@@ -80,11 +81,11 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     std::shared_ptr<Model> m_BubbleBaseModel;
     std::array<Material, (size_t)ElementType::COUNT> bubbleMaterials;
     std::array<Color, (size_t)ElementType::COUNT> bubbleColors = {
+        (Color){ 139, 66, 255, 255 }, // PURPLE electro
+        (Color){ 66, 255, 195, 255 }, // Green anemo
+        (Color){ 94, 201, 255, 255 }, // Light Blue cryo
         WHITE,
-        (Color){ 139, 66, 255, 255 }, // PURPLE
-        (Color){ 66, 255, 195, 255 }  // Green
     };
-    int commonTimeId, electroTimeId, anemoTimeId;
 
   public:
     BubbleManager();
@@ -104,4 +105,5 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     void PauseSpawn();
     void ContinueSpawn();
     void AnemoPushBack(bool active);
+    void CryoFreeze(bool active);
 };

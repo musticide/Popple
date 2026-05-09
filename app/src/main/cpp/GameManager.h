@@ -8,16 +8,19 @@
 #include <raymath.h>
 
 enum class ElementType {
-    NONE,
     ELECTRO,
     ANEMO,
+    CRYO,
+    NONE,
     COUNT
 };
 static struct GameData {
     static constexpr float electroShieldRadius     = 10.f;
     static constexpr float ELECTRO_SHIELD_DURATION = 5.0f;
+    static constexpr float CRYO_SHIELD_DURATION    = 4.0f;
     static constexpr float ANEMO_EFFECT_DURATION   = 1.0f;
     static constexpr int MAX_COMBO_LENGTH          = 3;
+    static int availableElementCount;
 } gameData;
 
 class GameManager : public Entity, public Singleton<GameManager> {

@@ -35,15 +35,17 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
     std::unique_ptr<StaticMesh> m_ElectroShieldMesh;
     int m_ElectroTimeId, m_ElectroBlinkId;
     bool m_ElectroBlink                = false;
+    float electroShieldTimer = 0.0f;
     const float ELECTRO_BLINK_DURATION = 1.0f;
-
-    std::array<bool, (int)ElementType::COUNT> effectCharged = { false };
-    std::array<bool, (int)ElementType::COUNT> effectActive  = { false };
 
     std::unique_ptr<StaticMesh> m_AnemoShieldMesh;
     int m_AnemoTimeId;
-    float electroShieldTimer = 0.0f;
     float anemoEffectTimer   = 0.0f;
+
+    float cryoEffectTimer = 0.0f;
+
+    std::array<bool, (int)ElementType::COUNT> effectCharged = { false };
+    std::array<bool, (int)ElementType::COUNT> effectActive  = { false };
 
     void InitElectroShield();
     void ActivateElectroShield();
@@ -52,4 +54,8 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
     void InitAnemoShield();
     void ActivateAnemoShield();
     void DeactivateAnemoShield();
+
+    void InitCryoShield();
+    void ActivateCryoShield();
+    void DeactivateCryoShield();
 };
