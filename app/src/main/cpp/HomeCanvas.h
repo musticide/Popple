@@ -2,6 +2,7 @@
 #include "uiButton.h"
 #include "uiCanvas.h"
 #include "uiImage.h"
+#include "uiText.h"
 #include <memory>
 
 class HomeCanvas : public ui::Canvas {
@@ -15,5 +16,9 @@ public:
 
     std::unique_ptr<ui::Image> bgImage = nullptr;
     std::unique_ptr<ui::Button> startButton = nullptr;
+    std::unique_ptr<ui::Text> highScoreTxt = nullptr;
+    std::unique_ptr<ui::Text> highestTimeTxt = nullptr;
+
+    void OnEnable() override;
 };
 

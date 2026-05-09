@@ -1,10 +1,12 @@
 #include "Game.h"
 #include "Globals.h"
+#include "Log.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "raylib.h"
 #include "raymath.h"
+#include "raymob.h"
 #include "scheduler.h"
 #include <cassert>
 #include <memory>
@@ -43,8 +45,8 @@ void Game::Init() {
     m_Renderer        = std::make_unique<Renderer>(mainCamera3D, uiCamera);
     m_Scheduler       = std::make_unique<Scheduler>();
 
-    m_HomeScene     = SceneManager::Get().RegisterScene<HomeScene>();
-    m_GameplayScene = SceneManager::Get().RegisterScene<GameplayScene>();
+    m_HomeScene     = SceneManager::Get().RegisterScene<HomeScene>(true);
+    m_GameplayScene = SceneManager::Get().RegisterScene<GameplayScene>(false);
 
     m_HomeScene->SetActive(true);
 

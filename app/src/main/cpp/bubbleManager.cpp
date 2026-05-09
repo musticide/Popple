@@ -166,7 +166,6 @@ void BubbleManager::SpawnBubble(Bubble* bubble) {
 
     //SET Bubble type
     if (RollPercentage(40)) {
-        // bubble->type = RollPercentage(50) ? ElementType::ANEMO : ElementType::ELECTRO;
         bubble->type = (ElementType)GetRandomValue(0, (int)ElementType::NONE);
     } else {
         bubble->type = ElementType::NONE;

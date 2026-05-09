@@ -83,7 +83,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     std::array<Color, (size_t)ElementType::COUNT> bubbleColors = {
         (Color){ 139, 66, 255, 255 }, // PURPLE electro
         (Color){ 66, 255, 195, 255 }, // Green anemo
-        (Color){ 94, 201, 255, 255 }, // Light Blue cryo
+        (Color){ 4, 180, 255, 255 },  // Light Blue cryo
         WHITE,
     };
 

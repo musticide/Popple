@@ -6,6 +6,7 @@
 #include "Scene.h"
 #include "bubbleManager.h"
 #include <raymob.h>
+#include <stdbool.h>
 #include "raymath.h"
 
 EffectManager::EffectManager() {
@@ -97,6 +98,8 @@ void EffectManager::ActivateElectroShield() {
     LOGI("Electro Shield Activated");
     m_ElectroShieldMesh->SetActive(true);
     ActivateEffect(ElementType::ELECTRO);
+    m_ElectroBlink = false;
+    electroShieldTimer = 0.0f;
 }
 void EffectManager::DeactivateElectroShield() {
     VibrateMS(400);
@@ -129,7 +132,7 @@ void EffectManager::DeactivateAnemoShield() {
     }
 }
 void EffectManager::ActivateEffect(ElementType type) {
-    if (!effectCharged[(int)type]) return;
+    if (!effectCharged[(int)type] || effectActive[(int)type]) return;
     effectActive[(int)type]  = true;
     effectCharged[(int)type] = false;
     GameManager::Get().ResetComboCount(type);

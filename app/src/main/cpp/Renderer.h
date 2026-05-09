@@ -20,7 +20,7 @@ public:
     Shader backgroundShader;
 
     bool doBloom = true;
-    float bloomThreshold = .85f;
+    float bloomThreshold = .82f;
 private:
     std::vector<std::weak_ptr<Shader>> m_Shaders;
     Camera3D& mainCamera3D;

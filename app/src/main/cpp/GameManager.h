@@ -72,7 +72,6 @@ class GameManager : public Entity, public Singleton<GameManager> {
     // const int GetMaxComboLength() const { return GameData::MAX_COMBO_LENGTH; }
     void ResetComboCount(ElementType type);
 
-
     static void PauseBubbleSpawn(bool pause);
 
 
@@ -83,6 +82,7 @@ class GameManager : public Entity, public Singleton<GameManager> {
 
     float m_SpawnInterval    = 1.4f;
     float m_MinSpawnInterval = 0.20f;
+    float gameStartTime      = 0.0f;
 
     void ResetComboCount();
 

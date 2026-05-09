@@ -30,11 +30,12 @@ public:
     // void ActivateScene(const char* name);
     // void DeactivateScene(const char* name);
 
-    template <typename T> std::unique_ptr<T> RegisterScene()
+    template <typename T> std::unique_ptr<T> RegisterScene(bool active)
     {
         static_assert(std::is_base_of_v<Scene, T>, "T does not derive from Scene");
 
         auto scene = std::make_unique<T>();
+        scene->SetActive(active);
         assert(scene.get() && "Failed to create Scene");
         m_Scenes.push_back(scene.get());
         return std::move(scene);
