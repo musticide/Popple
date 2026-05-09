@@ -20,7 +20,7 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
     void Update(float dT = 1.0f) override;
 
     void ActivateEffect(ElementType type);
-    bool IsEffectActive(ElementType type){
+    bool IsEffectActive(ElementType type) {
         return effectActive[(int)type];
     }
 
@@ -34,13 +34,13 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
 
     std::unique_ptr<StaticMesh> m_ElectroShieldMesh;
     int m_ElectroTimeId, m_ElectroBlinkId;
-    bool m_ElectroBlink                = false;
-    float electroShieldTimer = 0.0f;
+    int m_ElectroBlink                 = 0;
+    float electroShieldTimer           = 0.0f;
     const float ELECTRO_BLINK_DURATION = 1.0f;
 
     std::unique_ptr<StaticMesh> m_AnemoShieldMesh;
     int m_AnemoTimeId;
-    float anemoEffectTimer   = 0.0f;
+    float anemoEffectTimer = 0.0f;
 
     float cryoEffectTimer = 0.0f;
 

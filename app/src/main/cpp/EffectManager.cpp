@@ -7,6 +7,7 @@
 #include "bubbleManager.h"
 #include <raymob.h>
 #include <stdbool.h>
+#include "raylib.h"
 #include "raymath.h"
 
 EffectManager::EffectManager() {
@@ -29,19 +30,19 @@ void EffectManager::Update(float dT) {
         if (electroShieldTimer > GameData::ELECTRO_SHIELD_DURATION) {
             effectActive[(int)ElementType::ELECTRO] = false;
             electroShieldTimer                      = 0.0f;
-            m_ElectroBlink                          = false;
+            m_ElectroBlink                          = 0;
             DeactivateElectroShield();
         }
 
         if (m_ElectroShieldMesh && m_ElectroShieldMesh->IsActive()) {
 
             if (electroShieldTimer > GameData::ELECTRO_SHIELD_DURATION - ELECTRO_BLINK_DURATION) {
-                m_ElectroBlink = true;
+                m_ElectroBlink = 1;
             } else {
-                m_ElectroBlink = false;
+                m_ElectroBlink = 0;
             }
             if (m_ElectroBlinkId >= 0) {
-                SetShaderValue(m_ElectroShieldMesh->GetModel().materials[0].shader, m_ElectroBlinkId, &m_ElectroBlink, SHADER_UNIFORM_FLOAT);
+                SetShaderValue(m_ElectroShieldMesh->GetModel().materials[0].shader, m_ElectroBlinkId, &m_ElectroBlink, SHADER_UNIFORM_INT);
             }
 
             if (m_ElectroTimeId >= 0) {
@@ -98,7 +99,7 @@ void EffectManager::ActivateElectroShield() {
     LOGI("Electro Shield Activated");
     m_ElectroShieldMesh->SetActive(true);
     ActivateEffect(ElementType::ELECTRO);
-    m_ElectroBlink = false;
+    m_ElectroBlink = 0;
     electroShieldTimer = 0.0f;
 }
 void EffectManager::DeactivateElectroShield() {

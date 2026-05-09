@@ -8,7 +8,7 @@ in vec2 uv;
 out vec4 fnl;
 
 uniform sampler2D utilTex;
-uniform bool _Blink;
+uniform int _Blink;
 
 #define PI 3.14159265359
 #define NOISE_SPEED 0.8f
@@ -44,7 +44,7 @@ void main() {
     fnl.rgb = purple * INTENSITY;
     fnl.a = lines;
 
-    float blink = _Blink ? 1.0f - (fract(_Time * BLINK_SPEED)) : 1.0f;
+    float blink = _Blink > 0 ? 1.0f - (fract(_Time * BLINK_SPEED)) : 1.0f;
 
     fnl.a *= blink;
 
