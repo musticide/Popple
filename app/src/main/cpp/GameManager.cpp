@@ -37,10 +37,6 @@ void GameManager::AddSpecialBubbleInternal(ElementType type) {
 void GameManager::AddScore(int points) {
     m_Score += points;
     scoreChanged(m_Score, points);
-    if (m_Score >= 1000) {
-        // game won
-        EndGame();
-    }
 }
 
 void GameManager::DecreaseHealth(int amount) {
