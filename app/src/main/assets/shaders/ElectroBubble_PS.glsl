@@ -1,12 +1,11 @@
 #version 300 es
-precision mediump float;
-
-uniform highp float _Time;
+precision highp float;
 
 in vec4 color;
 in vec2 uv;
 out vec4 fnl;
 
+uniform float _Time;
 uniform sampler2D utilTex;
 uniform int _Blink;
 

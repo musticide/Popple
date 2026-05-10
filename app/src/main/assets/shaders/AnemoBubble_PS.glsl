@@ -1,7 +1,7 @@
 #version 300 es
-precision mediump float;
+precision highp float;
 
-uniform highp float _Time;
+uniform float _Time;
 
 in vec4 color;
 in vec2 uv;
@@ -36,25 +36,4 @@ void main() {
     fnl.rgb = vec3(0.0f);
     fnl.a = rimWind;
     return;
-
-    // float blackGlow = 1.f - clamp(polarCoord.x * 2.5f, 0.f, 1.f);
-
-    // vec2 windUVA = Rotate(uv, _Time * .5f);
-    // windUVA *= vec2(1.f, .1f);
-    // windUVA += _Time * vec2(.14f, .4f);
-
-    // float windA = texture(utilTex, windUVA).g;
-    // windA = step(windA, .35f);
-
-    // vec2 windUVB = Rotate(uv, -_Time * .5f);
-    // windUVB *= vec2(1.f, .1f);
-    // windUVB += _Time * vec2(.14f, .4f);
-
-    // float windB = texture(utilTex, windUVB).g;
-    // windB = step(windB, .35f);
-
-    // vec4 flow = texture(utilTex, uv);
-    // fnl = vec4(clamp(windA + windB, 0.f, 1.f));
-    // fnl.rgb *= green * 1.f;
-    // fnl.a += rimWind + blackGlow;
 }
