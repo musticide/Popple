@@ -5,6 +5,7 @@
 #include "functionLibrary.h"
 #include "raylib.h"
 #include "raymath.h"
+#include "utils.h"
 #include <cmath>
 
 ParticleSystem::ParticleSystem(int maxParticles)
@@ -59,8 +60,9 @@ void ParticleSystem::Update(float dT) {
             continue;
         }
         float life     = particle.age / particle.lifetime;
-        particle.color = ColorLerp(particleProperties.startColor, particleProperties.endColor, life);
-        particle.size  = Lerp(particleProperties.startSize, particleProperties.endSize, life);
+        float cubicLife = Utils::EaseInOutCubic(life);
+        particle.color = ColorLerp(particleProperties.startColor, particleProperties.endColor, cubicLife);
+        particle.size  = Lerp(particleProperties.startSize, particleProperties.endSize, cubicLife);
         particle.velocity *= 1.f - particleProperties.damping;
         particle.position += particle.velocity;
         // TODO: Transform paricles for local space emission

@@ -44,17 +44,17 @@ void BubbleManager::Start() {
 
     electroShieldRadius = GameData::electroShieldRadius;
 
-    burstParticles = parentScene->CreateEntity<ParticleSystem>(true, 15);
+    burstParticles = parentScene->CreateEntity<ParticleSystem>(true, 25);
 
-    burstParticles->particleProperties.lifetime       = 0.2f;
-    burstParticles->particleProperties.startSize      = 0.08f;
+    burstParticles->particleProperties.lifetime       = 0.25f;
+    burstParticles->particleProperties.startSize      = 0.04f;
     burstParticles->particleProperties.endSize        = 0.005f;
     burstParticles->particleProperties.sizeVariation  = 0.05f;
     burstParticles->emitType                          = EmitType::BURST;
     burstParticles->shape                             = EmitShape::CIRCLE;
-    burstParticles->particleProperties.initialSpeed   = 0.8f;
+    burstParticles->particleProperties.initialSpeed   = 2.0f;
     burstParticles->particleProperties.speedVariation = 0.3f;
-    burstParticles->particleProperties.damping        = 0.25f;
+    burstParticles->particleProperties.damping        = 0.45f;
     burstParticles->particleProperties.startColor     = bubbleColors[0];
     burstParticles->particleProperties.endColor       = { 255, 255, 255, 0 };
 }
@@ -97,7 +97,7 @@ void BubbleManager::Update(float dT) {
                         burstParticles->shape = EmitShape::NONE;
                     }
 
-                    burstParticles->Burst(10);
+                    burstParticles->Burst(20);
 
                     bubble->isActive = false;
                     break;

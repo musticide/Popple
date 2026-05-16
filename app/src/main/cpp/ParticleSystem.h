@@ -14,6 +14,7 @@ struct ParticleProperties {
 
     float initialSpeed = 0.0f;
     float speedVariation = 0.0f;
+    ///Higher value is more damping
     float damping = 0.1f;
 
     float startSize = 1.0f;
