@@ -17,7 +17,7 @@ void ParticleSystem::Start() {
     // if (model == nullptr)
     // model = LoadModel("models/Quad.glb");
     model = LoadModelFromMesh(ResourceManager::GetModel("models/Quad.glb")->meshes[0]);
-    model.materials[0].shader = *ResourceManager::GetShader("shaders/basicShader.vs", "shaders/basicShader.fs");
+    model.materials[0].shader = *ResourceManager::GetShader("shaders/basicShader.vert", "shaders/basicShader.frag");
     model.materials[0].maps[0].texture = *ResourceManager::GetTexture("textures/GlowTight.png");
 
     // m_ParticlePool.resize(maxParticles);

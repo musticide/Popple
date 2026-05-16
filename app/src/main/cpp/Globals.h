@@ -1,5 +1,4 @@
 #pragma once
-#include "GameStateManager.h"
 #include "SceneManager.h"
 
 namespace Globals {

@@ -46,7 +46,6 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/SceneManager.cpp"
     "${CMAKE_SOURCE_DIR}/HomeScene.cpp"
     "${CMAKE_SOURCE_DIR}/GameplayScene.cpp"
-    "${CMAKE_SOURCE_DIR}/GameUI.cpp"
     "${CMAKE_SOURCE_DIR}/ParticleSystem.cpp"
     "${CMAKE_SOURCE_DIR}/ParticleSystem.2Dcpp"
     "${CMAKE_SOURCE_DIR}/TouchFeedback.cpp"

@@ -84,7 +84,7 @@ void EffectManager::InitElectroShield() {
         parentScene->CreateEntity<StaticMesh>(true, "models/ElectroShield.glb", RenderQueue::TRANSPARENT);
     // parentScene->CreateEntity<StaticMesh>(true, "models/BubbleBase_01.glb", RenderQueue::TRANSPARENT);
     m_ElectroShieldMesh->GetModel().materials[0].shader =
-        *ResourceManager::GetShader("shaders/ElectroBubble_VS.glsl", "shaders/ElectroBubble_PS.glsl");
+        *ResourceManager::GetShader("shaders/ElectroBubble.vert", "shaders/ElectroBubble.frag");
     m_ElectroShieldMesh->GetModel().materials[0].maps[0].texture =
         *ResourceManager::GetTexture("textures/ElectroBubble_UTIL.png");
 
@@ -110,7 +110,7 @@ void EffectManager::DeactivateElectroShield() {
 void EffectManager::InitAnemoShield() {
     m_AnemoShieldMesh = parentScene->CreateEntity<StaticMesh>(true, "models/BubbleBase_01.glb", RenderQueue::TRANSPARENT);
     m_AnemoShieldMesh->GetModel().materials[0].shader =
-        *ResourceManager::GetShader("shaders/AnemoBubble_VS.glsl", "shaders/AnemoBubble_PS.glsl");
+        *ResourceManager::GetShader("shaders/AnemoBubble.vert", "shaders/AnemoBubble.frag");
     m_AnemoShieldMesh->GetModel().materials[0].maps[0].texture =
         *ResourceManager::GetTexture("textures/AnemoBubble_UTIL.png");
 

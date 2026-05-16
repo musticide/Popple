@@ -40,7 +40,7 @@ void BubbleManager::Start() {
 
     m_BubbleBaseModel = ResourceManager::GetModel("models/BubbleBase_01.glb");
     m_BubbleBaseModel->materials[0].shader =
-        *ResourceManager::GetShader("shaders/bubbleBasic.vs", "shaders/bubbleBasic.fs");
+        *ResourceManager::GetShader("shaders/bubbleBasic.vert", "shaders/bubbleBasic.frag");
 
     electroShieldRadius = GameData::electroShieldRadius;
 

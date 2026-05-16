@@ -2,7 +2,6 @@
 
 #include "GameCanvas.h"
 #include "GameManager.h"
-#include "GameUI.h"
 #include "Scene.h"
 #include "StaticMesh.h"
 #include "TouchFeedback.h"

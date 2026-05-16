@@ -13,7 +13,7 @@ Tower::Tower()
     , rotate(0.0f)
 {
     m_Model = ResourceManager::GetModel("models/TowerBase.glb");
-    m_Model->materials[0].shader = *ResourceManager::GetShader("shaders/towerBasic.vs", "shaders/towerBasic.fs");
+    m_Model->materials[0].shader = *ResourceManager::GetShader("shaders/towerBasic.vert", "shaders/towerBasic.frag");
     SetShaderValue(m_Model->materials[0].shader, GetShaderLocation(m_Model->materials[0].shader, "environmentMap"),
         (int[1]) { MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
 

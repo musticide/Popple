@@ -20,10 +20,10 @@ Renderer::Renderer(Camera3D& mainCam, Camera2D& uiCam)
     outlineRT = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
     SetTextureFilter(outlineRT.texture, TEXTURE_FILTER_BILINEAR);
 
-    copyShader = *ResourceManager::GetShader(0, "shaders/copy.fs");
-    outlineShader = *ResourceManager::GetShader(0, "shaders/outline.fs");
-    tonemapShader = *ResourceManager::GetShader(0, "shaders/tonemap.fs");
-    backgroundShader = *ResourceManager::GetShader(0, "shaders/defaultBackground.fs");
+    copyShader = *ResourceManager::GetShader(0, "shaders/copy.frag");
+    outlineShader = *ResourceManager::GetShader(0, "shaders/outline.frag");
+    tonemapShader = *ResourceManager::GetShader(0, "shaders/tonemap.frag");
+    backgroundShader = *ResourceManager::GetShader(0, "shaders/defaultBackground.frag");
 
     Utils::SetUniformValue(backgroundShader, "_ScreenSize", &screenSize, SHADER_UNIFORM_VEC2);
     backgroundTexture = *ResourceManager::GetTexture("textures/T_GameBG.png");
@@ -46,10 +46,10 @@ Renderer::Renderer(Camera3D& mainCam, Camera2D& uiCam)
             bloomPyramidRT[i].texture.format = PIXELFORMAT_UNCOMPRESSED_R16G16B16;
         }
 
-        bloomFilterShader = *ResourceManager::GetShader(0, "shaders/bloomFilter.fs");
+        bloomFilterShader = *ResourceManager::GetShader(0, "shaders/bloomFilter.frag");
         Utils::SetUniformValue(bloomFilterShader, "_Threshold", &bloomThreshold, SHADER_UNIFORM_FLOAT);
-        bloomBlurShader = *ResourceManager::GetShader(0, "shaders/bloomBlur.fs");
-        bloomComposeShader = *ResourceManager::GetShader(0, "shaders/bloomCompose.fs");
+        bloomBlurShader = *ResourceManager::GetShader(0, "shaders/bloomBlur.frag");
+        bloomComposeShader = *ResourceManager::GetShader(0, "shaders/bloomCompose.frag");
         Utils::SetUniformValue(bloomComposeShader, "_ScreenSize", &screenSize, SHADER_UNIFORM_VEC2);
         bloomBlurDirectionId = GetShaderLocation(bloomBlurShader, "_Direction");
     }
@@ -144,6 +144,7 @@ void Renderer::Render()
 
         // Upscale and compose
         DrawRTtoRT(bloomComposeShader, bloomPyramidRT[bloomPyramidRT.size() - 1], bloomResultRT, true);
+        // DrawRTtoRT(copyShader, bloomPyramidRT[bloomPyramidRT.size() - 1], bloomResultRT, true);
     }
 
     /* FINAL COMPOSITION */
