@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
 }
 
 // Updates a file during compilation
@@ -163,7 +164,6 @@ android {
     }
 }
 
-/*
 
 // Add your project's dependencies here.
 // This section is used to include external libraries or modules that your project relies on.
@@ -171,7 +171,9 @@ android {
 // To add a new dependency, use the 'implementation' or 'api' keyword followed by the library's coordinate or name.
 
 dependencies {
+    implementation platform('com.google.firebase:firebase-bom:34.13.0')
 
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-analytics'
 }
 
-*/
