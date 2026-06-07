@@ -28,5 +28,3 @@ Language	- C++
 Graphics / Input	- raylib
 Platform	Android
 Build System	Android NDK (via Android Studio)
-
-This code is open-source under **MIT License**. You're free to use and learn from it. Please credit me if you build upon it! The final game product (assets, store builds) is proprietary.
