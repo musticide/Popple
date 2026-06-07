@@ -1,17 +1,18 @@
 #include "GameManager.h"
 #include "EffectManager.h"
-#include "Game.h"
-#include "Globals.h"
+#include "LevelConfig.h"
 #include "Log.h"
+#include "PlayerProfile.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "bubbleManager.h"
 #include "raylib.h"
-#include "raymob.h"
 
 int GameData::availableElementCount = 3;
 
-GameManager::GameManager() {
+GameManager::GameManager(LevelConfig config)
+:levelConfig(config)
+{
 }
 GameManager::~GameManager() {
 }
@@ -48,18 +49,14 @@ void GameManager::DecreaseHealth(int amount) {
     }
 }
 
-void GameManager::DecreaseSpawnInterval(float amount) {
-    m_SpawnInterval -= amount;
-    m_SpawnInterval = std::max(m_SpawnInterval, m_MinSpawnInterval);
-    spawnIntervalChanged(m_SpawnInterval, amount);
-}
-
 void GameManager::Start() {
+    effectManager = parentScene->CreateEntity<EffectManager>(true);
+    spatialGrid   = parentScene->CreateEntity<SpatialGrid>(true);
+    bubbleManager = parentScene->CreateEntity<BubbleManager>(true, levelConfig);
     ResetGameValues();
     // activeElementEffectChanged(activeEffect);
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
-    spawnIntervalChanged(m_SpawnInterval, 0.f);
     LOGI("Game Manager Start");
 }
 
@@ -69,7 +66,6 @@ void GameManager::OnEnable() {
     // activeElementEffectChanged(activeEffect);
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
-    spawnIntervalChanged(m_SpawnInterval, 0.f);
     gameStartTime = GetTime();
 }
 
@@ -88,16 +84,15 @@ void GameManager::EndGame() {
     SceneManager::Get().ActivateScene(SceneType::HOME);
     SceneManager::Get().DeactivateScene(SceneType::GAMEPLAY);
 
-    if (Globals::highScore < m_Score) {
-        Globals::highScore = m_Score;
-        WriteToAppStorage("highscore.dat", &m_Score, sizeof(int));
+    if (PlayerProfile.highestScore.value < m_Score) {
+        PlayerProfile.highestScore.value = m_Score;
     }
     float highestTime = GetTime() - gameStartTime;
-    if(Globals::highestTime < highestTime)
-    {
-        Globals::highestTime = highestTime;
-        WriteToAppStorage("highest_time.dat", &highestTime, sizeof(float));
+    if (PlayerProfile.longestTimeSurvived.value < highestTime) {
+        PlayerProfile.longestTimeSurvived.value = highestTime;
     }
+
+    SavePlayerProfile();
 }
 
 void GameManager::ResetGameValues() {
@@ -106,9 +101,8 @@ void GameManager::ResetGameValues() {
     ResetComboCount();
     gameStartTime = 0.0f;
 
-    m_SpawnInterval    = 1.5f;
-    m_MinSpawnInterval = 0.20f;
     EffectManager::Get().Reset();
+    BubbleManager::Get().Reset();
 }
 void GameManager::PauseBubbleSpawn(bool pause) {
     if (pause) {

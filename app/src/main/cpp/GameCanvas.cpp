@@ -21,18 +21,21 @@ GameCanvas::GameCanvas() {
         true, "textures/GameplayAtlas.png", Rectangle{ 29, 19, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
     scoreIcon->drawRect = { 112, 136, 90, 90 };
 
-    scoreText = scoreBox->CreateChild<ui::Text>(true, Rectangle{ 138, 21, 184, 86 }, ui::FIXED_H | ui::FIXED_V);
+    scoreText = scoreBox->CreateChild<ui::Text>(
+        true, ui::ACE_BOLD, Rectangle{ 138, 21, 184, 86 }, ui::FIXED_H | ui::FIXED_V);
     scoreText->hAlign = ui::ALIGN_CENTER;
     scoreText->vAlign = ui::ALIGN_MIDDLE;
 
     for (auto& scorePopText : scorePopTexts) {
-        scorePopText = CreateElement<ui::Text>(false, Rectangle{ 0, 0, 100, 86 }, ui::FIXED_H | ui::FIXED_V);
+        scorePopText =
+            CreateElement<ui::Text>(false, ui::ACE_BOLD, Rectangle{ 0, 0, 100, 86 }, ui::FIXED_H | ui::FIXED_V);
         scoreText->hAlign    = ui::ALIGN_LEFT;
         scorePopText->vAlign = ui::ALIGN_TOP;
     }
 
     for (auto& healthPopText : healthPopTexts) {
-        healthPopText = CreateElement<ui::Text>(false, Rectangle{ 530, 1170, 100, 86 }, ui::FIXED_H | ui::FIXED_V);
+        healthPopText =
+            CreateElement<ui::Text>(false, ui::ACE_BOLD, Rectangle{ 530, 1170, 100, 86 }, ui::FIXED_H | ui::FIXED_V);
         scoreText->hAlign     = ui::ALIGN_LEFT;
         healthPopText->vAlign = ui::ALIGN_TOP;
     }
@@ -46,7 +49,8 @@ GameCanvas::GameCanvas() {
         true, "textures/GameplayAtlas.png", Rectangle{ 231, 19, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
     healthIcon->drawRect = { 0, 136, 90, 90 };
 
-    healthText = healthBox->CreateChild<ui::Text>(true, Rectangle{ 17, 21, 184, 86 }, ui::FIXED_H | ui::FIXED_V);
+    healthText = healthBox->CreateChild<ui::Text>(
+        true, ui::ACE_BOLD, Rectangle{ 17, 21, 184, 86 }, ui::FIXED_H | ui::FIXED_V);
     healthText->hAlign = ui::ALIGN_CENTER;
     healthText->vAlign = ui::ALIGN_MIDDLE;
 
@@ -61,9 +65,9 @@ GameCanvas::GameCanvas() {
     comboCircles[1]->drawRect = elementRects[(int)ElementType::NONE];
     comboCircles[2]->drawRect = elementRects[(int)ElementType::NONE];
 
-    size_t buttonSpacing   = 70;
-    size_t buttonCount     = shieldButtons.size();
-    float buttonSize = 130;
+    size_t buttonSpacing = 70;
+    size_t buttonCount   = shieldButtons.size();
+    float buttonSize     = 130;
 
     // total width of the row
     float totalWidth = buttonCount * buttonSize + (buttonCount - 1) * buttonSpacing;

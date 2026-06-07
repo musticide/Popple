@@ -7,15 +7,6 @@ SceneManager::SceneManager() { LOGI("Scene Manager Created"); }
 
 SceneManager::~SceneManager() { }
 
-void SceneManager::AddScene(Scene* scene)
-{
-    if (scene == nullptr) {
-        LOGE("Could not add scene");
-        return;
-    }
-    m_Scenes.push_back(scene);
-}
-
 void SceneManager::StartScenes()
 {
     for (auto& scene : m_ScenesToActivate) {
@@ -30,7 +21,8 @@ void SceneManager::StartScenes()
     }
     m_ScenesToDeactivate.clear();
 
-    for (auto& scene : m_Scenes) {
+    for (size_t i = 0; i < SceneManager::Get().scenes.size(); i++) {
+        Scene* scene = SceneManager::Get().scenes[i].get();
         if (scene != nullptr) {
             if (scene->IsActive()) {
                 // LOGV("Started Scene: %s", scene->GetName());
@@ -42,7 +34,8 @@ void SceneManager::StartScenes()
 
 void SceneManager::UpdateScenes(float dT)
 {
-    for (auto& scene : m_Scenes) {
+    for (size_t i = 0; i < SceneManager::Get().scenes.size(); i++) {
+        Scene* scene = SceneManager::Get().scenes[i].get();
         if (scene != nullptr)
             if (scene->IsActive()){
                 // LOGV("Updating Scene: %s", scene->GetName());
@@ -51,29 +44,11 @@ void SceneManager::UpdateScenes(float dT)
     }
 }
 
-// void SceneManager::DrawScenes()
-// {
-//     for (auto& scene : m_Scenes) {
-//         if (scene != nullptr)
-//             if (scene->IsActive())
-//                 scene->Draw();
-//     }
-// }
-
-// void SceneManager::DrawUI()
-// {
-//     for (auto& scene : m_Scenes) {
-//         if (scene != nullptr)
-//             if (scene->IsActive())
-//                 scene->DrawUI();
-//     }
-// }
-
-// Scene* SceneManager::GetScene(const char* name)
 Scene* SceneManager::GetScene(SceneType type)
 {
     Scene* result;
-    for (auto& scene : m_Scenes) {
+    for (size_t i = 0; i < scenes.size(); i++) {
+        Scene* scene = scenes[i].get();
         if (scene != nullptr) {
             if (scene->GetType() == type)
                 result = scene;

@@ -12,9 +12,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED_ON)
 # Set the project name based on the name given on the gradle.properties
 project("${APP_LIB_NAME}")
 
+set(FIREBASE_CPP_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/firebase_cpp_sdk")
+
 # Include raylib and raymob as a subdirectories
 add_subdirectory(${CMAKE_SOURCE_DIR}/deps/raylib)
 add_subdirectory(${CMAKE_SOURCE_DIR}/deps/raymob)
+
+add_subdirectory(${FIREBASE_CPP_SDK_DIR} bin/ EXCLUDE_FROM_ALL)
+
+set(FIREBASE_LIBS 
+    firebase_database 
+    firebase_analytics 
+    firebase_app
+)
 
 # Fetch all source files for your project (recursively), excluding 'deps' source files
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/*.c" "${CMAKE_SOURCE_DIR}/*.cpp")
@@ -61,6 +71,10 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/uiText.cpp"
     "${CMAKE_SOURCE_DIR}/uiImage.cpp"
     "${CMAKE_SOURCE_DIR}/HomeCanvas.cpp"
+    "${CMAKE_SOURCE_DIR}/firebase.cpp"
+    "${CMAKE_SOURCE_DIR}/PlayerProfile.cpp"
+    "${CMAKE_SOURCE_DIR}/Authentication.cpp"
+    "${CMAKE_SOURCE_DIR}/LevelMenuCanvas.cpp"
 )
 
 # Define compiler macros for the library
@@ -74,6 +88,20 @@ endif()
 # Include raylib and raymob header files
 target_include_directories(${APP_LIB_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/deps/raylib")
 target_include_directories(${APP_LIB_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/deps/raymob")
+target_include_directories(${APP_LIB_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/deps/firebase_cpp_sdk/include")
+# target_include_directories(${APP_LIB_NAME} PRIVATE "${FIREBASE_CPP_SDK_DIR}/include")
 
 # Link required libraries to the native application
-target_link_libraries(${APP_LIB_NAME} raylib raymoblib)
+target_link_libraries(${APP_LIB_NAME}
+    raylib 
+    raymoblib
+    ${FIREBASE_LIBS}
+)
+
+add_custom_target(copy_compile_commands ALL
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_BINARY_DIR}/compile_commands.json
+        ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json
+    DEPENDS ${CMAKE_BINARY_DIR}/compile_commands.json
+    COMMENT "Copying compile_commands.json to source directory for clangd"
+)

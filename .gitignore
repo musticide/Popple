@@ -34,3 +34,4 @@ google-services.json
 *.hprof
 /.cache
 /.idea
+/app/src/main/cpp/deps/firebase_cpp_sdk

@@ -2,6 +2,7 @@
 
 #include "DrawableEntity.h"
 #include "GameManager.h"
+#include "LevelConfig.h"
 #include "ParticleSystem.h"
 #include "Singleton.h"
 #include "raylib.h"
@@ -11,11 +12,11 @@
 #include <vector>
 
 struct Bubble {
-    bool isActive;
-    ElementType type;
-    Vector3 position;
-    Vector3 velocity;
-    float radius;
+    bool isActive    = false;
+    ElementType type = ElementType::NONE;
+    Vector3 position = { 0 };
+    Vector3 velocity = { 0 };
+    float radius     = 0;
 
     constexpr static float maxMoveSpeed = 15;
     constexpr static float moveSpeed    = 1.0;
@@ -59,11 +60,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     float m_SpawnTimer = 0.0f;
     bool m_PauseSpawn  = false;
 
-
-    void ResetInternal();
-
     // static void ActiveEffectChanged(ElementType type);
-    static void SpawnIntervalChanged(float spawnInterval, float amount);
     bool IsPointInBubble(Bubble* bubble, Vector3 point) const;
 
     /// Randomly Spawns bubbles in a circular ring based on spawn interval
@@ -75,7 +72,8 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     void UpdateBubble(Bubble* bubble);
 
     // static ElementType s_ActiveEffect;
-    static float s_SpawnInterval;
+    LevelConfig m_LevelConfig;
+    float m_SpawnInterval;
     float electroShieldRadius;
 
     std::shared_ptr<Model> m_BubbleBaseModel;
@@ -87,8 +85,10 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
         WHITE,
     };
 
+    void DecreaseSpawnInterval();
+
   public:
-    BubbleManager();
+    BubbleManager(LevelConfig config);
     ~BubbleManager();
 
     void Start() override;
@@ -98,10 +98,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
 
     void Draw() const override;
 
-    static void Reset() {
-        Get().ResetInternal();
-    }
-
+    void Reset();
     void PauseSpawn();
     void ContinueSpawn();
     void AnemoPushBack(bool active);

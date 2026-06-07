@@ -17,16 +17,22 @@ enum TextAlignV {
     ALIGN_BOTTOM
 };
 
+enum FontName {
+    ACE_BOLD,
+    ROUNDED_MPLUS_EXTRABOLD
+};
 class Text : public UIElement {
   public:
-    Text(Rectangle rect, int fitType);
-    Text(Text&&)                 = default;
+    Text(FontName font, Rectangle rect, int fitType);
     Text(const Text&)            = default;
     Text& operator=(Text&&)      = default;
     Text& operator=(const Text&) = default;
     ~Text();
 
-    static Font aceBold;
+    static std::array<Font, 2> fonts;
+    FontName activeFont;
+    // static Font aceBold;
+    // static Font roundedMPlus_ExtraBold;
     Color color       = WHITE;
     TextAlignH hAlign = ALIGN_LEFT;
     TextAlignV vAlign = ALIGN_BOTTOM;
@@ -42,7 +48,7 @@ class Text : public UIElement {
 
   private:
     std::string text = "Sample Text";
-    Vector2 textSize = MeasureTextEx(aceBold, text.c_str(), (float)fontSize, 2);
+    Vector2 textSize = { 0, 0 };
     Vector2 textPos = { 0, 0 }, textPosOffset = { 0, 0 };
 };
 

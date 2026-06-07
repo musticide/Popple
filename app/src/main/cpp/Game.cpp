@@ -10,6 +10,8 @@
 #include "scheduler.h"
 #include <cassert>
 #include <memory>
+#include "firebase.h"
+#include "Authentication.h"
 
 Game::Game() {
     assert(!s_Instance && "Game already exists");
@@ -19,8 +21,12 @@ Game::Game() {
 Game::~Game() {
 }
 void Game::Init() {
+    LOGI("Game Initializing");
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(0, 0, "Popple");
+    InitializeFirebaseCore();
+    GetLocalUserId();
+    RunGameBootAuthentication();
 
     screenWidth = Globals::screenWidth = GetScreenWidth();
     screenHeight = Globals::screenHeight = GetScreenHeight();
@@ -45,16 +51,16 @@ void Game::Init() {
     m_Renderer        = std::make_unique<Renderer>(mainCamera3D, uiCamera);
     m_Scheduler       = std::make_unique<Scheduler>();
 
-    m_HomeScene     = SceneManager::Get().RegisterScene<HomeScene>(true);
-    m_GameplayScene = SceneManager::Get().RegisterScene<GameplayScene>(false);
-
-    m_HomeScene->SetActive(true);
+    SceneManager::Get().RegisterScene<HomeScene>(true);
 
     SetTargetFPS(60);
+    LOGI("Game Initializing Complete");
 }
 
 void Game::Run() {
+    LOGI("Game Loop Start");
     while (!WindowShouldClose()) {
+        UpdateUserLoginLoop();
         SceneManager::Get().StartScenes();
         Scheduler::Get().Update(GetFrameTime());
         SceneManager::Get().UpdateScenes(GetFrameTime());
@@ -64,6 +70,7 @@ void Game::Run() {
 }
 
 void Game::Shutdown() {
+    CleanupFirebase();
     Renderer::Get().Cleanup();
     CloseWindow();
 }

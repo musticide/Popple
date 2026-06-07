@@ -9,9 +9,7 @@
 #include <vector>
 
 class SceneManager : public Singleton<SceneManager> {
-public:
-    void AddScene(Scene* scene);
-
+  public:
     void StartScenes();
 
     void UpdateScenes(float dT);
@@ -20,32 +18,39 @@ public:
 
     // void DrawUI();
 
-    // Scene* GetScene(const char* name);
     Scene* GetScene(SceneType type);
-
-    const std::vector<Scene*>& GetScenes() const { return m_Scenes; }
 
     void ActivateScene(SceneType type);
     void DeactivateScene(SceneType type);
-    // void ActivateScene(const char* name);
-    // void DeactivateScene(const char* name);
 
-    template <typename T> std::unique_ptr<T> RegisterScene(bool active)
-    {
+    template <typename T, typename... Args>
+    void RegisterScene(bool active, Args&&... args) {
         static_assert(std::is_base_of_v<Scene, T>, "T does not derive from Scene");
 
-        auto scene = std::make_unique<T>();
+        auto scene = std::make_unique<T>(std::forward<Args>(args)...);
         scene->SetActive(active);
-        assert(scene.get() && "Failed to create Scene");
-        m_Scenes.push_back(scene.get());
-        return std::move(scene);
+
+        int replaceAtIndex = scenes.size();
+        for (size_t i = 0; i < scenes.size(); i++) {
+            if (scene->GetType() == scenes[i]->GetType()) {
+                replaceAtIndex = i;
+            }
+        }
+
+        if (replaceAtIndex < scenes.size()) {
+            scenes[replaceAtIndex] = std::move(scene);
+        } else {
+            scenes.push_back(std::move(scene));
+        }
     }
+
+    std::vector<std::unique_ptr<Scene>> scenes;
 
     SceneManager();
     ~SceneManager();
 
-private:
-    std::vector<Scene*> m_Scenes;
+  private:
+    // std::vector<Scene*> m_Scenes;
     std::vector<Scene*> m_ScenesToActivate;
     std::vector<Scene*> m_ScenesToDeactivate;
 };

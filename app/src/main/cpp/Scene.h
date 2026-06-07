@@ -61,7 +61,7 @@ public:
         if (active) {
             LOGI("Scene activated: %s", m_Name);
             for (auto e : m_SceneEntities) {
-                if (e != nullptr && e->IsActive()) {
+                if (e != nullptr && e->IsActive() && e->hasStarted) {
                     e->OnEnable();
                 }
             }
@@ -69,7 +69,7 @@ public:
         } else {
             LOGI("Scene deactivated: %s", m_Name);
             for (auto e : m_SceneEntities) {
-                if (e != nullptr && e->IsActive()) {
+                if (e != nullptr && e->IsActive() && e->hasStarted) {
                     e->OnDisable();
                 }
             }

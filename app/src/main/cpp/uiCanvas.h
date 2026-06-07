@@ -1,7 +1,6 @@
 #pragma once
 #include "DrawableEntity.h"
 #include "Log.h"
-#include "Scene.h"
 #include <cstddef>
 #include <memory>
 #include <utility>
@@ -36,6 +35,8 @@ class Canvas : public DrawableEntity{
 
         return std::move(element);
     }
+
+    void Start() override;
 
     void Update(float dT = 1.0f) override;
 

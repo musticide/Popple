@@ -17,7 +17,7 @@ ui::Image::~Image() {
 
 void ui::Image::Draw() const {
     if (m_Texture && m_Texture->id != 0) {
-        DrawTexturePro(*m_Texture, drawRect, fRect, Vector2{ 0, 0 }, 0.0f, WHITE);
+        DrawTexturePro(*m_Texture, drawRect, fRect, Vector2{ 0, 0 }, 0.0f, tint);
     } else {
         DrawRectangleRec(fRect, PINK);
     }

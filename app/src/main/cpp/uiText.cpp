@@ -1,12 +1,19 @@
 #include "uiText.h"
 #include "raylib.h"
+#include "raymath.h"
 
-Font ui::Text::aceBold;
+// Font ui::Text::aceBold;
+// Font ui::Text::roundedMPlus_ExtraBold;
+std::array<Font, 2> ui::Text::fonts;
 
-ui::Text::Text(Rectangle rect, int fitType)
-: UIElement(rect, fitType) {
+ui::Text::Text(FontName font, Rectangle rect, int fitType)
+: UIElement(rect, fitType)
+, activeFont(font) {
+    if (!IsFontValid(fonts[ACE_BOLD])) fonts[ACE_BOLD] = LoadFontEx("fonts/AcephimereBold.otf", 72, 0, 250);
+    if (!IsFontValid(fonts[ROUNDED_MPLUS_EXTRABOLD]))
+        fonts[ROUNDED_MPLUS_EXTRABOLD] = LoadFontEx("fonts/MPLUSRounded1c-ExtraBold.ttf", 72, 0, 250);
 
-    if (!IsFontValid(aceBold)) aceBold = LoadFontEx("fonts/AcephimereBold.otf", 72, 0, 250);
+    textPos = {rect.x, rect.y};
 }
 
 ui::Text::~Text() {
@@ -14,7 +21,7 @@ ui::Text::~Text() {
 
 void ui::Text::Draw() const {
 
-    DrawTextEx(aceBold, text.c_str(), textPos + textPosOffset, fontSize, 2, color);
+    DrawTextEx(fonts[activeFont], text.c_str(), textPos + textPosOffset, fontSize, 2, color);
 }
 void ui::Text::Move(Vector2 pos) {
     textPos += pos;
@@ -33,7 +40,7 @@ void ui::Text::SetPosition(Vector2 pos) {
 
 void ui::Text::SetText(std::string text) {
     this->text = text;
-    textSize   = MeasureTextEx(aceBold, text.c_str(), (float)fontSize, 2);
+    textSize   = MeasureTextEx(fonts[activeFont], text.c_str(), (float)fontSize, 2);
     textPos    = (Vector2){ fRect.x + Lerp(0.0f, fRect.width - textSize.x, ((float)hAlign) * 0.5f),
            fRect.y + Lerp(0.0f, fRect.height - textSize.y, ((float)vAlign) * 0.5f) };
 }

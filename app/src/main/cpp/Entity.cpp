@@ -1,17 +1,23 @@
 #include "Entity.h"
 #include "Scene.h"
 
-Entity::Entity() { }
+Entity::Entity() {
+}
 
-Entity::~Entity() { }
+Entity::~Entity() {
+}
 
-void Entity::Update(float dT) { }
+void Entity::Update(float dT) {
+}
 
-void Entity::Start() { }
+void Entity::Start() {
+}
 
-void Entity::SetActive(bool active)
-{
+void Entity::SetActive(bool active) {
+
     m_IsActive = active;
+    if (!hasStarted) return;
+
     if (active)
         OnEnable();
     else
@@ -19,9 +25,10 @@ void Entity::SetActive(bool active)
 }
 
 Entity::Entity(Scene* scene)
-    : parentScene(scene)
-{
+: parentScene(scene) {
 }
 
-void Entity::OnEnable() { }
-void Entity::OnDisable() { }
+void Entity::OnEnable() {
+}
+void Entity::OnDisable() {
+}

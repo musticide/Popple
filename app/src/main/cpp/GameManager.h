@@ -1,11 +1,17 @@
 #pragma once
 
 #include "Entity.h"
+#include "LevelConfig.h"
 #include "Signal.h"
 #include "Singleton.h"
+#include "spatialGrid.h"
 #include <array>
+#include <memory>
 #include <raymob.h>
 #include <raymath.h>
+
+class BubbleManager;
+class EffectManager;
 
 enum class ElementType {
     ELECTRO,
@@ -25,12 +31,9 @@ static struct GameData {
 
 class GameManager : public Entity, public Singleton<GameManager> {
   public:
-    GameManager();
+    GameManager(LevelConfig config);
     ~GameManager();
 
-
-    // Signal<ElementType> activeElementEffectChanged;
-    // ElementType activeEffect = ElementType::NONE;
     void AddSpecialBubbleInternal(ElementType type);
 
     /// 1st arg current score
@@ -49,18 +52,6 @@ class GameManager : public Entity, public Singleton<GameManager> {
     }
     void DecreaseHealth(int amount);
 
-    /// 1st arg current spawn Interval
-    /// 2nd arg spawnInterval delta
-    Signal<float, float> spawnIntervalChanged;
-    /**
-     * @ Use During initialisation only.
-     * @ Connect to spawnIntervalChanged for repeated calls
-     */
-    float GetSpawnInterval() const {
-        return m_SpawnInterval;
-    }
-    void DecreaseSpawnInterval(float amount);
-
     void Start() override;
     void OnEnable() override;
 
@@ -74,14 +65,19 @@ class GameManager : public Entity, public Singleton<GameManager> {
 
     static void PauseBubbleSpawn(bool pause);
 
+    LevelConfig levelConfig;
+
+    std::unique_ptr<EffectManager> effectManager = nullptr;
+    std::unique_ptr<BubbleManager> bubbleManager = nullptr;
+    std::unique_ptr<SpatialGrid> spatialGrid = nullptr;
 
   private:
+    LevelConfig m_LevelConfig;
+
     int m_Score  = 0;
     int m_Health = 100;
     std::array<int, (int)ElementType::COUNT> m_ComboCount;
 
-    float m_SpawnInterval    = 1.4f;
-    float m_MinSpawnInterval = 0.20f;
     float gameStartTime      = 0.0f;
 
     void ResetComboCount();

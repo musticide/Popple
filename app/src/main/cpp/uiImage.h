@@ -11,6 +11,7 @@ class Image : public UIElement{
     ~Image();
 
     void Draw() const override;
+    Color tint = WHITE;
 
   private:
     std::shared_ptr<Texture2D> m_Texture;

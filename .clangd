@@ -1,31 +1,39 @@
+# Section 1: Fix header parsing without breaking .cpp files
+If:
+  PathMatch: .*\.h
 CompileFlags:
   Add:
-    # Forces clangd to treat .h files as C++ headers
     - -x
     - c++-header
 
-    # Existing NDK Toolchain & Driver settings
+---
+
+# Section 2: Core NDK & Project configuration
+CompileFlags:
+  Add:
+    # - "--query-driver=C:\\Users\\owlci\\AppData\\Local\\Android\\Sdk\\ndk\\26.1.10909125\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\*"
     - "--query-driver=C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\bin\*"
 
-    # NDK Headers [cite: 1, 2]
+    # NDK Headers (Safe forward slashes)
     - -isystem
-    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\sources\cxx-stl\llvm-libc++\include
+    - C:/Users/owlci/AppData/Local/Android/Sdk/ndk/26.1.10909125/sources/cxx-stl/llvm-libc++/include
     - -isystem
-    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\sources\cxx-stl\llvm-libc++abi\include
+    - C:/Users/owlci/AppData/Local/Android/Sdk/ndk/26.1.10909125/sources/cxx-stl/llvm-libc++abi/include
     - -isystem
-    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include
+    - C:/Users/owlci/AppData/Local/Android/Sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include
     - -isystem
-    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\android
+    - C:/Users/owlci/AppData/Local/Android/Sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/android
     - -isystem
-    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\sysroot\usr\include
+    - C:/Users/owlci/AppData/Local/Android/Sdk/ndk/26.1.10909125/sysroot/usr/include
     - -isystem
-    - C:\Users\owlci\AppData\Local\Android\Sdk\ndk\26.1.10909125\toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\include\GLES2
+    - C:/Users/owlci/AppData/Local/Android/Sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/GLES2
 
-    # Project-specific headers [cite: 2]
+    # Project-specific headers
     - -Iapp/src/main/cpp/deps/raylib
     - -Iapp/src/main/cpp/deps/raymob
+    - -Iapp/src/main/cpp/deps/firebase_cpp_sdk/include
 
-    # Compiler settings [cite: 2]
+    # Compiler settings
     - -DANDROID
     - -D__ANDROID_API__=24
     - -std=c++17

@@ -2,6 +2,7 @@
 
 #include "GameCanvas.h"
 #include "GameManager.h"
+#include "LevelConfig.h"
 #include "Scene.h"
 #include "StaticMesh.h"
 #include "TouchFeedback.h"
@@ -14,19 +15,19 @@
 
 class GameplayScene : public Scene{
 public:
-    GameplayScene();
+    GameplayScene(LevelConfig config);
     ~GameplayScene();
 
-private:
+  private:
 
     //Entities
-    std::unique_ptr<EffectManager> m_EffectManager;
     std::unique_ptr<GameManager> m_GameManager;
-    std::unique_ptr<BubbleManager> m_BubbleManager;
     std::unique_ptr<Tower> m_Tower;
     std::unique_ptr<StaticMesh> m_Background;
-    std::unique_ptr<SpatialGrid> m_SpatialGrid;
     std::unique_ptr<GameCanvas> m_GameCanvas;
+    // std::unique_ptr<EffectManager> m_EffectManager;
+    // std::unique_ptr<BubbleManager> m_BubbleManager;
+    // std::unique_ptr<SpatialGrid> m_SpatialGrid;
 
 };
 

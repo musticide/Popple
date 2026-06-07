@@ -3,6 +3,7 @@
 #include "Entity.h"
 
 enum class RenderQueue { SKY, OPAQUE, TRANSPARENT, UI };
+class Scene;
 
 class DrawableEntity : public Entity {
 public:
