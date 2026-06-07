@@ -13,7 +13,7 @@ private:
     Material m_Material;
 
 public:
-    StaticMesh(const char* filepath, RenderQueue type);
+    StaticMesh(Scene* parentScene, const char* filepath, RenderQueue type);
     StaticMesh(StaticMesh&&) = default;
     StaticMesh(const StaticMesh&) = default;
     StaticMesh& operator=(StaticMesh&&) = default;

@@ -4,8 +4,8 @@
 
 using namespace ui;
 
-Canvas::Canvas() 
-:DrawableEntity(RenderQueue::UI)
+Canvas::Canvas(Scene* parentScene) 
+:DrawableEntity(parentScene, RenderQueue::UI), parentScene(parentScene)
 {
 }
 

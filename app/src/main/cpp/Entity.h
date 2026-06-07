@@ -6,7 +6,6 @@ class DrawableEntity;
 
 class Entity {
 public:
-    Entity();
     Entity(Scene* scene);
     Entity(Entity&&) = default;
     Entity(const Entity&) = default;
@@ -14,7 +13,7 @@ public:
     Entity& operator=(const Entity&) = default;
     ~Entity();
 
-    Scene* parentScene;
+    // Scene* parentScene;
     bool hasStarted = false;
 
     // protected:

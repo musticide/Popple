@@ -12,7 +12,9 @@
 #include <stdbool.h>
 #include <string>
 
-GameCanvas::GameCanvas() {
+GameCanvas::GameCanvas(Scene* parentScene) 
+:ui::Canvas(parentScene)
+{
     scoreBox = CreateElement<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 35, 65, 350, 128 }, ui::FIXED_H | ui::FIXED_V);
     scoreBox->drawRect = { 0, 0, 350, 128 };

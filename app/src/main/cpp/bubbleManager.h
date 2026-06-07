@@ -4,6 +4,7 @@
 #include "GameManager.h"
 #include "LevelConfig.h"
 #include "ParticleSystem.h"
+#include "Scene.h"
 #include "Singleton.h"
 #include "raylib.h"
 #include <array>
@@ -77,7 +78,6 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     float electroShieldRadius;
 
     std::shared_ptr<Model> m_BubbleBaseModel;
-    std::array<Material, (size_t)ElementType::COUNT> bubbleMaterials;
     std::array<Color, (size_t)ElementType::COUNT> bubbleColors = {
         (Color){ 139, 66, 255, 255 }, // PURPLE electro
         (Color){ 66, 255, 195, 255 }, // Green anemo
@@ -88,7 +88,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     void DecreaseSpawnInterval();
 
   public:
-    BubbleManager(LevelConfig config);
+    BubbleManager(Scene* parentScene, LevelConfig config);
     ~BubbleManager();
 
     void Start() override;

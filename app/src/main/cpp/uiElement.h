@@ -15,7 +15,7 @@ enum FitType {
 
 class UIElement : public DrawableEntity {
   public:
-    UIElement(Rectangle rect, int fitType = STRETCH_H | STRETCH_V);
+    UIElement(Scene* parentScene, Rectangle rect, int fitType = STRETCH_H | STRETCH_V);
     UIElement(UIElement&&)                 = default;
     UIElement(const UIElement&)            = default;
     UIElement& operator=(UIElement&&)      = default;

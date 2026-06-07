@@ -3,8 +3,8 @@
 #include "ResourceManager.h"
 #include "raylib.h"
 
-StaticMesh::StaticMesh(const char* filepath, RenderQueue type)
-    : DrawableEntity(type),
+StaticMesh::StaticMesh(Scene* parentScene, const char* filepath, RenderQueue type)
+    : DrawableEntity(parentScene, type),
     m_Filepath(filepath)
 {
     m_Model = LoadModelFromMesh(ResourceManager::GetModel(filepath)->meshes[0]);

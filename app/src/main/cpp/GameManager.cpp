@@ -10,9 +10,12 @@
 
 int GameData::availableElementCount = 3;
 
-GameManager::GameManager(LevelConfig config)
-:levelConfig(config)
+GameManager::GameManager(Scene* parentScene, LevelConfig config)
+:Entity(parentScene), levelConfig(config)
 {
+    effectManager = parentScene->CreateEntity<EffectManager>(true);
+    spatialGrid   = parentScene->CreateEntity<SpatialGrid>(true);
+    bubbleManager = parentScene->CreateEntity<BubbleManager>(true, levelConfig);
 }
 GameManager::~GameManager() {
 }
@@ -50,9 +53,6 @@ void GameManager::DecreaseHealth(int amount) {
 }
 
 void GameManager::Start() {
-    effectManager = parentScene->CreateEntity<EffectManager>(true);
-    spatialGrid   = parentScene->CreateEntity<SpatialGrid>(true);
-    bubbleManager = parentScene->CreateEntity<BubbleManager>(true, levelConfig);
     ResetGameValues();
     // activeElementEffectChanged(activeEffect);
     scoreChanged(m_Score, 0);

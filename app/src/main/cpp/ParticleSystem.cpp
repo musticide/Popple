@@ -8,8 +8,8 @@
 #include "utils.h"
 #include <cmath>
 
-ParticleSystem::ParticleSystem(int maxParticles)
-: DrawableEntity(RenderQueue::TRANSPARENT), maxParticles(maxParticles) {
+ParticleSystem::ParticleSystem(Scene* parentScene, int maxParticles)
+: DrawableEntity(parentScene, RenderQueue::TRANSPARENT), maxParticles(maxParticles) {
     m_CurrentIndex = maxParticles - 1;
 }
 ParticleSystem::~ParticleSystem() {

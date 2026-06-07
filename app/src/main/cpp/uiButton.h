@@ -6,21 +6,23 @@
 #include <memory>
 
 namespace ui {
-class Button : public ui::Image{
-public:
-  Button(const char* filepath, Rectangle rect, int fitType);
-  Button(Button&&)                 = default;
-  Button(const Button&)            = default;
-  Button& operator=(Button&&)      = default;
-  Button& operator=(const Button&) = default;
-  ~Button();
+class Button : public ui::Image {
+  public:
+    Button(Scene* parentScene, const char* filepath, Rectangle rect, int fitType);
+    Button(Button&&)                 = default;
+    Button(const Button&)            = default;
+    Button& operator=(Button&&)      = default;
+    Button& operator=(const Button&) = default;
+    ~Button();
 
-  Signal<> onClick;
+    Signal<> onClick;
 
-  void Update(float dT = 1.0f) override;
+    void Update(float dT = 1.0f) override;
+    ///TODO: Set raycast rect scaling
+    Rectangle raycastRect;
+    bool clickable = true;
 
-private:
+  private:
     std::shared_ptr<Texture2D> m_Texture;
 };
-}
-
+} // namespace ui

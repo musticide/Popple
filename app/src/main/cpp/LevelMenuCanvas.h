@@ -8,7 +8,7 @@
 
 class LevelMenuCanvas : public ui::Canvas {
   public:
-    LevelMenuCanvas();
+    LevelMenuCanvas(Scene* parentScene);
     ~LevelMenuCanvas();
     std::unique_ptr<ui::Image> bgImage = nullptr;
     std::array<std::unique_ptr<LevelButton>, 12> levelBtns = { 0 };

@@ -7,7 +7,7 @@
 
 class HomeCanvas : public ui::Canvas {
 public:
-    HomeCanvas();
+    HomeCanvas(Scene* parentScene);
     HomeCanvas(HomeCanvas &&) = default;
     HomeCanvas(const HomeCanvas &) = default;
     HomeCanvas &operator=(HomeCanvas &&) = default;

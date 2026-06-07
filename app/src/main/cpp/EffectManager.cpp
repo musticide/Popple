@@ -5,20 +5,21 @@
 #include "ResourceManager.h"
 #include "Scene.h"
 #include "bubbleManager.h"
-#include <raymob.h>
-#include <stdbool.h>
 #include "raylib.h"
 #include "raymath.h"
+#include <raymob.h>
+#include <stdbool.h>
 
-EffectManager::EffectManager() {
+EffectManager::EffectManager(Scene* parentScene)
+: Entity(parentScene) {
+    InitElectroShield(parentScene);
+    InitAnemoShield(parentScene);
 }
 
 EffectManager::~EffectManager() {
 }
 
 void EffectManager::Start() {
-    InitElectroShield();
-    InitAnemoShield();
 
     LOGI("effect manager start");
 }
@@ -78,7 +79,7 @@ void EffectManager::Update(float dT) {
     }
 }
 
-void EffectManager::InitElectroShield() {
+void EffectManager::InitElectroShield(Scene* parentScene) {
 
     m_ElectroShieldMesh =
         parentScene->CreateEntity<StaticMesh>(true, "models/ElectroShield.glb", RenderQueue::TRANSPARENT);
@@ -99,7 +100,7 @@ void EffectManager::ActivateElectroShield() {
     LOGI("Electro Shield Activated");
     m_ElectroShieldMesh->SetActive(true);
     ActivateEffect(ElementType::ELECTRO);
-    m_ElectroBlink = 0;
+    m_ElectroBlink     = 0;
     electroShieldTimer = 0.0f;
 }
 void EffectManager::DeactivateElectroShield() {
@@ -107,7 +108,7 @@ void EffectManager::DeactivateElectroShield() {
     m_ElectroShieldMesh->SetActive(false);
 }
 
-void EffectManager::InitAnemoShield() {
+void EffectManager::InitAnemoShield(Scene* parentScene) {
     m_AnemoShieldMesh = parentScene->CreateEntity<StaticMesh>(true, "models/BubbleBase_01.glb", RenderQueue::TRANSPARENT);
     m_AnemoShieldMesh->GetModel().materials[0].shader =
         *ResourceManager::GetShader("shaders/AnemoBubble.vert", "shaders/AnemoBubble.frag");
@@ -168,7 +169,7 @@ bool EffectManager::IsEffectCharged(ElementType type) {
     return effectCharged[(int)type];
 }
 
-void EffectManager::InitCryoShield() {
+void EffectManager::InitCryoShield(Scene* parentScene) {
 }
 
 void EffectManager::ActivateCryoShield() {

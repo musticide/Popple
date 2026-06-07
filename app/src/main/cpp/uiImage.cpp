@@ -3,7 +3,7 @@
 #include "raylib.h"
 #include <raymob.h>
 
-ui::Image::Image(const char* filepath, Rectangle rect, int fitType) : UIElement(rect, fitType) {
+ui::Image::Image(Scene* parentScene, const char* filepath, Rectangle rect, int fitType) : UIElement(parentScene, rect, fitType) {
     m_Texture = ResourceManager::GetTexture(filepath);
 
     if (m_Texture && m_Texture->id != 0)

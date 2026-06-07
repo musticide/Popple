@@ -27,9 +27,9 @@ public:
       static_assert(std::is_base_of<Entity, T>::value, "T must derive from Entity");
 
       LOGV("%s is creating entity", m_Name);
-      auto entity = std::make_unique<T>(std::forward<Args>(args)...);
+      auto entity = std::make_unique<T>(this, std::forward<Args>(args)...);
 
-      entity->parentScene = this;
+      // entity->parentScene = this;
       entity->SetActive(active);
 
       LOGV("Entity added to %s", m_Name);

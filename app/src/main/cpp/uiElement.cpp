@@ -4,8 +4,8 @@
 #include "uiCanvas.h"
 using namespace ui;
 
-UIElement::UIElement(Rectangle rect, int fitType)
-: DrawableEntity(RenderQueue::UI), fitType(fitType), baseRect(rect) {
+UIElement::UIElement(Scene* parentScene, Rectangle rect, int fitType)
+: DrawableEntity(parentScene, RenderQueue::UI), fitType(fitType), baseRect(rect) {
     SetFinalRectangle();
 }
 

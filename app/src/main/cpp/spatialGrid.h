@@ -21,7 +21,7 @@ private:
     std::vector<Bubble*> GetNearbyEntitiesInternal(Vector3 position) const;
 
 public:
-    SpatialGrid();
+    SpatialGrid(Scene* parentScene);
 
     static void Clear() { Get().ClearInternal(); }
 

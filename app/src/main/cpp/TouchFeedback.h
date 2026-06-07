@@ -8,7 +8,7 @@
 
 class TouchFeedback : public Entity{
 public:
-    TouchFeedback();
+    TouchFeedback(Scene* parentScene);
     ~TouchFeedback();
 
     void Start() override;

@@ -6,8 +6,8 @@
 #include "uiImage.h"
 #include "uiText.h"
 
-LevelButton::LevelButton(const char* filepath, Rectangle rect, int fitType)
-: ui::Button(filepath, rect, fitType) {
+LevelButton::LevelButton(Scene* parentScene, const char* filepath, Rectangle rect, int fitType)
+: ui::Button(parentScene, filepath, rect, fitType) {
 }
 
 LevelButton::~LevelButton() {

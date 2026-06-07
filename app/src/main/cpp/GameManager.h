@@ -31,7 +31,7 @@ static struct GameData {
 
 class GameManager : public Entity, public Singleton<GameManager> {
   public:
-    GameManager(LevelConfig config);
+    GameManager(Scene* parentScene, LevelConfig config);
     ~GameManager();
 
     void AddSpecialBubbleInternal(ElementType type);

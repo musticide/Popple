@@ -1,8 +1,6 @@
 #include "Entity.h"
 #include "Scene.h"
 
-Entity::Entity() {
-}
 
 Entity::~Entity() {
 }
@@ -25,7 +23,9 @@ void Entity::SetActive(bool active) {
 }
 
 Entity::Entity(Scene* scene)
-: parentScene(scene) {
+// : parentScene(scene) {
+// }
+{
 }
 
 void Entity::OnEnable() {

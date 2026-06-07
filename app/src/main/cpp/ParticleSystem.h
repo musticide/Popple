@@ -52,7 +52,7 @@ enum class EmitType{
 
 class ParticleSystem : public DrawableEntity{
 public:
-    ParticleSystem(int maxParticles);
+    ParticleSystem(Scene* parentScene, int maxParticles);
     ~ParticleSystem();
 
     ParticleProperties particleProperties;

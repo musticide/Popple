@@ -13,7 +13,7 @@ typedef Rectangle OffOnRect[2];
 
 class GameCanvas : public ui::Canvas, public Singleton<GameCanvas> {
   public:
-    GameCanvas();
+    GameCanvas(Scene* parentScene);
     ~GameCanvas();
 
     Rectangle elementRects[(size_t)ElementType::COUNT] = {

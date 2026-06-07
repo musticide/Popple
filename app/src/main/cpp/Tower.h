@@ -18,7 +18,7 @@ public:
     Vector3 scale;
     Color color;
 
-    Tower();
+    Tower(Scene* parentScene);
     Tower(Tower &&) = default;
     Tower(const Tower &) = default;
     Tower &operator=(Tower &&) = default;

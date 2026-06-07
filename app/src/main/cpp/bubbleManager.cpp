@@ -20,29 +20,20 @@
 
 float Bubble::speedMultiplier = 1.f;
 
-BubbleManager::BubbleManager(LevelConfig config)
-: DrawableEntity(RenderQueue::OPAQUE)
+BubbleManager::BubbleManager(Scene* parentScene, LevelConfig config)
+: DrawableEntity(parentScene, RenderQueue::OPAQUE), m_SpawnInterval(config.startSpawnInterval)
 , m_LevelConfig(config) {
-    LOGI("Bubble Manager constructed");
-}
-
-BubbleManager::~BubbleManager() {
-}
-
-void BubbleManager::Start() {
     m_Bubbles.resize(INITIAL_POOL_SIZE);
     for (int i = 0; i < m_Bubbles.size(); i++) {
-        m_Bubbles[i] = std::make_unique<Bubble>();
+        m_Bubbles[i]           = std::make_unique<Bubble>();
         m_Bubbles[i]->isActive = false;
     }
     m_BubbleBaseModel = ResourceManager::GetModel("models/BubbleBase_01.glb");
     m_BubbleBaseModel->materials[0].shader =
         *ResourceManager::GetShader("shaders/bubbleBasic.vert", "shaders/bubbleBasic.frag");
 
-    electroShieldRadius = GameData::electroShieldRadius;
 
-    burstParticles = parentScene->CreateEntity<ParticleSystem>(true, 25);
-
+    burstParticles                                    = parentScene->CreateEntity<ParticleSystem>(true, 25);
     burstParticles->particleProperties.lifetime       = 0.25f;
     burstParticles->particleProperties.startSize      = 0.04f;
     burstParticles->particleProperties.endSize        = 0.005f;
@@ -54,6 +45,15 @@ void BubbleManager::Start() {
     burstParticles->particleProperties.damping        = 0.45f;
     burstParticles->particleProperties.startColor     = bubbleColors[0];
     burstParticles->particleProperties.endColor       = { 255, 255, 255, 0 };
+
+    LOGI("Bubble Manager constructed");
+}
+
+BubbleManager::~BubbleManager() {
+}
+
+void BubbleManager::Start() {
+    electroShieldRadius = GameData::electroShieldRadius;
 }
 
 void BubbleManager::OnEnable() {
@@ -164,7 +164,7 @@ void BubbleManager::SpawnBubble(Bubble* bubble) {
     // SET Bubble type
     if (RollPercentage(m_LevelConfig.powerUpSpawnChance)) {
         // bubble->type = (ElementType)GetRandomValue(0, (int)ElementType::NONE);
-        bubble->type = m_LevelConfig.availablePowerUps[GetRandomValue(0, m_LevelConfig.availablePowerUps.size())];
+        bubble->type = m_LevelConfig.availablePowerUps[GetRandomValue(0, m_LevelConfig.availablePowerUps.size() - 1)];
     } else {
         bubble->type = ElementType::NONE;
     }
@@ -219,6 +219,8 @@ void BubbleManager::Reset() {
     for (int i = 0; i < m_Bubbles.size(); i++) {
         m_Bubbles[i]->isActive = false;
     }
+    m_SpawnTimer = 0.f;
+    m_SpawnInterval = m_LevelConfig.startSpawnInterval;
 }
 void BubbleManager::AnemoPushBack(bool active) {
     if (active) {

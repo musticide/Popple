@@ -7,7 +7,7 @@ class Scene;
 
 class DrawableEntity : public Entity {
 public:
-    DrawableEntity(RenderQueue type);
+    DrawableEntity(Scene* parentScene, RenderQueue type);
     DrawableEntity(DrawableEntity&&) = default;
     DrawableEntity(const DrawableEntity&) = default;
     DrawableEntity& operator=(DrawableEntity&&) = default;

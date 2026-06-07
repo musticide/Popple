@@ -2,12 +2,16 @@
 #include "GameManager.h"
 #include "GameplayScene.h"
 #include "LevelConfig.h"
+#include "PlayerProfile.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "raylib.h"
 #include "uiButton.h"
+#include "uiCanvas.h"
 
-LevelMenuCanvas::LevelMenuCanvas() {
+LevelMenuCanvas::LevelMenuCanvas(Scene* parentScene)
+:ui::Canvas(parentScene)
+{
     bgImage = CreateElement<ui::Image>(
         true, "textures/MainMenuBG.png", Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_H | ui::STRETCH_V);
 
@@ -18,7 +22,6 @@ LevelMenuCanvas::LevelMenuCanvas() {
         rect.y += std::floor(i / 3.f) * (rect.height + spacing.y);
 
         levelBtns[i] = CreateElement<LevelButton>(true, "textures/LevelsMenuAtlas.png", rect, ui::FIXED_H | ui::FIXED_V);
-        levelBtns[i]->drawRect = { 5, 5, 260, 260 };
 
         levelBtns[i]->onClick.connect([this, i]() {
             m_LevelConfig = (LevelConfig){ .level = i + 1,
@@ -29,6 +32,7 @@ LevelMenuCanvas::LevelMenuCanvas() {
                 .availablePowerUps                = { ElementType::ELECTRO } };
         });
         levelBtns[i]->SetLevelNumber(i + 1);
+        levelBtns[i]->SetClickable(i <= PlayerProfile.highestLevelCleared.value);
     }
     playBtn = CreateElement<ui::Button>(
         true, "textures/LevelsMenuAtlas.png", Rectangle{ 191, 1732, 697, 350 }, ui::FIXED_H | ui::FIXED_V);

@@ -8,7 +8,7 @@
 
 class EffectManager : public Entity, public Singleton<EffectManager> {
   public:
-    EffectManager();
+    EffectManager(Scene* parentScene);
     ~EffectManager();
 
     void ChargeEffect(ElementType type);
@@ -47,15 +47,15 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
     std::array<bool, (int)ElementType::COUNT> effectCharged = { false };
     std::array<bool, (int)ElementType::COUNT> effectActive  = { false };
 
-    void InitElectroShield();
+    void InitElectroShield(Scene* parentScene);
     void ActivateElectroShield();
     void DeactivateElectroShield();
 
-    void InitAnemoShield();
+    void InitAnemoShield(Scene* parentScene);
     void ActivateAnemoShield();
     void DeactivateAnemoShield();
 
-    void InitCryoShield();
+    void InitCryoShield(Scene* parentScene);
     void ActivateCryoShield();
     void DeactivateCryoShield();
 };

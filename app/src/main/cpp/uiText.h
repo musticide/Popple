@@ -23,7 +23,7 @@ enum FontName {
 };
 class Text : public UIElement {
   public:
-    Text(FontName font, Rectangle rect, int fitType);
+    Text(Scene* parentScene,FontName font, Rectangle rect, int fitType);
     Text(const Text&)            = default;
     Text& operator=(Text&&)      = default;
     Text& operator=(const Text&) = default;
