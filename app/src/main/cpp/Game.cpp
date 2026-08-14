@@ -22,7 +22,6 @@ Game::~Game() {
 }
 void Game::Init() {
     LOGI("Game Initializing");
-    SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(0, 0, "Popple");
     InitializeFirebaseCore();
     GetLocalUserId();

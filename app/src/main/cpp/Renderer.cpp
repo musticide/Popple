@@ -13,11 +13,11 @@ Renderer::Renderer(Camera3D& mainCam, Camera2D& uiCam)
     screenSize.x = GetScreenWidth();
     screenSize.y = GetScreenHeight();
     // renderTarget = LoadRenderTexture(screenSize.x, screenSize.y);
-    colorRT = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
     SetTextureFilter(colorRT.texture, TEXTURE_FILTER_BILINEAR);
-    colorRT.texture.format = PIXELFORMAT_UNCOMPRESSED_R16G16B16A16; // 16*4 bpp (4 channels - half float)
-    outlineRT              = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    colorRT.texture.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8; // 16*4 bpp (4 channels - half float)
+    colorRT = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
     SetTextureFilter(outlineRT.texture, TEXTURE_FILTER_BILINEAR);
+    outlineRT              = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 
     copyShader       = *ResourceManager::GetShader(0, "shaders/copy.frag");
     outlineShader    = *ResourceManager::GetShader(0, "shaders/outline.frag");
@@ -28,21 +28,21 @@ Renderer::Renderer(Camera3D& mainCam, Camera2D& uiCam)
     backgroundTexture = *ResourceManager::GetTexture("textures/T_GameBG.png");
 
     if (doBloom) {
-        bloomFilterRT = LoadRenderTexture(screenSize.x, screenSize.y);
         SetTextureFilter(bloomFilterRT.texture, TEXTURE_FILTER_BILINEAR);
-        bloomFilterRT.texture.format = PIXELFORMAT_UNCOMPRESSED_R16G16B16;
+        bloomFilterRT.texture.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
+        bloomFilterRT = LoadRenderTexture(screenSize.x, screenSize.y);
 
-        bloomResultRT = LoadRenderTexture(screenSize.x, screenSize.y);
         SetTextureFilter(bloomResultRT.texture, TEXTURE_FILTER_BILINEAR);
-        bloomResultRT.texture.format = PIXELFORMAT_UNCOMPRESSED_R16G16B16;
+        bloomResultRT.texture.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
+        bloomResultRT = LoadRenderTexture(screenSize.x, screenSize.y);
 
         for (size_t i = 0; i < bloomPyramidRT.size(); i++) {
             // last two RT should be of same size for ping-pong
             float scale = 1.f / ((std::min(i, bloomPyramidRT.size() - 2) + 1) * 4.f);
 
-            bloomPyramidRT[i] = LoadRenderTexture(screenSize.x * scale, screenSize.y * scale);
             SetTextureFilter(bloomPyramidRT[i].texture, TEXTURE_FILTER_BILINEAR);
-            bloomPyramidRT[i].texture.format = PIXELFORMAT_UNCOMPRESSED_R16G16B16;
+            bloomPyramidRT[i].texture.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
+            bloomPyramidRT[i] = LoadRenderTexture(screenSize.x * scale, screenSize.y * scale);
         }
 
         bloomFilterShader = *ResourceManager::GetShader(0, "shaders/bloomFilter.frag");
