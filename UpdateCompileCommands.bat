@@ -1,0 +1,2 @@
+@echo off
+copy app\.cxx\tools\debug\arm64-v8a\compile_commands.json .
