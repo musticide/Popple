@@ -13,9 +13,6 @@ class Image : public UIElement{
 
     void Draw() const override;
     Color tint = WHITE;
-    float scale = 1.f;
-    float rotation = 0.f;
-    Vector2 pivot = Vector2Zero();
 
   private:
     std::shared_ptr<Texture2D> m_Texture;

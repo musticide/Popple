@@ -1,17 +1,19 @@
 #include "Game.h"
+#include "Authentication.h"
 #include "Globals.h"
 #include "Log.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
+#include "firebase.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "raymob.h"
 #include "scheduler.h"
+#include "uiElement.h"
+#include "uiUtils.h"
 #include <cassert>
 #include <memory>
-#include "firebase.h"
-#include "Authentication.h"
 
 Game::Game() {
     assert(!s_Instance && "Game already exists");
@@ -22,6 +24,7 @@ Game::~Game() {
 }
 void Game::Init() {
     LOGI("Game Initializing");
+    // SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(0, 0, "Popple");
     InitializeFirebaseCore();
     GetLocalUserId();
@@ -29,6 +32,9 @@ void Game::Init() {
 
     screenWidth = Globals::screenWidth = GetScreenWidth();
     screenHeight = Globals::screenHeight = GetScreenHeight();
+
+    Globals::uiScale = { (float)Globals::screenWidth / Globals::baseScreenWidth,
+        (float)Globals::screenHeight / Globals::baseScreenHeight };
 
     uiCamera          = { 0 };
     uiCamera.target   = (Vector2){ 0.0f, 0.0f };

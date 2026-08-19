@@ -1,9 +1,11 @@
 #include "Globals.h"
+#include "raylib.h"
 
-int Globals::screenWidth   = 0;
-int Globals::screenHeight  = 0;
+int Globals::screenWidth  = 0;
+int Globals::screenHeight = 0;
 
 const int Globals::baseScreenWidth = 1080, Globals::baseScreenHeight = 2340;
+Vector2 Globals::uiScale = { 0.f, 0.f };
 
 void Globals::StartGame() {
     // SceneManager::Get().ActivateScene(SceneType::GAMEPLAY);

@@ -14,13 +14,13 @@ LevelButton::~LevelButton() {
 }
 void LevelButton::Start() {
     levelText = this->CreateChild<ui::Text>(
-        true, ui::ROUNDED_MPLUS_EXTRABOLD, Rectangle{ 59, 86, 144, 72 }, ui::FIXED_H | ui::FIXED_V);
+        true, ui::ROUNDED_MPLUS_EXTRABOLD, Rectangle{ 59, 86, 144, 72 }, ui::FIXED_H | ui::FIXED_H);
     levelText->hAlign = ui::ALIGN_CENTER;
     levelText->vAlign = ui::ALIGN_MIDDLE;
     levelText->SetText("");
     levelText->fontSize = 95;
 
     ratingImg = this->CreateChild<ui::Image>(
-        true, "textures/LevelsMenuAtlas.png", Rectangle{ 39, 8, 183, 78 }, ui::FIXED_H | ui::FIXED_V);
+        true, "textures/LevelsMenuAtlas.png", Rectangle{ 39, 8, 183, 78 }, ui::FIXED_H | ui::FIXED_H);
     ratingImg->drawRect = ratingRects[0];
 }

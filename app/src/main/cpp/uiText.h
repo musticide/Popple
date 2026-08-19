@@ -50,6 +50,8 @@ class Text : public UIElement {
     std::string text = "Sample Text";
     Vector2 textSize = { 0, 0 };
     Vector2 textPos = { 0, 0 }, textPosOffset = { 0, 0 };
+
+    void UpdateTextPos();
 };
 
 } // namespace ui

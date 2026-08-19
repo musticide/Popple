@@ -16,52 +16,52 @@ GameCanvas::GameCanvas(Scene* parentScene)
 :ui::Canvas(parentScene)
 {
     scoreBox = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 35, 65, 350, 128 }, ui::FIXED_H | ui::FIXED_V);
+        true, "textures/GameplayAtlas.png", Rectangle{ 35, 65, 350, 128 }, ui::FIXED_W | ui::FIXED_H);
     scoreBox->drawRect = { 0, 0, 350, 128 };
 
     scoreIcon = scoreBox->CreateChild<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 29, 19, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
+        true, "textures/GameplayAtlas.png", Rectangle{ 29, 19, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
     scoreIcon->drawRect = { 112, 136, 90, 90 };
 
     scoreText = scoreBox->CreateChild<ui::Text>(
-        true, ui::ACE_BOLD, Rectangle{ 138, 21, 184, 86 }, ui::FIXED_H | ui::FIXED_V);
+        true, ui::ACE_BOLD, Rectangle{ 138, 21, 184, 86 }, ui::FIXED_W | ui::FIXED_H);
     scoreText->hAlign = ui::ALIGN_CENTER;
     scoreText->vAlign = ui::ALIGN_MIDDLE;
 
     for (auto& scorePopText : scorePopTexts) {
         scorePopText =
-            CreateElement<ui::Text>(false, ui::ACE_BOLD, Rectangle{ 0, 0, 100, 86 }, ui::FIXED_H | ui::FIXED_V);
+            CreateElement<ui::Text>(false, ui::ACE_BOLD, Rectangle{ 0, 0, 100, 86 }, ui::FIXED_W | ui::FIXED_H);
         scoreText->hAlign    = ui::ALIGN_LEFT;
         scorePopText->vAlign = ui::ALIGN_TOP;
     }
 
     for (auto& healthPopText : healthPopTexts) {
         healthPopText =
-            CreateElement<ui::Text>(false, ui::ACE_BOLD, Rectangle{ 530, 1170, 100, 86 }, ui::FIXED_H | ui::FIXED_V);
+            CreateElement<ui::Text>(false, ui::ACE_BOLD, Rectangle{ 530, 1170, 100, 86 }, ui::FIXED_W | ui::FIXED_H);
         scoreText->hAlign     = ui::ALIGN_LEFT;
         healthPopText->vAlign = ui::ALIGN_TOP;
     }
 
 
     healthBox = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 688, 65, 350, 128 }, ui::FIXED_H | ui::FIXED_V);
+        true, "textures/GameplayAtlas.png", Rectangle{ 688, 65, 350, 128 }, ui::FIXED_W | ui::FIXED_H);
     healthBox->drawRect = { 0, 0, -350, 128 };
 
     healthIcon = healthBox->CreateChild<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 231, 19, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
+        true, "textures/GameplayAtlas.png", Rectangle{ 231, 19, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
     healthIcon->drawRect = { 0, 136, 90, 90 };
 
     healthText = healthBox->CreateChild<ui::Text>(
-        true, ui::ACE_BOLD, Rectangle{ 17, 21, 184, 86 }, ui::FIXED_H | ui::FIXED_V);
+        true, ui::ACE_BOLD, Rectangle{ 17, 21, 184, 86 }, ui::FIXED_W | ui::FIXED_H);
     healthText->hAlign = ui::ALIGN_CENTER;
     healthText->vAlign = ui::ALIGN_MIDDLE;
 
     comboCircles[0] = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 376, 1980, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
+        true, "textures/GameplayAtlas.png", Rectangle{ 376, 1980, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
     comboCircles[1] = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 494, 1980, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
+        true, "textures/GameplayAtlas.png", Rectangle{ 494, 1980, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
     comboCircles[2] = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 612, 1980, 90, 90 }, ui::FIXED_H | ui::FIXED_V);
+        true, "textures/GameplayAtlas.png", Rectangle{ 612, 1980, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
 
     comboCircles[0]->drawRect = elementRects[(int)ElementType::NONE];
     comboCircles[1]->drawRect = elementRects[(int)ElementType::NONE];
@@ -84,7 +84,7 @@ GameCanvas::GameCanvas(Scene* parentScene)
 
         Rectangle transform = Rectangle{ x, 2129, buttonSize, buttonSize };
 
-        button = CreateElement<ui::Button>(true, "textures/GameplayAtlas.png", transform, ui::FIXED_H | ui::FIXED_V);
+        button = CreateElement<ui::Button>(true, "textures/GameplayAtlas.png", transform, ui::FIXED_W | ui::FIXED_H);
         button->onClick.connect([i]() { EffectManager::Get().ActivateEffect((ElementType)i); });
         button->drawRect = offOnRects[i][0];
     }
