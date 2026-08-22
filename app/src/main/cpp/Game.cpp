@@ -4,6 +4,7 @@
 #include "Log.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include "Scene.h"
 #include "SceneManager.h"
 #include "firebase.h"
 #include "raylib.h"
@@ -56,7 +57,7 @@ void Game::Init() {
     m_Renderer        = std::make_unique<Renderer>(mainCamera3D, uiCamera);
     m_Scheduler       = std::make_unique<Scheduler>();
 
-    SceneManager::Get().RegisterScene<HomeScene>(true);
+    SceneManager::Get().RegisterScene<HomeScene>(SceneType::HOME, true);
 
     SetTargetFPS(60);
     LOGI("Game Initializing Complete");

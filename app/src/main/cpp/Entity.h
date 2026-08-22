@@ -11,7 +11,7 @@ public:
     Entity(const Entity&) = default;
     Entity& operator=(Entity&&) = default;
     Entity& operator=(const Entity&) = default;
-    ~Entity();
+    virtual ~Entity();
 
     // Scene* parentScene;
     bool hasStarted = false;

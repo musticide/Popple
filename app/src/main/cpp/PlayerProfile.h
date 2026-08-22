@@ -23,6 +23,7 @@ inline struct PlayerProfile {
     PlayerData<int> highestScore = PlayerData<int>("highest_score", 0);
     /// In Seconds
     PlayerData<int> longestTimeSurvived =PlayerData<int>("longest_time_survived", 0);
+    ///Actual level number
     PlayerData<int> highestLevelCleared =PlayerData<int> ("highest_level_cleared",0);
 
     //metadata

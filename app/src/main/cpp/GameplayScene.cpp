@@ -8,8 +8,8 @@
 #include "Scene.h"
 
 
-GameplayScene::GameplayScene(LevelConfig config) : Scene(SceneType::GAMEPLAY) {
-    m_GameManager   = CreateEntity<GameManager>(true, config);
+GameplayScene::GameplayScene(LevelConfig config)
+: Scene(SceneType::GAMEPLAY) {
 
     m_Tower = CreateEntity<Tower>(true);
 
@@ -20,7 +20,11 @@ GameplayScene::GameplayScene(LevelConfig config) : Scene(SceneType::GAMEPLAY) {
     m_Background->position = { 0.f, -20.f, 0.f };
     m_Background->scale    = Vector3Scale(Vector3One(), 2.f);
 
-    m_GameCanvas = CreateEntity<GameCanvas>(true);
+    m_GameCanvas  = CreateEntity<GameCanvas>(true);
+    endGameCanvas = CreateEntity<EndGameCanvas>(false);
+
+    m_GameManager =
+        CreateEntity<GameManager>(true, config, m_GameCanvas.get(), pauseGameCanvas.get(), endGameCanvas.get());
 }
 
 GameplayScene::~GameplayScene() {

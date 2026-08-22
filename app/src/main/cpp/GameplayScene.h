@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EffectManager.h"
+#include "EndGameCanvas.h"
 #include "GameCanvas.h"
 #include "GameManager.h"
 #include "LevelConfig.h"
@@ -9,25 +11,26 @@
 #include "Tower.h"
 #include "bubbleManager.h"
 #include "spatialGrid.h"
-#include "EffectManager.h"
+#include "uiCanvas.h"
 #include <memory>
 #include <string>
 
-class GameplayScene : public Scene{
-public:
+class GameplayScene : public Scene {
+  public:
     GameplayScene(LevelConfig config);
     ~GameplayScene();
 
   private:
-
-    //Entities
-    std::unique_ptr<GameManager> m_GameManager;
-    std::unique_ptr<Tower> m_Tower;
-    std::unique_ptr<StaticMesh> m_Background;
-    std::unique_ptr<GameCanvas> m_GameCanvas;
+    // Entities
+    // NOTE: Destruction runs in reverse declaration order. GameManager holds raw
+    // pointers to the canvases below, so declare it LAST so it is destroyed FIRST.
+    std::unique_ptr<Tower> m_Tower               = nullptr;
+    std::unique_ptr<StaticMesh> m_Background     = nullptr;
+    std::unique_ptr<GameCanvas> m_GameCanvas     = nullptr;
+    std::unique_ptr<ui::Canvas> pauseGameCanvas  = nullptr;
+    std::unique_ptr<EndGameCanvas> endGameCanvas = nullptr;
+    std::unique_ptr<GameManager> m_GameManager   = nullptr;
     // std::unique_ptr<EffectManager> m_EffectManager;
     // std::unique_ptr<BubbleManager> m_BubbleManager;
     // std::unique_ptr<SpatialGrid> m_SpatialGrid;
-
 };
-

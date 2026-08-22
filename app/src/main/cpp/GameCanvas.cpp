@@ -15,13 +15,14 @@
 GameCanvas::GameCanvas(Scene* parentScene) 
 :ui::Canvas(parentScene)
 {
+    LOGI("Game Canvas Constructor");
     scoreBox = CreateElement<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 35, 65, 350, 128 }, ui::FIXED_W | ui::FIXED_H);
-    scoreBox->drawRect = { 0, 0, 350, 128 };
+    scoreBox->nPatchInfo.source = { 0, 0, 350, 128 };
 
     scoreIcon = scoreBox->CreateChild<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 29, 19, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
-    scoreIcon->drawRect = { 112, 136, 90, 90 };
+    scoreIcon->nPatchInfo.source = { 112, 136, 90, 90 };
 
     scoreText = scoreBox->CreateChild<ui::Text>(
         true, ui::ACE_BOLD, Rectangle{ 138, 21, 184, 86 }, ui::FIXED_W | ui::FIXED_H);
@@ -45,11 +46,11 @@ GameCanvas::GameCanvas(Scene* parentScene)
 
     healthBox = CreateElement<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 688, 65, 350, 128 }, ui::FIXED_W | ui::FIXED_H);
-    healthBox->drawRect = { 0, 0, -350, 128 };
+    healthBox->nPatchInfo.source = { 0, 0, -350, 128 };
 
     healthIcon = healthBox->CreateChild<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 231, 19, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
-    healthIcon->drawRect = { 0, 136, 90, 90 };
+    healthIcon->nPatchInfo.source = { 0, 136, 90, 90 };
 
     healthText = healthBox->CreateChild<ui::Text>(
         true, ui::ACE_BOLD, Rectangle{ 17, 21, 184, 86 }, ui::FIXED_W | ui::FIXED_H);
@@ -63,9 +64,9 @@ GameCanvas::GameCanvas(Scene* parentScene)
     comboCircles[2] = CreateElement<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 612, 1980, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
 
-    comboCircles[0]->drawRect = elementRects[(int)ElementType::NONE];
-    comboCircles[1]->drawRect = elementRects[(int)ElementType::NONE];
-    comboCircles[2]->drawRect = elementRects[(int)ElementType::NONE];
+    comboCircles[0]->nPatchInfo.source = elementRects[(int)ElementType::NONE];
+    comboCircles[1]->nPatchInfo.source = elementRects[(int)ElementType::NONE];
+    comboCircles[2]->nPatchInfo.source = elementRects[(int)ElementType::NONE];
 
     size_t buttonSpacing = 70;
     size_t buttonCount   = shieldButtons.size();
@@ -86,17 +87,23 @@ GameCanvas::GameCanvas(Scene* parentScene)
 
         button = CreateElement<ui::Button>(true, "textures/GameplayAtlas.png", transform, ui::FIXED_W | ui::FIXED_H);
         button->onClick.connect([i]() { EffectManager::Get().ActivateEffect((ElementType)i); });
-        button->drawRect = offOnRects[i][0];
+        button->nPatchInfo.source = offOnRects[i][0];
     }
 }
 
 GameCanvas::~GameCanvas() {
+    // Disconnect slots so GameManager never invokes a dangling lambda
+    if (Singleton<GameManager>::IsInitialized()) {
+        GameManager::Get().scoreChanged.disconnect(scoreConnId);
+        GameManager::Get().healthChanged.disconnect(healthConnId);
+    }
+    LOGI("Game Canvas Destroyed");
 }
 void GameCanvas::Start() {
     healthText->SetText(std::to_string(GameManager::Get().GetHealth()));
     scoreText->SetText(std::to_string(GameManager::Get().GetScore()));
-    GameManager::Get().scoreChanged.connect([this](int s, int a) { ScoreChanged(s, a); });
-    GameManager::Get().healthChanged.connect([this](int s, int a) { HealthChanged(s, a); });
+    scoreConnId  = GameManager::Get().scoreChanged.connect([this](int s, int a) { ScoreChanged(s, a); });
+    healthConnId = GameManager::Get().healthChanged.connect([this](int s, int a) { HealthChanged(s, a); });
 
     ui::Canvas::Start();
 }
@@ -115,17 +122,17 @@ void GameCanvas::HealthChanged(int health, int amount) {
 
 void GameCanvas::Update(float dT) {
     for (int i = 0; i < GameData::MAX_COMBO_LENGTH; i++) {
-        comboCircles[i]->drawRect = elementRects[(int)ElementType::NONE];
+        comboCircles[i]->nPatchInfo.source = elementRects[(int)ElementType::NONE];
         for (int j = 0; j < (int)ElementType::COUNT - 1; j++) {
             int comboCount = GameManager::Get().GetComboCountForType((ElementType)j);
             if (comboCount > 0 && i < comboCount) {
-                comboCircles[i]->drawRect = elementRects[j];
+                comboCircles[i]->nPatchInfo.source = elementRects[j];
             }
         }
     }
 
     for (size_t i = 0; i < shieldButtons.size(); i++) {
-        shieldButtons[i]->drawRect = offOnRects[i][EffectManager::Get().IsEffectCharged((ElementType)i)];
+        shieldButtons[i]->nPatchInfo.source = offOnRects[i][EffectManager::Get().IsEffectCharged((ElementType)i)];
     }
     for (auto& scorePopText : scorePopTexts) {
         if (scorePopText->IsActive()) {

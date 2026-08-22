@@ -16,6 +16,7 @@ void ui::Canvas::Start(){
     for (size_t i = 0; i < m_Elements.size(); i++) {
         if (m_Elements[i] && m_Elements[i]->IsActive() && !m_Elements[i]->hasStarted) {
             m_Elements[i]->Start();
+            m_Elements[i]->hasStarted = true;
         }
     }
 

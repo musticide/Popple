@@ -3,13 +3,15 @@
 #include "raylib.h"
 #include <raymob.h>
 
-ui::Image::Image(Scene* parentScene, const char* filepath, Rectangle rect, int fitType) : UIElement(parentScene, rect, fitType) {
+ui::Image::Image(Scene* parentScene, const char* filepath, Rectangle rect, int fitType, bool nPatch)
+: UIElement(parentScene, rect, fitType)
+, isNPatch(nPatch) {
     m_Texture = ResourceManager::GetTexture(filepath);
 
     if (m_Texture && m_Texture->id != 0)
-        drawRect = Rectangle{ 0, 0, (float)m_Texture->width, (float)m_Texture->height };
+        nPatchInfo.source = Rectangle{ 0, 0, (float)m_Texture->width, (float)m_Texture->height };
     else
-        drawRect = Rectangle{ 0, 0, rect.width, rect.height };
+        nPatchInfo.source = Rectangle{ 0, 0, rect.width, rect.height };
 }
 
 ui::Image::~Image() {
@@ -17,7 +19,11 @@ ui::Image::~Image() {
 
 void ui::Image::Draw() const {
     if (m_Texture && m_Texture->id != 0) {
-        DrawTexturePro(*m_Texture, drawRect, fRect, Vector2{ 0, 0 }, 0.0f, tint);
+        if (isNPatch)
+            DrawTextureNPatch(*m_Texture, nPatchInfo, fRect, Vector2{ 0, 0 }, 0.0f, tint);
+        else
+            DrawTexturePro(*m_Texture, nPatchInfo.source, fRect, Vector2{ 0, 0 }, 0.0f, tint);
+
     } else {
         DrawRectangleRec(fRect, PINK);
     }

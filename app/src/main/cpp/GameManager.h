@@ -5,10 +5,11 @@
 #include "Signal.h"
 #include "Singleton.h"
 #include "spatialGrid.h"
+#include "uiCanvas.h"
 #include <array>
 #include <memory>
-#include <raymob.h>
 #include <raymath.h>
+#include <raymob.h>
 
 class BubbleManager;
 class EffectManager;
@@ -26,12 +27,14 @@ static struct GameData {
     static constexpr float CRYO_SHIELD_DURATION    = 4.0f;
     static constexpr float ANEMO_EFFECT_DURATION   = 1.0f;
     static constexpr int MAX_COMBO_LENGTH          = 3;
+    static constexpr int MAX_SCORE                 = 1000;
     static int availableElementCount;
 } gameData;
 
 class GameManager : public Entity, public Singleton<GameManager> {
   public:
-    GameManager(Scene* parentScene, LevelConfig config);
+    GameManager(Scene* parentScene, LevelConfig config, ui::Canvas* gameCanvas, ui::Canvas* pauseCanvas, ui::Canvas* endGameCanvas);
+
     ~GameManager();
 
     void AddSpecialBubbleInternal(ElementType type);
@@ -69,22 +72,25 @@ class GameManager : public Entity, public Singleton<GameManager> {
 
     std::unique_ptr<EffectManager> effectManager = nullptr;
     std::unique_ptr<BubbleManager> bubbleManager = nullptr;
-    std::unique_ptr<SpatialGrid> spatialGrid = nullptr;
+    std::unique_ptr<SpatialGrid> spatialGrid     = nullptr;
+
+    ui::Canvas* gameCanvas, *pauseGameCanvas, *endGameCanvas;
 
   private:
-    LevelConfig m_LevelConfig;
-
     int m_Score  = 0;
     int m_Health = 100;
     std::array<int, (int)ElementType::COUNT> m_ComboCount;
 
-    float gameStartTime      = 0.0f;
+    float gameStartTime = 0.0f;
 
     void ResetComboCount();
 
-    void EndGame();
+    void EndGame(bool hasWon);
 
     void ResetGameValues();
+
+    void StopGameSystems();
+    void StartGameSystems();
 
     void SetElectroShield(bool active);
 };

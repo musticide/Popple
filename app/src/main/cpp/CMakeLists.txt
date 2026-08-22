@@ -69,6 +69,8 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/uiText.cpp"
     "${CMAKE_SOURCE_DIR}/uiImage.cpp"
     "${CMAKE_SOURCE_DIR}/HomeCanvas.cpp"
+    "${CMAKE_SOURCE_DIR}/GameCanvas.cpp"
+    "${CMAKE_SOURCE_DIR}/EndGameCanvas.cpp"
     "${CMAKE_SOURCE_DIR}/firebase.cpp"
     "${CMAKE_SOURCE_DIR}/PlayerProfile.cpp"
     "${CMAKE_SOURCE_DIR}/Authentication.cpp"

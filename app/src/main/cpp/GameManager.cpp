@@ -10,14 +10,18 @@
 
 int GameData::availableElementCount = 3;
 
-GameManager::GameManager(Scene* parentScene, LevelConfig config)
-:Entity(parentScene), levelConfig(config)
-{
+GameManager::GameManager(Scene* parentScene, LevelConfig config, ui::Canvas* gameCanvas, ui::Canvas* pauseCanvas, ui::Canvas* endGameCanvas)
+: Entity(parentScene)
+, gameCanvas(gameCanvas)
+, pauseGameCanvas(pauseCanvas)
+, endGameCanvas(endGameCanvas)
+, levelConfig(config) {
     effectManager = parentScene->CreateEntity<EffectManager>(true);
     spatialGrid   = parentScene->CreateEntity<SpatialGrid>(true);
     bubbleManager = parentScene->CreateEntity<BubbleManager>(true, levelConfig);
 }
 GameManager::~GameManager() {
+    LOGI("Game Man Destroyed");
 }
 
 void GameManager::AddSpecialBubbleInternal(ElementType type) {
@@ -41,6 +45,10 @@ void GameManager::AddSpecialBubbleInternal(ElementType type) {
 void GameManager::AddScore(int points) {
     m_Score += points;
     scoreChanged(m_Score, points);
+    if (m_Score >= GameData::MAX_SCORE) {
+        // GAME WON
+        EndGame(true);
+    }
 }
 
 void GameManager::DecreaseHealth(int amount) {
@@ -48,7 +56,7 @@ void GameManager::DecreaseHealth(int amount) {
     m_Health = std::max(m_Health, 0);
     healthChanged(m_Health, amount);
     if (m_Health <= 0) {
-        EndGame();
+        EndGame(false);
     }
 }
 
@@ -62,11 +70,7 @@ void GameManager::Start() {
 
 void GameManager::OnEnable() {
     LOGI("Game Manager Enabled");
-    ResetGameValues();
-    // activeElementEffectChanged(activeEffect);
-    scoreChanged(m_Score, 0);
-    healthChanged(m_Health, 0);
-    gameStartTime = GetTime();
+    StartGameSystems();
 }
 
 void GameManager::Update(float dT) {
@@ -80,9 +84,17 @@ void GameManager::ResetComboCount(ElementType type) {
     m_ComboCount[(int)type] = 0;
 }
 
-void GameManager::EndGame() {
-    SceneManager::Get().ActivateScene(SceneType::HOME);
-    SceneManager::Get().DeactivateScene(SceneType::GAMEPLAY);
+void GameManager::EndGame(bool hasWon) {
+
+    StopGameSystems();
+    gameCanvas->SetActive(false);
+    endGameCanvas->SetActive(true);
+
+    if (hasWon) {
+
+        if (levelConfig.level > PlayerProfile.highestLevelCleared.value)
+            PlayerProfile.highestLevelCleared.value = levelConfig.level;
+    }
 
     if (PlayerProfile.highestScore.value < m_Score) {
         PlayerProfile.highestScore.value = m_Score;
@@ -93,7 +105,9 @@ void GameManager::EndGame() {
     }
 
     SavePlayerProfile();
+    ResetGameValues();
 }
+
 
 void GameManager::ResetGameValues() {
     m_Score  = 0;
@@ -111,3 +125,20 @@ void GameManager::PauseBubbleSpawn(bool pause) {
         BubbleManager::Get().ContinueSpawn();
     }
 }
+void GameManager::StopGameSystems() {
+    effectManager->SetActive(false);
+    bubbleManager->SetActive(false);
+    spatialGrid->SetActive(false);
+}
+void GameManager::StartGameSystems() {
+    ResetGameValues();
+    // activeElementEffectChanged(activeEffect);
+    scoreChanged(m_Score, 0);
+    healthChanged(m_Health, 0);
+    gameStartTime = GetTime();
+
+    effectManager->SetActive(true);
+    bubbleManager->SetActive(true);
+    spatialGrid->SetActive(true);
+}
+

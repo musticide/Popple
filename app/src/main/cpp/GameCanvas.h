@@ -7,6 +7,7 @@
 #include "uiImage.h"
 #include "uiText.h"
 #include <array>
+#include <cstddef>
 #include <memory>
 
 typedef Rectangle OffOnRect[2];
@@ -54,6 +55,8 @@ class GameCanvas : public ui::Canvas, public Singleton<GameCanvas> {
 
     void ShowScorePop(int score, Vector2 position);
     void ShowHealthPop(int health);
+
+    size_t scoreConnId = 0, healthConnId = 0;
 
   private:
 };

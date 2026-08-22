@@ -3,7 +3,8 @@
 enum class ElementType;
 
 struct LevelConfig{
-    size_t level;
+    bool isCleared;
+    int level;
     float startSpawnInterval;
     float minSpawnInterval;
     float spawnDecrementAmount;

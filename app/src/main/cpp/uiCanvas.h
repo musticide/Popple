@@ -15,7 +15,7 @@ class Canvas : public DrawableEntity{
     Canvas(const Canvas&)            = default;
     Canvas& operator=(Canvas&&)      = default;
     Canvas& operator=(const Canvas&) = default;
-    ~Canvas();
+    virtual ~Canvas();
 
     //WARN:
     Scene* parentScene;

@@ -17,8 +17,10 @@ enum TextAlignV {
     ALIGN_BOTTOM
 };
 
+//NOTE: When Adding fonts remember to increase the font array size
 enum FontName {
     ACE_BOLD,
+    ACE_BOLD_ITALIC,
     ROUNDED_MPLUS_EXTRABOLD
 };
 class Text : public UIElement {
@@ -29,7 +31,7 @@ class Text : public UIElement {
     Text& operator=(const Text&) = default;
     ~Text();
 
-    static std::array<Font, 2> fonts;
+    static std::array<Font, 3> fonts;
     FontName activeFont;
     // static Font aceBold;
     // static Font roundedMPlus_ExtraBold;

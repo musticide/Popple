@@ -9,6 +9,8 @@ public:
         return *s_instance;
     }
 
+    static bool IsInitialized() { return s_instance != nullptr; }
+
     Singleton()
     {
         assert(!s_instance && "Singleton already exists!");

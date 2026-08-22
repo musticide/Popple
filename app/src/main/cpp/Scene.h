@@ -20,7 +20,7 @@ public:
   Scene(const Scene&)            = default;
   Scene& operator=(Scene&&)      = default;
   Scene& operator=(const Scene&) = default;
-  ~Scene();
+  virtual ~Scene();
 
   template <typename T, typename... Args>
   std::unique_ptr<T> CreateEntity(bool active, Args&&... args) {

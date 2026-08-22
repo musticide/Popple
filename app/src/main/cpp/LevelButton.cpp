@@ -22,5 +22,5 @@ void LevelButton::Start() {
 
     ratingImg = this->CreateChild<ui::Image>(
         true, "textures/LevelsMenuAtlas.png", Rectangle{ 39, 8, 183, 78 }, ui::FIXED_H | ui::FIXED_H);
-    ratingImg->drawRect = ratingRects[0];
+    ratingImg->nPatchInfo.source = ratingRects[0];
 }

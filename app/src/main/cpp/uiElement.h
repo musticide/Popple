@@ -26,7 +26,7 @@ class UIElement : public DrawableEntity {
     bool preserveRatio = true;
     static Vector2 s_ScreenScale;
 
-    Rectangle baseRect, fRect, drawRect;
+    Rectangle baseRect, fRect;
     int fitType;
 
 

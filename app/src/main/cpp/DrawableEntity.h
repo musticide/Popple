@@ -12,7 +12,7 @@ public:
     DrawableEntity(const DrawableEntity&) = default;
     DrawableEntity& operator=(DrawableEntity&&) = default;
     DrawableEntity& operator=(const DrawableEntity&) = default;
-    ~DrawableEntity();
+    virtual ~DrawableEntity();
 
     RenderQueue GetRenderQueue() const { return renderQueue; }
 

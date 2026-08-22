@@ -20,7 +20,7 @@ class LevelButton : public ui::Button {
 
     void SetRating(int rating) {
         if (rating < MAX_RATING) {
-            ratingImg->drawRect = ratingRects[rating];
+            ratingImg->nPatchInfo.source = ratingRects[rating];
         }
     }
     void SetLevelNumber(int number) {
@@ -31,7 +31,7 @@ class LevelButton : public ui::Button {
     std::unique_ptr<ui::Text> levelText  = nullptr;
 
     void SetClickable(bool clickable) {
-        drawRect = buttonImageRect[clickable];
+        nPatchInfo.source = buttonImageRect[clickable];
         this->clickable = clickable;
     }
 

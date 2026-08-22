@@ -16,6 +16,7 @@ class LevelMenuCanvas : public ui::Canvas {
     std::unique_ptr<ui::Button> backBtn                  = nullptr;
 
   private:
+    void SetLevelConfig(int levelIndex);
 
     LevelConfig m_LevelConfig;
 
