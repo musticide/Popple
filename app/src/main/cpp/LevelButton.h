@@ -23,6 +23,8 @@ class LevelButton : public ui::Button {
     LevelButton& operator=(LevelButton&&)      = default;
     ~LevelButton();
     void Start() override;
+    void OnEnable() override;
+    void OnDisable() override;
 
     void SetRating(int rating) {
         if (rating < MAX_RATING) {

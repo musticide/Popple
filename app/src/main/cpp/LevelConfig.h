@@ -1,9 +1,9 @@
-#pragma once 
+#pragma once
+#include "ElementType.h"
 #include "PlayerProfile.h"
 #include <vector>
-enum class ElementType;
 
-struct LevelConfig{
+struct LevelParams {
     bool isCleared;
     int levelNumber;
     int minScore;
@@ -12,7 +12,6 @@ struct LevelConfig{
     float spawnDecrementAmount;
     int powerUpSpawnChance;
     std::vector<ElementType> availablePowerUps;
-
 };
 
-LevelConfig GetLevelConfig(int levelNumber);
+LevelParams GetLevelParams(int levelNumber);

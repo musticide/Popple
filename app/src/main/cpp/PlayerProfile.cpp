@@ -55,16 +55,21 @@ void SyncLevelToFirebase(int levelNumber) {
         }
     });
 
-    firebase::database::DatabaseReference highestLevelCleardRef =
-        g_firebaseDB->GetReference("users").Child(g_UserId).Child(PlayerProfile.highestLevelCleared.key);
+    if (stats.rating > 0 && levelNumber > PlayerProfile.highestLevelCleared.value) {
+        PlayerProfile.highestLevelCleared.value = levelNumber;
+        LOGI("PLAYER_PROFILE: Highest level cleared %d", PlayerProfile.highestLevelCleared.value);
 
-    highestLevelCleardRef.SetValue(PlayerProfile.highestLevelCleared.value).OnCompletion([](const Future<void>& future) {
-        if (future.error() == firebase::database::kErrorNone) {
-            LOGI("Highest level Saved.");
-        } else {
-            LOGE("Highest level sync Failed: %s", future.error_message());
-        }
-    });
+        firebase::database::DatabaseReference highestLevelCleardRef =
+            g_firebaseDB->GetReference("users").Child(g_UserId).Child(PlayerProfile.highestLevelCleared.key);
+
+        highestLevelCleardRef.SetValue(PlayerProfile.highestLevelCleared.value).OnCompletion([](const Future<void>& future) {
+            if (future.error() == firebase::database::kErrorNone) {
+                LOGI("Highest level Saved.");
+            } else {
+                LOGE("Highest level sync Failed: %s", future.error_message());
+            }
+        });
+    }
 }
 
 // --- PULL ALL LEVELS ON BOOT / LOGIN ---

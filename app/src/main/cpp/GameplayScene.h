@@ -17,7 +17,7 @@
 
 class GameplayScene : public Scene {
   public:
-    GameplayScene(LevelConfig config);
+    GameplayScene(LevelParams config);
     ~GameplayScene();
 
   private:

@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include "EffectManager.h"
+#include "ElementType.h"
 #include "Globals.h"
 #include "LevelConfig.h"
 #include "Log.h"
@@ -12,15 +13,15 @@
 
 int GameData::availableElementCount = 3;
 
-GameManager::GameManager(Scene* parentScene, LevelConfig config, ui::Canvas* gameCanvas, ui::Canvas* pauseCanvas, ui::Canvas* endGameCanvas)
+GameManager::GameManager(Scene* parentScene, LevelParams config, ui::Canvas* gameCanvas, ui::Canvas* pauseCanvas, ui::Canvas* endGameCanvas)
 : Entity(parentScene)
 , gameCanvas(gameCanvas)
 , pauseGameCanvas(pauseCanvas)
 , endGameCanvas(endGameCanvas)
-, levelConfig(config) {
+, levelParams(config) {
     effectManager = parentScene->CreateEntity<EffectManager>(true);
     spatialGrid   = parentScene->CreateEntity<SpatialGrid>(true);
-    bubbleManager = parentScene->CreateEntity<BubbleManager>(true, levelConfig);
+    bubbleManager = parentScene->CreateEntity<BubbleManager>(true, levelParams);
 }
 GameManager::~GameManager() {
     LOGI("Game Man Destroyed");
@@ -67,7 +68,6 @@ void GameManager::Start() {
     // activeElementEffectChanged(activeEffect);
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
-    LOGI("Game Manager Start");
 }
 
 void GameManager::OnEnable() {
@@ -91,21 +91,11 @@ void GameManager::EndGame() {
 
     StopGameSystems();
 
-    GameResults.levelPlayed   = levelConfig.levelNumber;
+    GameResults.levelPlayed   = levelParams.levelNumber;
     GameResults.gameCompleted = true;
-
-    if (m_Score > levelConfig.minScore) {
-        GameResults.gameWon = true;
-
-        if (levelConfig.levelNumber > PlayerProfile.highestLevelCleared.value) {
-            PlayerProfile.highestLevelCleared.value = levelConfig.levelNumber;
-            LOGI("PLAYER_PROFILE: Highest level cleared %d", PlayerProfile.highestLevelCleared.value);
-        }
-    } else {
-        GameResults.gameWon = false;
-    }
-    GameResults.score  = m_Score;
-    GameResults.health = m_Health;
+    GameResults.gameWon       = m_Score > levelParams.minScore;
+    GameResults.score         = m_Score;
+    GameResults.health        = m_Health;
 
     if (PlayerProfile.highestScore.value < m_Score) {
         PlayerProfile.highestScore.value = m_Score;
@@ -115,12 +105,12 @@ void GameManager::EndGame() {
         PlayerProfile.longestTimeSurvived.value = highestTime;
     }
 
-    GameResults.levelRating = static_cast<int>(std::floor((float)m_Score / levelConfig.minScore));
-    PlayerProfile.levelsData.value[levelConfig.levelNumber - 1] = {
+    GameResults.levelRating = static_cast<int>(std::floor((float)m_Score / levelParams.minScore));
+    PlayerProfile.levelsData.value[levelParams.levelNumber - 1] = {
         .rating = GameResults.levelRating, .score = m_Score, .time = static_cast<int>(highestTime)
     };
 
-    SyncLevelToFirebase(levelConfig.levelNumber);
+    SyncLevelToFirebase(levelParams.levelNumber);
     ResetGameValues();
 
     gameCanvas->SetActive(false);
@@ -151,7 +141,7 @@ void GameManager::StopGameSystems() {
 }
 void GameManager::StartGameSystems() {
     ResetGameValues();
-    bubbleManager->levelConfig = levelConfig;
+    bubbleManager->levelParams = levelParams;
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
     gameStartTime = GetTime();
@@ -159,10 +149,16 @@ void GameManager::StartGameSystems() {
     effectManager->SetActive(true);
     bubbleManager->SetActive(true);
     spatialGrid->SetActive(true);
+
+    LOGI("Game started with Level Params: ");
+    LOGI("Level Number: %d", levelParams.levelNumber);
+    LOGI("Start Spawn Interval: %f", levelParams.startSpawnInterval);
+    LOGI("Min Spawn Interval: %f", levelParams.minSpawnInterval);
+    LOGI("Power Up Spawn Chance: %d", levelParams.powerUpSpawnChance);
 }
-void GameManager::RestartGame(LevelConfig config) {
+void GameManager::RestartGame(LevelParams config) {
     LOGI("Game Restarted");
-    levelConfig = config;
+    levelParams = config;
     StartGameSystems();
     gameCanvas->SetActive(true);
     endGameCanvas->SetActive(false);

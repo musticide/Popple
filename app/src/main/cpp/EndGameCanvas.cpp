@@ -143,13 +143,13 @@ void EndGameCanvas::Initialise() {
     nextLevelButton->onClick.connect([]() {
         LOGI("Starting Level %d", GameResults.levelPlayed + 1);
 
-        LevelConfig config = GetLevelConfig(GameResults.levelPlayed + 1);
-        GameManager::Get().RestartGame(config);
+        LevelParams params = GetLevelParams(GameResults.levelPlayed + 1);
+        GameManager::Get().RestartGame(params);
     });
 
     retryLevelButton->onClick.connect([]() {
         LOGI("Retrying Level %d", GameResults.levelPlayed);
-        LevelConfig config = GetLevelConfig(GameResults.levelPlayed);
-        GameManager::Get().RestartGame(config);
+        LevelParams params = GetLevelParams(GameResults.levelPlayed);
+        GameManager::Get().RestartGame(params);
     });
 }

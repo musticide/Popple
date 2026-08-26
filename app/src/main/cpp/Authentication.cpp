@@ -2,6 +2,7 @@
 #include "Android.h"
 #include "Log.h"
 #include "PlayerProfile.h"
+#include "RemoteConfig.h"
 #include "firebase.h"
 #include "raymob.h"
 #include <firebase/database/common.h>
@@ -38,6 +39,7 @@ void LoadProfileFromSnapshot(const firedb::DataSnapshot& userNode) {
         (int)userNode.Child(PlayerProfile.highestLevelCleared.key).value().int64_value();
 
     LoadLevelsFromFirebase();
+    FetchRemoteConfig();
     WriteToAppStorage("user_id.dat", &g_UserId, g_UserId.size());
 }
 

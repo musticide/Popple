@@ -38,6 +38,8 @@ class Button : public ui::Image {
     std::unique_ptr<ui::Text> text = nullptr;
 
     void Start() override;
+    void OnEnable() override;
+    void OnDisable() override;
 
     int fontSize;
     Vector2 fontOffset = { 0, 0 };

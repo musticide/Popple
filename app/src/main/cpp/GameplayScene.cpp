@@ -8,7 +8,7 @@
 #include "Scene.h"
 
 
-GameplayScene::GameplayScene(LevelConfig config)
+GameplayScene::GameplayScene(LevelParams config)
 : Scene(SceneType::GAMEPLAY) {
 
     m_Tower = CreateEntity<Tower>(true);

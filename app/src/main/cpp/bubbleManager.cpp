@@ -21,10 +21,10 @@
 
 float Bubble::speedMultiplier = 1.f;
 
-BubbleManager::BubbleManager(Scene* parentScene, LevelConfig config)
+BubbleManager::BubbleManager(Scene* parentScene, LevelParams levelParams)
 : DrawableEntity(parentScene, RenderQueue::OPAQUE)
-, m_SpawnInterval(config.startSpawnInterval)
-, levelConfig(config) {
+, m_SpawnInterval(levelParams.startSpawnInterval)
+, levelParams(levelParams) {
     m_Bubbles.resize(INITIAL_POOL_SIZE);
     for (int i = 0; i < m_Bubbles.size(); i++) {
         m_Bubbles[i]           = std::make_unique<Bubble>();
@@ -166,9 +166,9 @@ void BubbleManager::SpawnBubble(Bubble* bubble) {
     bubble->velocity = Vector3Scale(Vector3Normalize(Vector3Zero() - bubble->position), bubble->CENTER_FORCE);
 
     // SET Bubble type
-    if (RollPercentage(levelConfig.powerUpSpawnChance)) {
+    if (RollPercentage(levelParams.powerUpSpawnChance)) {
         // bubble->type = (ElementType)GetRandomValue(0, (int)ElementType::NONE);
-        bubble->type = levelConfig.availablePowerUps[GetRandomValue(0, levelConfig.availablePowerUps.size() - 1)];
+        bubble->type = levelParams.availablePowerUps[GetRandomValue(0, levelParams.availablePowerUps.size() - 1)];
     } else {
         bubble->type = ElementType::NONE;
     }
@@ -224,7 +224,7 @@ void BubbleManager::Reset() {
         m_Bubbles[i]->isActive = false;
     }
     m_SpawnTimer    = 0.f;
-    m_SpawnInterval = levelConfig.startSpawnInterval;
+    m_SpawnInterval = levelParams.startSpawnInterval;
 }
 void BubbleManager::AnemoPushBack(bool active) {
     if (active) {
@@ -249,6 +249,6 @@ void BubbleManager::CryoFreeze(bool active) {
 }
 
 void BubbleManager::DecreaseSpawnInterval() {
-    m_SpawnInterval -= levelConfig.spawnDecrementAmount;
-    m_SpawnInterval = std::max(m_SpawnInterval, levelConfig.minSpawnInterval);
+    m_SpawnInterval -= levelParams.spawnDecrementAmount;
+    m_SpawnInterval = std::max(m_SpawnInterval, levelParams.minSpawnInterval);
 }

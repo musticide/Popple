@@ -87,7 +87,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     void DecreaseSpawnInterval();
 
   public:
-    BubbleManager(Scene* parentScene, LevelConfig config);
+    BubbleManager(Scene* parentScene, LevelParams levelParams);
     ~BubbleManager();
 
     void Start() override;
@@ -96,7 +96,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     void Update(float dT = 1.0f) override;
 
     void Draw() const override;
-    LevelConfig levelConfig;
+    LevelParams levelParams;
 
     void Reset();
     void PauseSpawn();

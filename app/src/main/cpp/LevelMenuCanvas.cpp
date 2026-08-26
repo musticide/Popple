@@ -5,45 +5,37 @@
 #include "LevelConfig.h"
 #include "Log.h"
 #include "PlayerProfile.h"
+#include "RemoteConfig.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "raylib.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
+#include "uiElement.h"
 #include "uiText.h"
+#include <cstdlib>
 #include <string>
 
-#define HIGHLIGHT_BTN_SCALE 1.3f
 
 LevelMenuCanvas::LevelMenuCanvas(Scene* parentScene)
 : ui::Canvas(parentScene) {
     bgImage = CreateElement<ui::Image>(
         true, "textures/MainMenuBG.png", Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_W | ui::STRETCH_H);
 
-    Vector2 spacing = { 62.f, 28.f };
-    for (size_t i = 0; i < levelBtns.size(); i++) {
-        size_t levelNumber = i + 1; // offset by the level group
-        Rectangle rect     = Rectangle{ 88, 316, 260, 260 };
-        rect.x += (i % 3) * (rect.width + spacing.x);
-        rect.y += std::floor(i / 3.f) * (rect.height + spacing.y);
-
-        levelBtns[i] = CreateElement<LevelButton>(
-            true, "textures/LevelsMenuAtlas.png", rect, std::to_string(levelNumber), ui::ACE_BOLD, ui::FIXED_W | ui::FIXED_H);
-
-        levelBtns[i]->onClick.connect([this, levelNumber, i]() {
-            m_LevelConfig = GetLevelConfig(levelNumber);
-            SetLevelButtonHighlighted(i);
-        });
-        levelBtns[i]->SetLevelNumber(levelNumber);
-        levelBtns[i]->SetClickable(PlayerProfile.highestLevelCleared.value + 1 >= levelNumber);
-        levelBtns[i]->SetScale((levelNumber == PlayerProfile.highestLevelCleared.value + 1) ? HIGHLIGHT_BTN_SCALE : 1.0f);
-        levelBtns[i]->fontOffset.y = 90;
-        levelBtns[i]->fontSize     = 90;
-    }
 
     // Assign the highest Level config + 1
-    m_LevelConfig = GetLevelConfig(PlayerProfile.highestLevelCleared.value + 1);
+    levelParams = GetLevelParams(PlayerProfile.highestLevelCleared.value + 1);
 
+    for (size_t i = 0; i < MAX_LEVEL_GROUPS; i++) {
+        levelButtonsArray[i] = CreateElement<LevelButtonsArray>(true,
+            (Rectangle){ 0, 0, (float)Globals::baseScreenHeight, (float)Globals::baseScreenHeight },
+            ui::STRETCH_W | ui::STRETCH_H,
+            i + 1,
+            levelParams);
+    }
+
+    activeLevelGroupIndex = std::floor((float)levelParams.levelNumber / MAX_LEVEL_GROUPS);
+    levelButtonsArray[activeLevelGroupIndex]->SetActive(true);
 
     playBtn                    = CreateElement<ui::Button>(true,
         "textures/LevelsMenuAtlas.png",
@@ -64,9 +56,25 @@ LevelMenuCanvas::LevelMenuCanvas(Scene* parentScene)
         // Change scenemanager to activate scene by reference
         // Or register scene will create a scene inside the scenemanager
         // always only 1 scene of a type will exist
-        SceneManager::Get().RegisterScene<GameplayScene>(SceneType::GAMEPLAY, false, m_LevelConfig);
+        SceneManager::Get().RegisterScene<GameplayScene>(SceneType::GAMEPLAY, false, levelParams);
         SceneManager::Get().ActivateScene(SceneType::GAMEPLAY);
         SceneManager::Get().DeactivateScene(SceneType::HOME);
+    });
+
+    nextBtn = CreateElement<ui::Button>(
+        true, "textures/LevelsMenuAtlas.png", Rectangle{ 784, 1456, 200, 200 }, ui::FIXED_W | ui::FIXED_H);
+    nextBtn->nPatchInfo.source = { 535, 5, 200, 200 };
+    nextBtn->onClick.connect([this]() {
+        activeLevelGroupIndex = (activeLevelGroupIndex + 1) % MAX_LEVEL_GROUPS;
+        Refresh();
+    });
+
+    prevBtn = CreateElement<ui::Button>(
+        true, "textures/LevelsMenuAtlas.png", Rectangle{ 109, 1456, 200, 200 }, ui::FIXED_W | ui::FIXED_H);
+    prevBtn->nPatchInfo.source = { 535, 5, -200, 200 };
+    prevBtn->onClick.connect([this]() {
+        activeLevelGroupIndex = (activeLevelGroupIndex - 1) % MAX_LEVEL_GROUPS;
+        Refresh();
     });
 
     backBtn = CreateElement<ui::Button>(
@@ -79,51 +87,22 @@ LevelMenuCanvas::~LevelMenuCanvas() {
 }
 void LevelMenuCanvas::Start() {
     ui::Canvas::Start();
-    for (size_t i = 0; i < levelBtns.size(); i++) {
-
-        levelBtns[i]->SetLevelNumber(i + 1);
-        if (PlayerProfile.levelsData.value.size() > i)
-            levelBtns[i]->SetRating(PlayerProfile.levelsData.value[i].rating);
-        else
-            levelBtns[i]->SetRating(0);
-    }
     Refresh();
 }
-
 
 void LevelMenuCanvas::OnEnable() {
     ui::Canvas::OnEnable();
     Refresh();
 }
 
-void LevelMenuCanvas::Refresh() {
-
-    for (size_t i = 0; i < levelBtns.size(); i++) {
-        size_t levelNumber    = i + 1; // offset by the level group
-        LevelButton* levelBtn = levelBtns[i].get();
-        if (levelBtn != nullptr) {
-            levelBtn->onClick.connect([this, levelNumber]() { m_LevelConfig = GetLevelConfig(levelNumber); });
-
-            if (PlayerProfile.levelsData.value.size() > i)
-                levelBtn->SetRating(PlayerProfile.levelsData.value[i].rating);
-            else
-                levelBtn->SetRating(0);
-
-            levelBtn->SetLevelNumber(levelNumber);
-            levelBtn->SetClickable(PlayerProfile.highestLevelCleared.value + 1 >= levelNumber);
-            if (levelNumber == PlayerProfile.highestLevelCleared.value + 1) {
-                levelBtn->SetScale(1.3f);
-                m_LevelConfig = GetLevelConfig(levelNumber);
-            } else {
-                levelBtn->SetScale(1.0f);
-            }
-        }
-    }
+void LevelMenuCanvas::OnDisable() {
+    ui::Canvas::OnDisable();
 }
-void LevelMenuCanvas::SetLevelButtonHighlighted(int index) {
-    if (index < 0 || index >= levelBtns.size()) return;
 
-    for (size_t i = 0; i < levelBtns.size(); i++) {
-        levelBtns[i]->SetScale((i == index) ? HIGHLIGHT_BTN_SCALE : 1.0f);
+void LevelMenuCanvas::Refresh() {
+    for (size_t i = 0; i < MAX_LEVEL_GROUPS; i++) {
+        levelButtonsArray[i]->SetActive(i == activeLevelGroupIndex);
     }
+    prevBtn->clickable = activeLevelGroupIndex != 0;
+    nextBtn->clickable = activeLevelGroupIndex < MAX_LEVEL_GROUPS - 1;
 }

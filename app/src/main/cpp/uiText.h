@@ -1,6 +1,7 @@
 #pragma once
 
 #include "raylib.h"
+#include "uiCanvas.h"
 #include "uiElement.h"
 
 namespace ui {
@@ -25,7 +26,7 @@ enum FontName {
 };
 class Text : public UIElement {
   public:
-    Text(Scene* parentScene,FontName font, Rectangle rect, int fitType);
+    Text(Scene* parentScene,Canvas* parentCanvas, FontName font, Rectangle rect, int fitType);
     Text(const Text&)            = default;
     Text& operator=(Text&&)      = default;
     Text& operator=(const Text&) = default;

@@ -3,6 +3,7 @@
 #include "input.h"
 #include "raylib.h"
 #include "uiCanvas.h"
+#include "uiImage.h"
 #include "uiText.h"
 using namespace ui;
 
@@ -62,3 +63,18 @@ void Button::Update(float dT) {
         wasPressed = false;
     }
 }
+void ui::Button::OnEnable() {
+    ui::Image::OnEnable();
+    if (text != nullptr) {
+        text->SetActive(true);
+    }
+}
+
+void ui::Button::OnDisable() {
+    ui::Image::OnDisable();
+    if (text != nullptr) {
+        text->SetActive(false);
+    }
+}
+
+

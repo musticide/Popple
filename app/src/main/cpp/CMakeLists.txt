@@ -76,6 +76,8 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/Authentication.cpp"
     "${CMAKE_SOURCE_DIR}/LevelMenuCanvas.cpp"
     "${CMAKE_SOURCE_DIR}/LevelConfig.cpp"
+    "${CMAKE_SOURCE_DIR}/RemoteConfig.cpp"
+    "${CMAKE_SOURCE_DIR}/LevelButtonsArray.cpp"
 )
 
 # Define compiler macros for the library

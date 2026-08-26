@@ -10,17 +10,11 @@
 #include <memory>
 #include <raymath.h>
 #include <raymob.h>
+#include "ElementType.h"
 
 class BubbleManager;
 class EffectManager;
 
-enum class ElementType {
-    ELECTRO,
-    ANEMO,
-    CRYO,
-    NONE,
-    COUNT
-};
 static struct GameData {
     static constexpr float electroShieldRadius     = 10.f;
     static constexpr float ELECTRO_SHIELD_DURATION = 5.0f;
@@ -35,7 +29,7 @@ static struct GameData {
 
 class GameManager : public Entity, public Singleton<GameManager> {
   public:
-    GameManager(Scene* parentScene, LevelConfig config, ui::Canvas* gameCanvas, ui::Canvas* pauseCanvas, ui::Canvas* endGameCanvas);
+    GameManager(Scene* parentScene, LevelParams config, ui::Canvas* gameCanvas, ui::Canvas* pauseCanvas, ui::Canvas* endGameCanvas);
 
     ~GameManager();
 
@@ -70,7 +64,7 @@ class GameManager : public Entity, public Singleton<GameManager> {
 
     static void PauseBubbleSpawn(bool pause);
 
-    LevelConfig levelConfig;
+    LevelParams levelParams;
 
     std::unique_ptr<EffectManager> effectManager = nullptr;
     std::unique_ptr<BubbleManager> bubbleManager = nullptr;
@@ -78,7 +72,7 @@ class GameManager : public Entity, public Singleton<GameManager> {
 
     ui::Canvas *gameCanvas, *pauseGameCanvas, *endGameCanvas;
 
-    void RestartGame(LevelConfig config);
+    void RestartGame(LevelParams params);
 
   private:
     int m_Score  = 0;

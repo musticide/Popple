@@ -18,10 +18,23 @@ LevelButton::LevelButton(Scene* parentScene,
 }
 LevelButton::~LevelButton() {
 }
+
 void LevelButton::Start() {
     ui::Button::Start();
-
+    //NOTE: Some bug that is causing this to not generate from the constructor
     ratingImg = this->CreateChild<ui::Image>(
         true, "textures/LevelsMenuAtlas.png", Rectangle{ 39, 8, 183, 78 }, ui::FIXED_H | ui::FIXED_H);
     ratingImg->nPatchInfo.source = ratingRects[0];
 }
+
+void LevelButton::OnEnable() {
+    ui::Button::OnEnable();
+    ratingImg->SetActive(true);
+}
+
+void LevelButton::OnDisable() {
+    ui::Button::OnDisable();
+    ratingImg->SetActive(false);
+}
+
+
