@@ -157,12 +157,12 @@ void GameCanvas::Update(float dT) {
     ui::Canvas::Update(dT);
 }
 
-void GameCanvas::ShowScorePop(int score, Vector2 position) {
+void GameCanvas::ShowScorePop(Vector2 position) {
     for (auto& scorePopText : scorePopTexts) {
         if (scorePopText->IsActive()) continue;
 
         scorePopText->SetPosition(position);
-        scorePopText->SetText("+" + std::to_string(score));
+        scorePopText->SetText("+" + std::to_string(GameData::BUBBLE_POINTS));
         scorePopText->color.a = 255;
         scorePopText->SetActive(true);
         scorePopTime = 0.5f;
@@ -170,12 +170,12 @@ void GameCanvas::ShowScorePop(int score, Vector2 position) {
     }
 }
 
-void GameCanvas::ShowHealthPop(int health) {
+void GameCanvas::ShowHealthPop() {
     for (auto& healthPopText : healthPopTexts) {
         if (healthPopText->IsActive()) continue;
 
         healthPopText->color = RED;
-        healthPopText->SetText("-" + std::to_string(health));
+        healthPopText->SetText("-" + std::to_string(GameData::BUBBLE_DAMAGE));
         healthPopText->color.a = 255;
         healthPopText->SetActive(true);
         healthPopTime = 0.5f;

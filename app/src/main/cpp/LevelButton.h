@@ -1,20 +1,26 @@
 #pragma once
 #include "raylib.h"
+#include "raymath.h"
 #include "uiButton.h"
+#include "uiCanvas.h"
 #include "uiImage.h"
 #include "uiText.h"
 #include <memory>
 #include <string>
-#include "raymath.h"
 
 #define MAX_RATING 4
 class LevelButton : public ui::Button {
   public:
-    LevelButton(Scene* parentScene, const char* filepath, Rectangle rect, int fitType);
+    LevelButton(Scene* parentScene,
+        ui::Canvas* parentCanvas,
+        const char* filepath,
+        Rectangle rect,
+        std::string textContent,
+        ui::FontName font,
+        int fitType,
+        bool nPatch = false);
     LevelButton(LevelButton&&)                 = default;
-    LevelButton(const LevelButton&)            = default;
     LevelButton& operator=(LevelButton&&)      = default;
-    LevelButton& operator=(const LevelButton&) = default;
     ~LevelButton();
     void Start() override;
 
@@ -24,15 +30,14 @@ class LevelButton : public ui::Button {
         }
     }
     void SetLevelNumber(int number) {
-        if (levelText != nullptr) levelText->SetText(std::to_string(number));
+        if (text != nullptr) text->SetText(std::to_string(number));
     }
 
     std::unique_ptr<ui::Image> ratingImg = nullptr;
-    std::unique_ptr<ui::Text> levelText  = nullptr;
 
     void SetClickable(bool clickable) {
         nPatchInfo.source = buttonImageRect[clickable];
-        this->clickable = clickable;
+        this->clickable   = clickable;
     }
 
   private:

@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include "EffectManager.h"
+#include "Globals.h"
 #include "LevelConfig.h"
 #include "Log.h"
 #include "PlayerProfile.h"
@@ -7,6 +8,7 @@
 #include "SceneManager.h"
 #include "bubbleManager.h"
 #include "raylib.h"
+#include <cmath>
 
 int GameData::availableElementCount = 3;
 
@@ -42,21 +44,21 @@ void GameManager::AddSpecialBubbleInternal(ElementType type) {
     }
 }
 
-void GameManager::AddScore(int points) {
-    m_Score += points;
-    scoreChanged(m_Score, points);
+void GameManager::AddScore() {
+    m_Score += GameData::BUBBLE_POINTS;
+    scoreChanged(m_Score, GameData::BUBBLE_POINTS);
     if (m_Score >= GameData::MAX_SCORE) {
         // GAME WON
-        EndGame(true);
+        EndGame();
     }
 }
 
-void GameManager::DecreaseHealth(int amount) {
-    m_Health -= amount;
+void GameManager::DecreaseHealth() {
+    m_Health -= GameData::BUBBLE_DAMAGE;
     m_Health = std::max(m_Health, 0);
-    healthChanged(m_Health, amount);
+    healthChanged(m_Health, GameData::BUBBLE_DAMAGE);
     if (m_Health <= 0) {
-        EndGame(false);
+        EndGame();
     }
 }
 
@@ -84,17 +86,26 @@ void GameManager::ResetComboCount(ElementType type) {
     m_ComboCount[(int)type] = 0;
 }
 
-void GameManager::EndGame(bool hasWon) {
+void GameManager::EndGame() {
+    using namespace Globals;
 
     StopGameSystems();
-    gameCanvas->SetActive(false);
-    endGameCanvas->SetActive(true);
 
-    if (hasWon) {
+    GameResults.levelPlayed   = levelConfig.levelNumber;
+    GameResults.gameCompleted = true;
 
-        if (levelConfig.level > PlayerProfile.highestLevelCleared.value)
-            PlayerProfile.highestLevelCleared.value = levelConfig.level;
+    if (m_Score > levelConfig.minScore) {
+        GameResults.gameWon = true;
+
+        if (levelConfig.levelNumber > PlayerProfile.highestLevelCleared.value) {
+            PlayerProfile.highestLevelCleared.value = levelConfig.levelNumber;
+            LOGI("PLAYER_PROFILE: Highest level cleared %d", PlayerProfile.highestLevelCleared.value);
+        }
+    } else {
+        GameResults.gameWon = false;
     }
+    GameResults.score  = m_Score;
+    GameResults.health = m_Health;
 
     if (PlayerProfile.highestScore.value < m_Score) {
         PlayerProfile.highestScore.value = m_Score;
@@ -104,8 +115,16 @@ void GameManager::EndGame(bool hasWon) {
         PlayerProfile.longestTimeSurvived.value = highestTime;
     }
 
-    SavePlayerProfile();
+    GameResults.levelRating = static_cast<int>(std::floor((float)m_Score / levelConfig.minScore));
+    PlayerProfile.levelsData.value[levelConfig.levelNumber - 1] = {
+        .rating = GameResults.levelRating, .score = m_Score, .time = static_cast<int>(highestTime)
+    };
+
+    SyncLevelToFirebase(levelConfig.levelNumber);
     ResetGameValues();
+
+    gameCanvas->SetActive(false);
+    endGameCanvas->SetActive(true);
 }
 
 
@@ -113,7 +132,7 @@ void GameManager::ResetGameValues() {
     m_Score  = 0;
     m_Health = 100;
     ResetComboCount();
-    gameStartTime = 0.0f;
+    gameStartTime = GetTime();
 
     EffectManager::Get().Reset();
     BubbleManager::Get().Reset();
@@ -132,7 +151,7 @@ void GameManager::StopGameSystems() {
 }
 void GameManager::StartGameSystems() {
     ResetGameValues();
-    // activeElementEffectChanged(activeEffect);
+    bubbleManager->levelConfig = levelConfig;
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
     gameStartTime = GetTime();
@@ -141,4 +160,17 @@ void GameManager::StartGameSystems() {
     bubbleManager->SetActive(true);
     spatialGrid->SetActive(true);
 }
+void GameManager::RestartGame(LevelConfig config) {
+    LOGI("Game Restarted");
+    levelConfig = config;
+    StartGameSystems();
+    gameCanvas->SetActive(true);
+    endGameCanvas->SetActive(false);
+}
+void GameManager::PauseGame() {
+    Globals::gamePaused = true;
+}
 
+void GameManager::ResumeGame() {
+    Globals::gamePaused = false;
+}

@@ -6,16 +6,16 @@
 #include "uiCanvas.h"
 using namespace ui;
 
-UIElement::UIElement(Scene* parentScene, Rectangle rect, int fitType)
+UIElement::UIElement(Scene* parentScene, Canvas* parentCanvas, Rectangle rect, int fitType)
 : DrawableEntity(parentScene, RenderQueue::UI)
 , fitType(fitType)
-, baseRect(rect) {
+, baseRect(rect)
+, parentCanvas(parentCanvas) {
     UpdateFinalRect();
 }
 
 UIElement::~UIElement() {
 }
-
 
 
 void ui::UIElement::UpdateFinalRect() {
@@ -31,10 +31,7 @@ void ui::UIElement::UpdateFinalRect() {
     fRect.width *= scale;
     fRect.height *= scale;
 
-    Vector2 globalScale = {
-        Globals::uiScale.x,
-        preserveRatio? Globals::uiScale.x : Globals::uiScale.y
-    };
+    Vector2 globalScale = { Globals::uiScale.x, preserveRatio ? Globals::uiScale.x : Globals::uiScale.y };
 
     if (parent != nullptr) {
         fRect.x = (anchor.x * parent->fRect.width) +
@@ -63,8 +60,8 @@ void ui::UIElement::UpdateFinalRect() {
             fRect.height = parent->fRect.height - baseRect.y - bottomMargin;
         }
     } else {
-        fRect.x = (anchor.x * Globals::screenWidth) +
-            (fRect.x - Globals::baseScreenWidth * anchor.x) * globalScale.x;
+        fRect.x =
+            (anchor.x * Globals::screenWidth) + (fRect.x - Globals::baseScreenWidth * anchor.x) * globalScale.x;
         fRect.y = (anchor.y * Globals::screenHeight) +
             (fRect.y - Globals::baseScreenHeight * anchor.y) * globalScale.y;
         // Root elements use the actual drawable screen dimensions.
@@ -91,5 +88,8 @@ void ui::UIElement::UpdateFinalRect() {
             fRect.y      = topMargin;
             fRect.height = static_cast<float>(Globals::screenHeight) - topMargin - bottomMargin;
         }
+    }
+    for (size_t i = 0; i < children.size(); i++) {
+        children[i]->UpdateFinalRect();
     }
 }

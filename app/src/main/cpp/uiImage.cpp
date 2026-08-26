@@ -3,8 +3,8 @@
 #include "raylib.h"
 #include <raymob.h>
 
-ui::Image::Image(Scene* parentScene, const char* filepath, Rectangle rect, int fitType, bool nPatch)
-: UIElement(parentScene, rect, fitType)
+ui::Image::Image(Scene* parentScene, Canvas* parentCanvas,const char* filepath, Rectangle rect, int fitType, bool nPatch)
+: UIElement(parentScene, parentCanvas, rect, fitType)
 , isNPatch(nPatch) {
     m_Texture = ResourceManager::GetTexture(filepath);
 

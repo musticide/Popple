@@ -1,6 +1,8 @@
 #include "EffectManager.h"
 #include "DrawableEntity.h"
+#include "Entity.h"
 #include "GameManager.h"
+#include "Globals.h"
 #include "Log.h"
 #include "ResourceManager.h"
 #include "Scene.h"
@@ -25,6 +27,7 @@ void EffectManager::Start() {
 }
 
 void EffectManager::Update(float dT) {
+    if (Globals::gamePaused) return;
     if (effectActive[(int)ElementType::ELECTRO]) {
         electroShieldTimer += dT;
 

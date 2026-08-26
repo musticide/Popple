@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "GameCanvas.h"
 #include "GameManager.h"
+#include "Globals.h"
 #include "LevelConfig.h"
 #include "Log.h"
 #include "ParticleSystem.h"
@@ -21,8 +22,9 @@
 float Bubble::speedMultiplier = 1.f;
 
 BubbleManager::BubbleManager(Scene* parentScene, LevelConfig config)
-: DrawableEntity(parentScene, RenderQueue::OPAQUE), m_SpawnInterval(config.startSpawnInterval)
-, m_LevelConfig(config) {
+: DrawableEntity(parentScene, RenderQueue::OPAQUE)
+, m_SpawnInterval(config.startSpawnInterval)
+, levelConfig(config) {
     m_Bubbles.resize(INITIAL_POOL_SIZE);
     for (int i = 0; i < m_Bubbles.size(); i++) {
         m_Bubbles[i]           = std::make_unique<Bubble>();
@@ -61,6 +63,8 @@ void BubbleManager::OnEnable() {
 }
 
 void BubbleManager::Update(float dT) {
+    if (Globals::gamePaused) return;
+
     SpatialGrid::Clear();
     SpawnBubbles();
 
@@ -75,10 +79,10 @@ void BubbleManager::Update(float dT) {
             for (int j = 0; j < GetTouchPointCount(); j++) {
                 // LOGI("Touch Pos: %f, %f, %f", touchPos.x, touchPos.y, touchPos.z);
                 if (IsPointInBubble(bubble, Input::GetTouchPositionWS(j))) {
-                    GameManager::Get().AddScore(5);
+                    GameManager::Get().AddScore();
                     DecreaseSpawnInterval();
                     GameManager::Get().AddSpecialBubbleInternal(bubble->type);
-                    GameCanvas::Get().ShowScorePop(5, GetWorldToScreen(bubble->position, Game::Get().mainCamera3D));
+                    GameCanvas::Get().ShowScorePop(GetWorldToScreen(bubble->position, Game::Get().mainCamera3D));
 
                     burstParticles->position                      = bubble->position;
                     burstParticles->particleProperties.startColor = bubbleColors[(int)bubble->type];
@@ -118,8 +122,8 @@ void BubbleManager::Update(float dT) {
                 // If bubbles have reached the center
                 if (Vector3Length(bubble->position) <= bubble->radius + 2) {
                     if (bubble->type == ElementType::NONE) {
-                        GameManager::Get().DecreaseHealth(10);
-                        GameCanvas::Get().ShowHealthPop(10);
+                        GameManager::Get().DecreaseHealth();
+                        GameCanvas::Get().ShowHealthPop();
                     }
                     bubble->isActive = false;
                     continue;
@@ -162,9 +166,9 @@ void BubbleManager::SpawnBubble(Bubble* bubble) {
     bubble->velocity = Vector3Scale(Vector3Normalize(Vector3Zero() - bubble->position), bubble->CENTER_FORCE);
 
     // SET Bubble type
-    if (RollPercentage(m_LevelConfig.powerUpSpawnChance)) {
+    if (RollPercentage(levelConfig.powerUpSpawnChance)) {
         // bubble->type = (ElementType)GetRandomValue(0, (int)ElementType::NONE);
-        bubble->type = m_LevelConfig.availablePowerUps[GetRandomValue(0, m_LevelConfig.availablePowerUps.size() - 1)];
+        bubble->type = levelConfig.availablePowerUps[GetRandomValue(0, levelConfig.availablePowerUps.size() - 1)];
     } else {
         bubble->type = ElementType::NONE;
     }
@@ -219,8 +223,8 @@ void BubbleManager::Reset() {
     for (int i = 0; i < m_Bubbles.size(); i++) {
         m_Bubbles[i]->isActive = false;
     }
-    m_SpawnTimer = 0.f;
-    m_SpawnInterval = m_LevelConfig.startSpawnInterval;
+    m_SpawnTimer    = 0.f;
+    m_SpawnInterval = levelConfig.startSpawnInterval;
 }
 void BubbleManager::AnemoPushBack(bool active) {
     if (active) {
@@ -245,6 +249,6 @@ void BubbleManager::CryoFreeze(bool active) {
 }
 
 void BubbleManager::DecreaseSpawnInterval() {
-    m_SpawnInterval -= m_LevelConfig.spawnDecrementAmount;
-    m_SpawnInterval = std::max(m_SpawnInterval, m_LevelConfig.minSpawnInterval);
+    m_SpawnInterval -= levelConfig.spawnDecrementAmount;
+    m_SpawnInterval = std::max(m_SpawnInterval, levelConfig.minSpawnInterval);
 }

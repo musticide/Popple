@@ -27,7 +27,9 @@ static struct GameData {
     static constexpr float CRYO_SHIELD_DURATION    = 4.0f;
     static constexpr float ANEMO_EFFECT_DURATION   = 1.0f;
     static constexpr int MAX_COMBO_LENGTH          = 3;
-    static constexpr int MAX_SCORE                 = 1000;
+    static constexpr int MAX_SCORE                 = 500;
+    static constexpr int BUBBLE_POINTS             = 10;
+    static constexpr int BUBBLE_DAMAGE             = 20;
     static int availableElementCount;
 } gameData;
 
@@ -45,7 +47,7 @@ class GameManager : public Entity, public Singleton<GameManager> {
     int GetScore() const {
         return m_Score;
     }
-    void AddScore(int points);
+    void AddScore();
 
     /// 1st arg current health
     /// 2nd arg health delta
@@ -53,7 +55,7 @@ class GameManager : public Entity, public Singleton<GameManager> {
     int GetHealth() const {
         return m_Health;
     }
-    void DecreaseHealth(int amount);
+    void DecreaseHealth();
 
     void Start() override;
     void OnEnable() override;
@@ -74,7 +76,9 @@ class GameManager : public Entity, public Singleton<GameManager> {
     std::unique_ptr<BubbleManager> bubbleManager = nullptr;
     std::unique_ptr<SpatialGrid> spatialGrid     = nullptr;
 
-    ui::Canvas* gameCanvas, *pauseGameCanvas, *endGameCanvas;
+    ui::Canvas *gameCanvas, *pauseGameCanvas, *endGameCanvas;
+
+    void RestartGame(LevelConfig config);
 
   private:
     int m_Score  = 0;
@@ -85,7 +89,9 @@ class GameManager : public Entity, public Singleton<GameManager> {
 
     void ResetComboCount();
 
-    void EndGame(bool hasWon);
+    void PauseGame();
+    void ResumeGame();
+    void EndGame();
 
     void ResetGameValues();
 

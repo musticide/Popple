@@ -6,19 +6,20 @@
 #include "uiImage.h"
 #include "uiText.h"
 
-LevelButton::LevelButton(Scene* parentScene, const char* filepath, Rectangle rect, int fitType)
-: ui::Button(parentScene, filepath, rect, fitType) {
+LevelButton::LevelButton(Scene* parentScene,
+    ui::Canvas* parentCanvas,
+    const char* filepath,
+    Rectangle rect,
+    std::string textContent,
+    ui::FontName font,
+    int fitType,
+    bool nPatch)
+: ui::Button(parentScene, parentCanvas, filepath, rect, textContent, font, fitType, nPatch) {
 }
-
 LevelButton::~LevelButton() {
 }
 void LevelButton::Start() {
-    levelText = this->CreateChild<ui::Text>(
-        true, ui::ROUNDED_MPLUS_EXTRABOLD, Rectangle{ 59, 86, 144, 72 }, ui::FIXED_H | ui::FIXED_H);
-    levelText->hAlign = ui::ALIGN_CENTER;
-    levelText->vAlign = ui::ALIGN_MIDDLE;
-    levelText->SetText("");
-    levelText->fontSize = 95;
+    ui::Button::Start();
 
     ratingImg = this->CreateChild<ui::Image>(
         true, "textures/LevelsMenuAtlas.png", Rectangle{ 39, 8, 183, 78 }, ui::FIXED_H | ui::FIXED_H);

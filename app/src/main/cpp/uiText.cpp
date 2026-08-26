@@ -6,8 +6,8 @@
 // Font ui::Text::roundedMPlus_ExtraBold;
 std::array<Font, 3> ui::Text::fonts;
 
-ui::Text::Text(Scene* parentScene, FontName font, Rectangle rect, int fitType)
-: UIElement(parentScene, rect, fitType)
+ui::Text::Text(Scene* parentScene, Canvas* parentCanvas, FontName font, Rectangle rect, int fitType)
+: UIElement(parentScene,parentCanvas, rect, fitType)
 , activeFont(font) {
     if (!IsFontValid(fonts[ACE_BOLD])) fonts[ACE_BOLD] = LoadFontEx("fonts/AcephimereBold.otf", 72, 0, 250);
     if (!IsFontValid(fonts[ACE_BOLD_ITALIC]))

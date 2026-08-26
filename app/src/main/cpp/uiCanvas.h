@@ -8,7 +8,7 @@
 
 namespace ui {
 class UIElement;
-class Canvas : public DrawableEntity{
+class Canvas : public DrawableEntity {
   public:
     Canvas(Scene* parentScene);
     Canvas(Canvas&&)                 = default;
@@ -17,18 +17,15 @@ class Canvas : public DrawableEntity{
     Canvas& operator=(const Canvas&) = default;
     virtual ~Canvas();
 
-    //WARN:
+    // WARN:
     Scene* parentScene;
 
     template <typename T, typename... Args>
     std::unique_ptr<T> CreateElement(bool active, Args&&... args) {
         static_assert(std::is_base_of<UIElement, T>::value, "T must derive from UIElement");
 
-        // auto element = parentScene->CreateEntity<T>(active, std::forward<Args>(args)...);
-        auto element = std::make_unique<T>(this->parentScene, std::forward<Args>(args)...);
+        auto element = std::make_unique<T>(this->parentScene, (Canvas*)this, std::forward<Args>(args)...);
 
-        element->parentCanvas = this;
-        // element->parentScene = this->parentScene;
         element->SetActive(active);
 
         if (element.get())

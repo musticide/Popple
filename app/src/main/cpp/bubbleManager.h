@@ -73,7 +73,6 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     void UpdateBubble(Bubble* bubble);
 
     // static ElementType s_ActiveEffect;
-    LevelConfig m_LevelConfig;
     float m_SpawnInterval;
     float electroShieldRadius;
 
@@ -97,6 +96,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     void Update(float dT = 1.0f) override;
 
     void Draw() const override;
+    LevelConfig levelConfig;
 
     void Reset();
     void PauseSpawn();

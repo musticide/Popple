@@ -17,7 +17,7 @@ class EndGameCanvas : public ui::Canvas {
     ~EndGameCanvas();
 
     std::unique_ptr<ui::Image> bgImage                  = nullptr;
-    std::array<std::unique_ptr<ui::Image>, 3> starImage = { 0 };
+    std::array<std::unique_ptr<ui::Image>, 3> starImages = { 0 };
     std::unique_ptr<ui::Image> starBgGradient           = nullptr;
     std::unique_ptr<ui::Button> nextLevelButton         = nullptr;
     std::unique_ptr<ui::Button> retryLevelButton        = nullptr;
@@ -25,7 +25,10 @@ class EndGameCanvas : public ui::Canvas {
     std::unique_ptr<ui::Text> resultText                = nullptr;
     std::unique_ptr<ui::Text> scoreText                 = nullptr;
 
+    void Start() override;
+    void OnEnable() override;
 
   private:
-    std::array<Rectangle, 2> starOnOffRect = { Rectangle{ 784, 4, 222, 222 }, Rectangle{ 558, 4, 222, 222 } };
+    std::array<Rectangle, 2> starOnOffRect = { Rectangle{ 365, 546, 235, 235 }, Rectangle{ 365, 785, 235, 235 } };
+    void Initialise();
 };

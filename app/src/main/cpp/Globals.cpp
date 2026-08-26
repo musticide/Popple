@@ -13,3 +13,10 @@ void Globals::StartGame() {
 
     LOGI("Gameplay scene activated");
 }
+
+bool Globals::GameResults::gameCompleted;
+bool Globals::GameResults::gameWon;
+int Globals::GameResults::score;
+int Globals::GameResults::health;
+int Globals::GameResults::levelPlayed;
+int Globals::GameResults::levelRating;
