@@ -20,24 +20,26 @@ ui::Button::Button(Scene* parentScene,
     int fitType,
     bool nPatch)
 : Image(parentScene, parentCanvas, filepath, rect, fitType, nPatch) {
-    raycastRect       = fRect;
+    raycastRect = fRect;
     this->font        = font;
     this->textContent = textContent;
+    if (!textContent.empty()) {
+        this->text = this->CreateChild<ui::Text>(
+            true, font, Rectangle{ fontOffset.x, fontOffset.y, baseRect.width, baseRect.height}, fitType);
+    }
 }
 
 Button::~Button() {
 }
 
-
 void ui::Button::Start() {
-    if (!textContent.empty()) {
-        this->text = this->CreateChild<ui::Text>(
-            true, font, Rectangle{ fontOffset.x, fontOffset.y, baseRect.width, (float)fontSize }, fitType);
+    if (text != nullptr){
+        text->baseRect = { fontOffset.x, fontOffset.y, baseRect.width, baseRect.height};
         text->hAlign   = ALIGN_CENTER;
-        text->vAlign   = ALIGN_MIDDLE;
+        text->vAlign   = ALIGN_TOP;
         text->fontSize = fontSize;
+        text->UpdateFinalRect();
         text->SetText(textContent);
-        // LOGI("Text Created %s", textContent.c_str());
     }
 }
 
@@ -76,5 +78,3 @@ void ui::Button::OnDisable() {
         text->SetActive(false);
     }
 }
-
-

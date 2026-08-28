@@ -75,6 +75,10 @@ class UIElement : public DrawableEntity {
         UpdateFinalRect();
     }
 
+    void OnEnable() override;
+    void OnDisable() override;
+    void Draw() const override;
+
   private:
     float scale    = 1.f;
     float rotation = 0.f;

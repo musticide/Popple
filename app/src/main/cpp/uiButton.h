@@ -41,7 +41,7 @@ class Button : public ui::Image {
     void OnEnable() override;
     void OnDisable() override;
 
-    int fontSize;
+    int fontSize = 72;
     Vector2 fontOffset = { 0, 0 };
 
   private:

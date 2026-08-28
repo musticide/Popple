@@ -37,5 +37,5 @@ void main()
 
     halftone = halftone < luminance(source.rgb) * 10.f ? 1.f : 0.f;
 
-    finalColor = source * halftone * 4.f;
+    finalColor = source * 4.f;
 }

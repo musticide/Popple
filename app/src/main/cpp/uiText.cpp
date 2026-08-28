@@ -1,6 +1,7 @@
 #include "uiText.h"
 #include "raylib.h"
 #include "raymath.h"
+#include "uiElement.h"
 
 // Font ui::Text::aceBold;
 // Font ui::Text::roundedMPlus_ExtraBold;
@@ -22,6 +23,7 @@ ui::Text::~Text() {
 }
 
 void ui::Text::Draw() const {
+    ui::UIElement::Draw();
     //TODO: Find a better way to scale
     float scale = parent != nullptr ? parent->GetScale() : 1.f;
     DrawTextEx(fonts[activeFont], text.c_str(), textPos + textPosOffset, fontSize * scale, 2, color);

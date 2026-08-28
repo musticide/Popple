@@ -1,5 +1,6 @@
 #pragma once
 #include "GameManager.h"
+#include "LevelConfig.h"
 #include "Singleton.h"
 #include "raylib.h"
 #include "uiButton.h"
@@ -14,7 +15,7 @@ typedef Rectangle OffOnRect[2];
 
 class GameCanvas : public ui::Canvas, public Singleton<GameCanvas> {
   public:
-    GameCanvas(Scene* parentScene);
+    GameCanvas(Scene* parentScene, LevelParams params);
     ~GameCanvas();
 
     Rectangle elementRects[(size_t)ElementType::COUNT] = {
@@ -57,6 +58,8 @@ class GameCanvas : public ui::Canvas, public Singleton<GameCanvas> {
     void ShowHealthPop();
 
     size_t scoreConnId = 0, healthConnId = 0;
+
+    LevelParams levelParams;
 
   private:
 };

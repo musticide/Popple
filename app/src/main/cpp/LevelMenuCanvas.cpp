@@ -104,5 +104,7 @@ void LevelMenuCanvas::Refresh() {
         levelButtonsArray[i]->SetActive(i == activeLevelGroupIndex);
     }
     prevBtn->clickable = activeLevelGroupIndex != 0;
+    prevBtn->tint      = activeLevelGroupIndex != 0 ? WHITE : LIGHTGRAY;
     nextBtn->clickable = activeLevelGroupIndex < MAX_LEVEL_GROUPS - 1;
+    nextBtn->tint      = activeLevelGroupIndex < MAX_LEVEL_GROUPS - 1 ? WHITE : LIGHTGRAY;
 }

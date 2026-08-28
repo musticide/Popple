@@ -63,8 +63,8 @@ void main()
     //ACES Tonemap
     // source.rgb = pow(source.rgb, vec3(2.2f));
     // source.rgb *= 1.5f;
-    source.rgb = ACESFitted(source.rgb);
-    source.rgb = pow(source.rgb, vec3(.4545454545454545));
+    // source.rgb = ACESFitted(source.rgb);
+    // source.rgb = pow(source.rgb, vec3(.4545454545454545));
 
     finalColor = source;
 }

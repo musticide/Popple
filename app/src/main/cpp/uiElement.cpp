@@ -90,6 +90,31 @@ void ui::UIElement::UpdateFinalRect() {
         }
     }
     for (size_t i = 0; i < children.size(); i++) {
-        children[i]->UpdateFinalRect();
+        if (children[i] != nullptr) {
+            children[i]->UpdateFinalRect();
+        }
     }
+}
+void ui::UIElement::OnEnable() {
+    for (size_t i = 0; i < children.size(); i++) {
+        if (children[i] != nullptr) {
+            children[i]->SetActive(true);
+        }
+    }
+}
+
+void ui::UIElement::OnDisable() {
+    for (size_t i = 0; i < children.size(); i++) {
+        if (children[i] != nullptr) {
+            children[i]->SetActive(false);
+        }
+    }
+}
+void ui::UIElement::Draw() const {
+    for (size_t i = 0; i < children.size(); i++) {
+        if (children[i] != nullptr && children[i]->IsActive()) {
+            children[i]->Draw();
+        }
+    }
+    DrawableEntity::Draw();
 }

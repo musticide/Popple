@@ -1,0 +1,112 @@
+{
+    "LevelGroup0": {
+        "MinSpawnInterval": 0.6,
+        "StartSpawnInterval": 1.2,
+        "PowerUpSpawnChance": 30,
+        "PowerUps": {
+            "ANEMO": false,
+            "CRYO": false,
+            "ELECTRO": true,
+            "PYRO": false
+        }
+    },
+    "LevelGroup1": {
+        "MinSpawnInterval": 0.6,
+        "StartSpawnInterval": 1.15,
+        "PowerUpSpawnChance": 30,
+        "PowerUps": {
+            "ANEMO": true,
+            "CRYO": false,
+            "ELECTRO": true,
+            "PYRO": false
+        }
+    },
+    "LevelGroup2": {
+        "MinSpawnInterval": 0.5,
+        "StartSpawnInterval": 1.1,
+        "PowerUpSpawnChance": 30,
+        "PowerUps": {
+            "ANEMO": true,
+            "CRYO": true,
+            "ELECTRO": true,
+            "PYRO": false
+        }
+    },
+    "LevelGroup3": {
+        "MinSpawnInterval": 0.5,
+        "StartSpawnInterval": 1.0,
+        "PowerUpSpawnChance": 35,
+        "PowerUps": {
+            "ANEMO": true,
+            "CRYO": true,
+            "ELECTRO": true,
+            "PYRO": true
+        }
+    },
+    "LevelGroup4": {
+        "MinSpawnInterval": 0.5,
+        "StartSpawnInterval": 1.0,
+        "PowerUpSpawnChance": 35,
+        "PowerUps": {
+            "ANEMO": true,
+            "CRYO": true,
+            "ELECTRO": true,
+            "PYRO": true
+        }
+    },
+    "LevelGroup5": {
+        "MinSpawnInterval": 0.5,
+        "StartSpawnInterval": 1.0,
+        "PowerUpSpawnChance": 35,
+        "PowerUps": {
+            "ANEMO": true,
+            "CRYO": true,
+            "ELECTRO": true,
+            "PYRO": true
+        }
+    },
+    "LevelGroup6": {
+        "MinSpawnInterval": 0.5,
+        "StartSpawnInterval": 1.0,
+        "PowerUpSpawnChance": 35,
+        "PowerUps": {
+            "ANEMO": true,
+            "CRYO": true,
+            "ELECTRO": true,
+            "PYRO": true
+        }
+    },
+    "LevelGroup7": {
+        "MinSpawnInterval": 0.5,
+        "StartSpawnInterval": 1.0,
+        "PowerUpSpawnChance": 35,
+        "PowerUps": {
+            "ANEMO": true,
+            "CRYO": true,
+            "ELECTRO": true,
+            "PYRO": true
+        }
+    },
+    "LevelGroup8": {
+        "MinSpawnInterval": 0.5,
+        "StartSpawnInterval": 1.0,
+        "PowerUpSpawnChance": 35,
+        "PowerUps": {
+            "ANEMO": true,
+            "CRYO": true,
+            "ELECTRO": true,
+            "PYRO": true
+        }
+    },
+    "LevelGroup9": {
+        "MinSpawnInterval": 0.5,
+        "StartSpawnInterval": 1.0,
+        "PowerUpSpawnChance": 35,
+        "PowerUps": {
+            "ANEMO": true,
+            "CRYO": true,
+            "ELECTRO": true,
+            "PYRO": true
+        }
+    }
+}

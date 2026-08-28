@@ -27,4 +27,6 @@ void ui::Image::Draw() const {
     } else {
         DrawRectangleRec(fRect, PINK);
     }
+
+    ui::UIElement::Draw();
 }

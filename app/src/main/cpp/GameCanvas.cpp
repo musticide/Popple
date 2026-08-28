@@ -1,6 +1,7 @@
 #include "GameCanvas.h"
 #include "EffectManager.h"
 #include "GameManager.h"
+#include "LevelConfig.h"
 #include "Log.h"
 #include "raylib.h"
 #include "uiButton.h"
@@ -12,9 +13,9 @@
 #include <stdbool.h>
 #include <string>
 
-GameCanvas::GameCanvas(Scene* parentScene) 
-:ui::Canvas(parentScene)
-{
+GameCanvas::GameCanvas(Scene* parentScene, LevelParams params)
+: ui::Canvas(parentScene)
+, levelParams(params) {
     LOGI("Game Canvas Constructor");
     scoreBox = CreateElement<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 35, 65, 350, 128 }, ui::FIXED_W | ui::FIXED_H);
@@ -88,6 +89,10 @@ GameCanvas::GameCanvas(Scene* parentScene)
         button = CreateElement<ui::Button>(true, "textures/GameplayAtlas.png", transform, ui::FIXED_W | ui::FIXED_H);
         button->onClick.connect([i]() { EffectManager::Get().ActivateEffect((ElementType)i); });
         button->nPatchInfo.source = offOnRects[i][0];
+        if (i > levelParams.availablePowerUps.size()) {
+            button->tint = LIGHTGRAY;
+        
+        }
     }
 }
 
