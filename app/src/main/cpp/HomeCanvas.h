@@ -18,7 +18,8 @@ class HomeCanvas : public ui::Canvas {
     std::unique_ptr<ui::Image> bgImage           = nullptr;
     std::unique_ptr<ui::Image> bgOverlayImg      = nullptr;
     std::unique_ptr<ui::Image> usernameBGImg     = nullptr;
-    std::unique_ptr<ui::Button> startButton      = nullptr;
+    std::unique_ptr<ui::Button> classicModeBtn   = nullptr;
+    std::unique_ptr<ui::Button> endlessModeBtn   = nullptr;
     std::unique_ptr<ui::Text> usernameTxt        = nullptr;
     std::unique_ptr<ui::Text> userLvlTxt         = nullptr;
     std::unique_ptr<UsernamePopup> usernamePopup = nullptr;

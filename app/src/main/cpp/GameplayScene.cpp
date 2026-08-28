@@ -22,6 +22,7 @@ GameplayScene::GameplayScene(LevelParams config)
 
     m_GameCanvas  = CreateEntity<GameCanvas>(true, config);
     endGameCanvas = CreateEntity<EndGameCanvas>(false);
+    pauseGameCanvas = CreateEntity<PauseGameCanvas>(false);
 
     m_GameManager =
         CreateEntity<GameManager>(true, config, m_GameCanvas.get(), pauseGameCanvas.get(), endGameCanvas.get());

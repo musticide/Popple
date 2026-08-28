@@ -5,6 +5,7 @@
 #include "GameCanvas.h"
 #include "GameManager.h"
 #include "LevelConfig.h"
+#include "PauseGameCanvas.h"
 #include "Scene.h"
 #include "StaticMesh.h"
 #include "TouchFeedback.h"
@@ -27,7 +28,7 @@ class GameplayScene : public Scene {
     std::unique_ptr<Tower> m_Tower               = nullptr;
     std::unique_ptr<StaticMesh> m_Background     = nullptr;
     std::unique_ptr<GameCanvas> m_GameCanvas     = nullptr;
-    std::unique_ptr<ui::Canvas> pauseGameCanvas  = nullptr;
+    std::unique_ptr<PauseGameCanvas> pauseGameCanvas  = nullptr;
     std::unique_ptr<EndGameCanvas> endGameCanvas = nullptr;
     std::unique_ptr<GameManager> m_GameManager   = nullptr;
     // std::unique_ptr<EffectManager> m_EffectManager;

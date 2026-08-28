@@ -4,6 +4,7 @@
 #include "Globals.h"
 #include "LevelConfig.h"
 #include "Log.h"
+#include "PauseGameCanvas.h"
 #include "PlayerProfile.h"
 #include "Scene.h"
 #include "SceneManager.h"
@@ -13,7 +14,7 @@
 
 int GameData::availableElementCount = 3;
 
-GameManager::GameManager(Scene* parentScene, LevelParams config, ui::Canvas* gameCanvas, ui::Canvas* pauseCanvas, ui::Canvas* endGameCanvas)
+GameManager::GameManager(Scene* parentScene, LevelParams config, ui::Canvas* gameCanvas, PauseGameCanvas* pauseCanvas, ui::Canvas* endGameCanvas)
 : Entity(parentScene)
 , gameCanvas(gameCanvas)
 , pauseGameCanvas(pauseCanvas)
@@ -68,6 +69,13 @@ void GameManager::Start() {
     // activeElementEffectChanged(activeEffect);
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
+    pauseGameCanvas->resumeBtn->onClick.connect([this]() { ResumeGame(); });
+    Globals::gameStateChanged.connect([this](bool paused) {
+        if (paused) {
+            PauseGame();
+            LOGI("GameManager: Paused");
+        }
+    });
 }
 
 void GameManager::OnEnable() {
@@ -164,9 +172,10 @@ void GameManager::RestartGame(LevelParams config) {
     endGameCanvas->SetActive(false);
 }
 void GameManager::PauseGame() {
-    Globals::gamePaused = true;
+    pauseGameCanvas->SetActive(true);
 }
 
 void GameManager::ResumeGame() {
     Globals::gamePaused = false;
+    pauseGameCanvas->SetActive(false);
 }

@@ -79,6 +79,7 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/RemoteConfig.cpp"
     "${CMAKE_SOURCE_DIR}/LevelButtonsArray.cpp"
     "${CMAKE_SOURCE_DIR}/UsernamePopup.cpp"
+    "${CMAKE_SOURCE_DIR}/PauseGameCanvas.cpp"
 )
 
 # Define compiler macros for the library

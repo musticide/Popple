@@ -2,6 +2,7 @@
 
 #include "Entity.h"
 #include "LevelConfig.h"
+#include "PauseGameCanvas.h"
 #include "Signal.h"
 #include "Singleton.h"
 #include "spatialGrid.h"
@@ -29,7 +30,7 @@ static struct GameData {
 
 class GameManager : public Entity, public Singleton<GameManager> {
   public:
-    GameManager(Scene* parentScene, LevelParams config, ui::Canvas* gameCanvas, ui::Canvas* pauseCanvas, ui::Canvas* endGameCanvas);
+    GameManager(Scene* parentScene, LevelParams config, ui::Canvas* gameCanvas, PauseGameCanvas* pauseCanvas, ui::Canvas* endGameCanvas);
 
     ~GameManager();
 
@@ -70,7 +71,8 @@ class GameManager : public Entity, public Singleton<GameManager> {
     std::unique_ptr<BubbleManager> bubbleManager = nullptr;
     std::unique_ptr<SpatialGrid> spatialGrid     = nullptr;
 
-    ui::Canvas *gameCanvas, *pauseGameCanvas, *endGameCanvas;
+    ui::Canvas *gameCanvas, *endGameCanvas;
+    PauseGameCanvas* pauseGameCanvas;
 
     void RestartGame(LevelParams params);
 

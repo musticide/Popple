@@ -11,7 +11,7 @@ HomeScene::HomeScene()
     touchFeedback   = CreateEntity<TouchFeedback>(true);
     homeCanvas      = CreateEntity<HomeCanvas>(true);
     levelMenuCanvas = CreateEntity<LevelMenuCanvas>(false);
-    homeCanvas->startButton->onClick.connect([this]() {
+    homeCanvas->classicModeBtn->onClick.connect([this]() {
         if (PlayerProfile.username.value.empty()) {
             homeCanvas->usernamePopup->SetActive(true);
         } else {

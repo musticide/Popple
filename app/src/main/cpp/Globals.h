@@ -1,5 +1,7 @@
 #pragma once
 #include "SceneManager.h"
+#include "Signal.h"
+#include "raymob.h"
 #include <cstdint>
 
 #define MAX_LEVELS 120
@@ -19,5 +21,9 @@ inline struct GameResults {
     static int levelRating;
     static int levelPlayed;
 } GameResults;
+
+extern Callback onPauseCallBack;
+extern Callback onResumeCallBack;
+extern Signal<bool> gameStateChanged;
 
 } // namespace Globals

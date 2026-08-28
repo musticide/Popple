@@ -17,7 +17,7 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
         true, "textures/MainMenuBG.png", Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_W | ui::STRETCH_H);
 
     bgOverlayImg = CreateElement<ui::Image>(
-        true, "textures/MainMenuBGOverlay.png", Rectangle{ 0, 1161, 1080, 1175}, ui::STRETCH_W | ui::STRETCH_H);
+        true, "textures/MainMenuBGOverlay.png", Rectangle{ 0, 1161, 1080, 1175 }, ui::STRETCH_W | ui::STRETCH_H);
 
     usernameBGImg = CreateElement<ui::Image>(
         true, "textures/LevelsMenuAtlas.png", Rectangle{ 36, 41, 994, 157 }, ui::FIXED_H | ui::STRETCH_W, true);
@@ -40,16 +40,40 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
     userLvlTxt->fontSize = 96;
     userLvlTxt->SetText(std::to_string(PlayerProfile.highestLevelCleared.value));
 
-    startButton = CreateElement<ui::Button>(
-        true, "textures/LevelsMenuAtlas.png", Rectangle{ 192, 958, 697, 350 }, "START", ui::ACE_BOLD_ITALIC, ui::FIXED_W | ui::FIXED_H, true);
-    startButton->nPatchInfo.source = { 5, 694, 347, 325 };
-    startButton->nPatchInfo.layout = NPATCH_NINE_PATCH;
-    startButton->nPatchInfo.left   = 130;
-    startButton->nPatchInfo.right  = 130;
-    startButton->nPatchInfo.top    = 70;
-    startButton->nPatchInfo.bottom = 170;
-    startButton->fontOffset.y      = 62;
-    startButton->fontSize          = 115;
+    classicModeBtn                    = CreateElement<ui::Button>(true,
+        "textures/LevelsMenuAtlas.png",
+        Rectangle{ 176, 891, 727, 326 },
+        "Classic",
+        ui::ACE_BOLD_ITALIC,
+        ui::FIXED_W | ui::FIXED_H,
+        true);
+    classicModeBtn->nPatchInfo.source = { 5, 694, 347, 325 };
+    classicModeBtn->nPatchInfo.layout = NPATCH_NINE_PATCH;
+    classicModeBtn->nPatchInfo.left   = 130;
+    classicModeBtn->nPatchInfo.right  = 130;
+    classicModeBtn->nPatchInfo.top    = 70;
+    classicModeBtn->nPatchInfo.bottom = 170;
+    classicModeBtn->fontOffset.y      = 62;
+    classicModeBtn->fontSize          = 115;
+
+    endlessModeBtn                    = CreateElement<ui::Button>(true,
+        "textures/LevelsMenuAtlas.png",
+        Rectangle{ 176, 1187, 727, 326 },
+        "Endless",
+        ui::ACE_BOLD_ITALIC,
+        ui::FIXED_W | ui::FIXED_H,
+        true);
+    endlessModeBtn->nPatchInfo.source = { 5, 694, 347, 325 };
+    endlessModeBtn->nPatchInfo.layout = NPATCH_NINE_PATCH;
+    endlessModeBtn->nPatchInfo.left   = 130;
+    endlessModeBtn->nPatchInfo.right  = 130;
+    endlessModeBtn->nPatchInfo.top    = 70;
+    endlessModeBtn->nPatchInfo.bottom = 170;
+    endlessModeBtn->fontOffset.y      = 62;
+    endlessModeBtn->fontSize          = 115;
+    endlessModeBtn->tint = LIGHTGRAY;
+    endlessModeBtn->text->color = LIGHTGRAY;
+    endlessModeBtn->clickable = false;
 
     usernamePopup = CreateElement<UsernamePopup>(true, Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_W | ui::STRETCH_H);
 }

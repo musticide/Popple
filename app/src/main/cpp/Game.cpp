@@ -30,6 +30,10 @@ void Game::Init() {
     GetLocalUserId();
     RunGameBootAuthentication();
 
+    SetOnPauseCallBack(Globals::onPauseCallBack);
+    SetOnResumeCallBack(Globals::onResumeCallBack);
+    InitCallBacks();
+
     screenWidth = Globals::screenWidth = GetScreenWidth();
     screenHeight = Globals::screenHeight = GetScreenHeight();
 
