@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "Singleton.h"
 #include "raylib.h"
+#include "scheduler.h"
 #include <cassert>
 #include <cmath>
 #include <cstddef>
@@ -21,13 +22,20 @@ class Input : public Singleton<Input> {
     Camera2D* m_Camera2D;
 
   public:
+    static void PauseInputForTime(float seconds) {
+        inputPaused = true;
+        Scheduler::Get().ScheduleCall(seconds, []() { inputPaused = false; });
+    }
     static Vector3 GetTouchPositionWS(int index = 0) {
         Ray r = GetScreenToWorldRay(GetTouchPosition(index), *Get().m_Camera3D);
         return r.position;
     }
 
     static Vector2 GetTouchPositionCS(int index = 0) {
-        return GetTouchPosition(index);
+        if (inputPaused)
+            return { -1, -1 };
+        else
+            return GetTouchPosition(index);
         // return GetScreenToWorld2D(GetTouchPosition(index), *Get().m_Camera2D);
     }
     static int GetTouchPointCount() {
@@ -47,8 +55,8 @@ class Input : public Singleton<Input> {
         const float MIN_SPEED = 0.5f;
 
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            ts->start= GetTouchPosition(0);
-            ts->last= ts->start;
+            ts->start      = GetTouchPosition(0);
+            ts->last       = ts->start;
             ts->velocity   = (Vector2){ 0, 0 };
             ts->isDragging = true;
         }
@@ -78,4 +86,5 @@ class Input : public Singleton<Input> {
     ~Input();
 
   private:
+    inline static bool inputPaused = false;
 };

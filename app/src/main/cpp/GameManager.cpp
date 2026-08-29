@@ -98,6 +98,7 @@ void GameManager::EndGame() {
     using namespace Globals;
 
     StopGameSystems();
+    Input::Get().PauseInputForTime(1.0f);
 
     GameResults.levelPlayed   = levelParams.levelNumber;
     GameResults.gameCompleted = true;
