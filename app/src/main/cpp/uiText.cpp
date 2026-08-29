@@ -53,3 +53,8 @@ void ui::Text::UpdateTextPos() {
            fRect.y + Lerp(0.0f, fRect.height - textSize.y, ((float)vAlign) * 0.5f) };
 }
 
+void ui::Text::UpdateFinalRect() {
+    ui::UIElement::UpdateFinalRect();
+    UpdateTextPos();
+}
+

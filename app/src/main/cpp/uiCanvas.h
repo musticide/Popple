@@ -11,10 +11,6 @@ class UIElement;
 class Canvas : public DrawableEntity {
   public:
     Canvas(Scene* parentScene);
-    Canvas(Canvas&&)                 = default;
-    Canvas(const Canvas&)            = default;
-    Canvas& operator=(Canvas&&)      = default;
-    Canvas& operator=(const Canvas&) = default;
     virtual ~Canvas();
 
     // WARN:

@@ -20,8 +20,8 @@ GameplayScene::GameplayScene(LevelParams config)
     m_Background->position = { 0.f, -20.f, 0.f };
     m_Background->scale    = Vector3Scale(Vector3One(), 2.f);
 
-    m_GameCanvas  = CreateEntity<GameCanvas>(true, config);
-    endGameCanvas = CreateEntity<EndGameCanvas>(false);
+    m_GameCanvas    = CreateEntity<GameCanvas>(true, config);
+    endGameCanvas   = CreateEntity<EndGameCanvas>(false, config);
     pauseGameCanvas = CreateEntity<PauseGameCanvas>(false);
 
     m_GameManager =

@@ -18,10 +18,6 @@ class Button : public ui::Image {
         FontName font,
         int fitType,
         bool nPatch = false);
-    Button(Button&&)                 = default;
-    Button(const Button&)            = delete;
-    Button& operator=(Button&&)      = default;
-    Button& operator=(const Button&) = delete;
     ~Button();
 
     Signal<> onClick;

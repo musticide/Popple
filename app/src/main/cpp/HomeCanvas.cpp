@@ -1,7 +1,10 @@
 #include "HomeCanvas.h"
+#include "GameplayScene.h"
 #include "Globals.h"
+#include "LevelConfig.h"
 #include "Log.h"
 #include "PlayerProfile.h"
+#include "RemoteConfig.h"
 #include "raylib.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
@@ -17,7 +20,8 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
         true, "textures/MainMenuBG.png", Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_W | ui::STRETCH_H);
 
     bgOverlayImg = CreateElement<ui::Image>(
-        true, "textures/MainMenuBGOverlay.png", Rectangle{ 0, 1161, 1080, 1175 }, ui::STRETCH_W | ui::STRETCH_H);
+        true, "textures/MainMenuBGOverlay.png", Rectangle{ 0, 1161, 1080, 1175 }, ui::STRETCH_W | ui::FIXED_H);
+    bgOverlayImg->SetAnchor({ 0.5f, 1.0f });
 
     usernameBGImg = CreateElement<ui::Image>(
         true, "textures/LevelsMenuAtlas.png", Rectangle{ 36, 41, 994, 157 }, ui::FIXED_H | ui::STRETCH_W, true);
@@ -30,14 +34,14 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
         true, ui::ROUNDED_MPLUS_EXTRABOLD, Rectangle{ 421, 48, 581, 143 }, ui::FIXED_H | ui::FIXED_W);
     usernameTxt->hAlign   = ui::ALIGN_RIGHT;
     usernameTxt->vAlign   = ui::ALIGN_MIDDLE;
-    usernameTxt->fontSize = 72;
+    usernameTxt->fontSize = 90;
     usernameTxt->SetText(PlayerProfile.username.value);
 
     userLvlTxt = CreateElement<ui::Text>(
         true, ui::ROUNDED_MPLUS_EXTRABOLD, Rectangle{ 188, 48, 690, 143 }, ui::FIXED_H | ui::FIXED_W);
     userLvlTxt->hAlign   = ui::ALIGN_LEFT;
     userLvlTxt->vAlign   = ui::ALIGN_MIDDLE;
-    userLvlTxt->fontSize = 96;
+    userLvlTxt->fontSize = 100;
     userLvlTxt->SetText(std::to_string(PlayerProfile.highestLevelCleared.value));
 
     classicModeBtn                    = CreateElement<ui::Button>(true,
@@ -71,9 +75,14 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
     endlessModeBtn->nPatchInfo.bottom = 170;
     endlessModeBtn->fontOffset.y      = 62;
     endlessModeBtn->fontSize          = 115;
-    endlessModeBtn->tint = LIGHTGRAY;
-    endlessModeBtn->text->color = LIGHTGRAY;
-    endlessModeBtn->clickable = false;
+    // endlessModeBtn->tint = LIGHTGRAY;
+    // endlessModeBtn->text->color = LIGHTGRAY;
+    // endlessModeBtn->clickable = false;
+    endlessModeBtn->onClick.connect([]() {
+        SceneManager::Get().RegisterScene<GameplayScene>(SceneType::GAMEPLAY, false, GetLevelParams(-1));
+        SceneManager::Get().ActivateScene(SceneType::GAMEPLAY);
+        SceneManager::Get().DeactivateScene(SceneType::HOME);
+    });
 
     usernamePopup = CreateElement<UsernamePopup>(true, Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_W | ui::STRETCH_H);
 }

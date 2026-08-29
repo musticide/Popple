@@ -15,5 +15,6 @@ class HomeScene : public Scene {
     std::unique_ptr<HomeCanvas> homeCanvas           = nullptr;
     std::unique_ptr<LevelMenuCanvas> levelMenuCanvas = nullptr;
 
+
   private:
 };

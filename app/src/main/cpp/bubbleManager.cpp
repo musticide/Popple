@@ -56,6 +56,7 @@ BubbleManager::~BubbleManager() {
 
 void BubbleManager::Start() {
     electroShieldRadius = GameData::electroShieldRadius;
+    Reset();
 }
 
 void BubbleManager::OnEnable() {
@@ -194,7 +195,7 @@ void BubbleManager::SpawnBubbles() {
     if (m_SpawnTimer > m_SpawnInterval) {
         for (int i = 0; i < m_Bubbles.size(); i++) {
             if (!m_Bubbles[i]->isActive) {
-                LOGI("Bubble Spawned at frame: %f", GetTime());
+                LOGV("Bubble Spawned at time: %f", GetTime());
                 m_Bubbles[i]->isActive = true;
                 // m_Bubbles[i]->Spawn();
                 SpawnBubble(m_Bubbles[i].get());

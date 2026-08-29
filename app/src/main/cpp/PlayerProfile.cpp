@@ -1,10 +1,6 @@
-#pragma once
-
 #include "PlayerProfile.h"
-#include "Globals.h"
 #include "Log.h"
 #include "firebase.h"
-#include <cstdint>
 #include <firebase/database/database_reference.h>
 #include <firebase/variant.h>
 #include <map>

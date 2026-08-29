@@ -17,10 +17,6 @@ enum FitType {
 class UIElement : public DrawableEntity {
   public:
     UIElement(Scene* parentScene, Canvas* parentCanvas, Rectangle rect, int fitType = STRETCH_W | STRETCH_H);
-    UIElement(UIElement&&)                 = default;
-    UIElement(const UIElement&)            = default;
-    UIElement& operator=(UIElement&&)      = default;
-    UIElement& operator=(const UIElement&) = default;
     ~UIElement();
 
     bool preserveRatio = true;
@@ -49,7 +45,7 @@ class UIElement : public DrawableEntity {
         return std::move(child);
     }
 
-    void UpdateFinalRect();
+    virtual void UpdateFinalRect();
 
     void SetAnchor(Vector2 anchor) {
         this->anchor = anchor;

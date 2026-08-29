@@ -10,8 +10,6 @@
 class UsernamePopup : public ui::UIElement {
   public:
     UsernamePopup(Scene* parentScene, ui::Canvas* parentCanvas, Rectangle rect, int fitType = ui::STRETCH_W | ui::STRETCH_H);
-    UsernamePopup(UsernamePopup&&)            = default;
-    UsernamePopup& operator=(UsernamePopup&&) = default;
     ~UsernamePopup();
 
     std::unique_ptr<ui::Image> darkBgImg     = nullptr;

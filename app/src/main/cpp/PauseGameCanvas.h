@@ -6,10 +6,6 @@
 class PauseGameCanvas : public ui::Canvas {
   public:
     PauseGameCanvas(Scene* parentScene);
-    PauseGameCanvas(PauseGameCanvas&&)                 = default;
-    PauseGameCanvas(const PauseGameCanvas&)            = default;
-    PauseGameCanvas& operator=(PauseGameCanvas&&)      = default;
-    PauseGameCanvas& operator=(const PauseGameCanvas&) = default;
     ~PauseGameCanvas();
 
     std::unique_ptr<ui::Image> darkBgImg  = nullptr;

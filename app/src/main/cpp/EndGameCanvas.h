@@ -1,4 +1,5 @@
 #pragma once
+#include "LevelConfig.h"
 #include "raylib.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
@@ -9,11 +10,7 @@
 
 class EndGameCanvas : public ui::Canvas {
   public:
-    EndGameCanvas(Scene* parentScene);
-    EndGameCanvas(EndGameCanvas&&)                 = default;
-    EndGameCanvas(const EndGameCanvas&)            = default;
-    EndGameCanvas& operator=(EndGameCanvas&&)      = default;
-    EndGameCanvas& operator=(const EndGameCanvas&) = default;
+    EndGameCanvas(Scene* parentScene, LevelParams params);
     ~EndGameCanvas();
 
     std::unique_ptr<ui::Image> bgImage                  = nullptr;
@@ -27,6 +24,8 @@ class EndGameCanvas : public ui::Canvas {
 
     void Start() override;
     void OnEnable() override;
+
+    LevelParams levelParams;
 
   private:
     std::array<Rectangle, 2> starOnOffRect = { Rectangle{ 365, 546, 235, 235 }, Rectangle{ 365, 785, 235, 235 } };

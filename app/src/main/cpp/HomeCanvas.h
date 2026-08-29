@@ -9,10 +9,6 @@
 class HomeCanvas : public ui::Canvas {
   public:
     HomeCanvas(Scene* parentScene);
-    HomeCanvas(HomeCanvas&&)                 = default;
-    HomeCanvas(const HomeCanvas&)            = default;
-    HomeCanvas& operator=(HomeCanvas&&)      = default;
-    HomeCanvas& operator=(const HomeCanvas&) = default;
     ~HomeCanvas();
 
     std::unique_ptr<ui::Image> bgImage           = nullptr;

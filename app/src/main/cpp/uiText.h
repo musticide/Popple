@@ -27,9 +27,6 @@ enum FontName {
 class Text : public UIElement {
   public:
     Text(Scene* parentScene,Canvas* parentCanvas, FontName font, Rectangle rect, int fitType);
-    Text(const Text&)            = default;
-    Text& operator=(Text&&)      = default;
-    Text& operator=(const Text&) = default;
     ~Text();
 
     static std::array<Font, 3> fonts;
@@ -48,6 +45,8 @@ class Text : public UIElement {
     void SetPosition(Vector2 pos);
     void SetPositionOffset(Vector2 pos);
     void Move(Vector2 pos);
+
+    void UpdateFinalRect() override;
 
   private:
     std::string text = "Sample Text";

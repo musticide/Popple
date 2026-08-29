@@ -13,8 +13,9 @@
 #include "uiText.h"
 #include <string>
 
-EndGameCanvas::EndGameCanvas(Scene* parentScene)
-: ui::Canvas(parentScene) {
+EndGameCanvas::EndGameCanvas(Scene* parentScene, LevelParams params)
+: ui::Canvas(parentScene)
+, levelParams(params) {
     LOGI("End Game canvas Contructor start");
     bgImage = CreateElement<ui::Image>(
         true, "textures/MainMenuBG.png", Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_W | ui::STRETCH_H);
@@ -103,7 +104,7 @@ EndGameCanvas::EndGameCanvas(Scene* parentScene)
     resultText->SetText("COMPLETE!");
 
     scoreText = CreateElement<ui::Text>(true, ui::ACE_BOLD, Rectangle{ 0, 1057, 1080, 100 }, ui::FIXED_H | ui::FIXED_W);
-    scoreText->fontSize = 95;
+    scoreText->fontSize = 110;
     scoreText->hAlign   = ui::ALIGN_CENTER;
     scoreText->SetText("Score:XXX");
     LOGI("End Game canvas Contructor End");
@@ -127,25 +128,55 @@ void EndGameCanvas::Initialise() {
 
     scoreText->SetText("Score: " + std::to_string(GameResults.score));
 
-    if (GameResults.gameWon) {
-        resultText->SetText("LEVEL\nCOMPLETE!");
-    } else {
-        resultText->SetText("LEVEL\nFAILED");
-    }
-
-    for (size_t i = 0; i < starImages.size(); i++) {
-        starImages[i]->nPatchInfo.source = starOnOffRect[i < GameResults.levelRating];
-    }
 
     nextLevelButton->onClick.disconnectAll();
     retryLevelButton->onClick.disconnectAll();
 
-    nextLevelButton->onClick.connect([]() {
-        LOGI("Starting Level %d", GameResults.levelPlayed + 1);
+    if (!levelParams.endlessMode) {
+        // CLASSIC MODE
+        nextLevelButton->onClick.connect([]() {
+            LOGI("Starting Level %d", GameResults.levelPlayed + 1);
 
-        LevelParams params = GetLevelParams(GameResults.levelPlayed + 1);
-        GameManager::Get().RestartGame(params);
-    });
+            LevelParams params = GetLevelParams(GameResults.levelPlayed + 1);
+            GameManager::Get().RestartGame(params);
+        });
+        nextLevelButton->SetActive(true);
+        retryLevelButton->text->SetText("Retry Level");
+        retryLevelButton->baseRect.y = 1641;
+        retryLevelButton->UpdateFinalRect();
+        exitToMainButton->baseRect.y = 1904;
+        exitToMainButton->UpdateFinalRect();
+        resultText->SetPosition({ 0, 454 });
+
+        if (GameResults.gameWon) {
+            resultText->SetText("LEVEL\nCOMPLETE!");
+        } else {
+            resultText->SetText("LEVEL\nFAILED");
+        }
+
+        for (size_t i = 0; i < starImages.size(); i++) {
+            starImages[i]->nPatchInfo.source = starOnOffRect[i < GameResults.levelRating];
+        }
+    } else {
+        // ENDLESS MODE
+        nextLevelButton->SetActive(false);
+        retryLevelButton->text->SetText("Try Again");
+        retryLevelButton->baseRect.y = 1378;
+        retryLevelButton->UpdateFinalRect();
+        exitToMainButton->baseRect.y = 1641;
+        exitToMainButton->UpdateFinalRect();
+        resultText->SetPosition({ 0, 750 });
+
+        if (GameResults.gameWon) {
+            resultText->SetText("NEW\nHIGH SCORE!");
+        } else {
+            resultText->SetText("NEXT\nTIME");
+        }
+
+        for (size_t i = 0; i < starImages.size(); i++) {
+            starImages[i]->SetActive(false);
+        }
+    }
 
     retryLevelButton->onClick.connect([]() {
         LOGI("Retrying Level %d", GameResults.levelPlayed);

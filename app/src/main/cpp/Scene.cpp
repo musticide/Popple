@@ -18,7 +18,6 @@ void Scene::Start() {
         Entity* e = m_SceneEntities[i];
         if (e != nullptr && e->IsActive() && !e->hasStarted) {
             e->Start();
-            LOGV("Scene Started: %s", m_Name);
             e->hasStarted = true;
         }
     }

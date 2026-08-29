@@ -9,6 +9,7 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "bubbleManager.h"
+#include "input.h"
 #include "raylib.h"
 #include <cmath>
 
@@ -49,7 +50,7 @@ void GameManager::AddSpecialBubbleInternal(ElementType type) {
 void GameManager::AddScore() {
     m_Score += GameData::BUBBLE_POINTS;
     scoreChanged(m_Score, GameData::BUBBLE_POINTS);
-    if (m_Score >= GameData::MAX_SCORE) {
+    if (m_Score >= GameData::MAX_SCORE && !levelParams.endlessMode) {
         // GAME WON
         EndGame();
     }
@@ -102,10 +103,15 @@ void GameManager::EndGame() {
 
     GameResults.levelPlayed   = levelParams.levelNumber;
     GameResults.gameCompleted = true;
-    GameResults.gameWon       = m_Score > levelParams.minScore;
-    GameResults.score         = m_Score;
-    GameResults.health        = m_Health;
+    if (levelParams.endlessMode) {
+        GameResults.gameWon = PlayerProfile.highestScore.value < m_Score;
+    } else {
+        GameResults.gameWon = m_Score > levelParams.minScore;
+    }
+    GameResults.score  = m_Score;
+    GameResults.health = m_Health;
 
+    //NOTE: Obsolete can be verified and removed
     if (PlayerProfile.highestScore.value < m_Score) {
         PlayerProfile.highestScore.value = m_Score;
     }

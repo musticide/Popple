@@ -19,8 +19,6 @@ class LevelButton : public ui::Button {
         ui::FontName font,
         int fitType,
         bool nPatch = false);
-    LevelButton(LevelButton&&)                 = default;
-    LevelButton& operator=(LevelButton&&)      = default;
     ~LevelButton();
     void Start() override;
     void OnEnable() override;

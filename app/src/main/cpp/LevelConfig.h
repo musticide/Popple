@@ -11,6 +11,7 @@ struct LevelParams {
     float minSpawnInterval;
     float spawnDecrementAmount;
     int powerUpSpawnChance;
+    bool endlessMode;
     std::vector<ElementType> availablePowerUps;
 };
 

@@ -9,8 +9,6 @@
 class LevelButtonsArray : public ui::UIElement {
   public:
     LevelButtonsArray(Scene* parentScene, ui::Canvas* parentCanvas, Rectangle rect, int fitType, int levelGroupNumber, LevelParams& levelParams);
-    LevelButtonsArray(LevelButtonsArray&&)            = default;
-    LevelButtonsArray& operator=(LevelButtonsArray&&) = default;
     ~LevelButtonsArray();
 
     int levelGroupNumber;
