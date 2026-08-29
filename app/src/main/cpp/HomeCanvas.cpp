@@ -75,9 +75,6 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
     endlessModeBtn->nPatchInfo.bottom = 170;
     endlessModeBtn->fontOffset.y      = 62;
     endlessModeBtn->fontSize          = 115;
-    // endlessModeBtn->tint = LIGHTGRAY;
-    // endlessModeBtn->text->color = LIGHTGRAY;
-    // endlessModeBtn->clickable = false;
     endlessModeBtn->onClick.connect([]() {
         SceneManager::Get().RegisterScene<GameplayScene>(SceneType::GAMEPLAY, false, GetLevelParams(-1));
         SceneManager::Get().ActivateScene(SceneType::GAMEPLAY);
@@ -93,8 +90,6 @@ void HomeCanvas::OnEnable() {
     usernameTxt->SetText(PlayerProfile.username.value);
     LOGI("Username: %s", PlayerProfile.username.value.c_str());
     userLvlTxt->SetText(std::to_string(PlayerProfile.highestLevelCleared.value));
-    // highScoreTxt->SetText("HighScore: " + std::to_string(PlayerProfile.highestScore.value));
-    // highestTimeTxt->SetText(TextFormat("Highest Time: %d", PlayerProfile.longestTimeSurvived.value));
 }
 void HomeCanvas::Start() {
     ui::Canvas::Start();

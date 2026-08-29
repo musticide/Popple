@@ -9,7 +9,8 @@
 #include <cmath>
 
 ParticleSystem::ParticleSystem(Scene* parentScene, int maxParticles)
-: DrawableEntity(parentScene, RenderQueue::TRANSPARENT), maxParticles(maxParticles) {
+: DrawableEntity(parentScene, RenderQueue::TRANSPARENT)
+, maxParticles(maxParticles) {
     m_CurrentIndex = maxParticles - 1;
 }
 ParticleSystem::~ParticleSystem() {
@@ -48,8 +49,7 @@ void ParticleSystem::Update(float dT) {
     for (size_t i = 0; i < m_ParticlePool.size(); i++) {
         Particle& particle = m_ParticlePool[i];
 
-        if (!particle.isActive)
-            continue;
+        if (!particle.isActive) continue;
 
         // activeParticleCount++;
         particle.age += dT;
@@ -59,12 +59,17 @@ void ParticleSystem::Update(float dT) {
             // activeParticleCount--;
             continue;
         }
-        float life     = particle.age / particle.lifetime;
+        float life      = particle.age / particle.lifetime;
         float cubicLife = Utils::EaseInOutCubic(life);
-        particle.color = ColorLerp(particleProperties.startColor, particleProperties.endColor, cubicLife);
-        particle.size  = Lerp(particleProperties.startSize, particleProperties.endSize, cubicLife);
+        particle.color  = ColorLerp(particleProperties.startColor, particleProperties.endColor, cubicLife);
+        particle.size   = Lerp(particleProperties.startSize, particleProperties.endSize, cubicLife);
+
+        if (shape == EmitShape::LINE)
+            particle.velocity += Vector3Normalize(endPoint - particle.position) * endPointForce * (1.f - particleProperties.damping);
+
         particle.velocity *= 1.f - particleProperties.damping;
         particle.position += particle.velocity;
+
         // TODO: Transform paricles for local space emission
     }
     // if (activeParticleCount != 0)
@@ -96,19 +101,19 @@ void ParticleSystem::Emit() {
         RandomRangeFloat(-particleProperties.speedVariation, particleProperties.speedVariation);
 
     switch (shape) {
-    case EmitShape::NONE:
-        particle.velocity = direction * speed;
-        break;
-    case EmitShape::CIRCLE:
-        particle.velocity = GetCircularDirection() * speed;
-        break;
-    case EmitShape::LINE:
-        particle.velocity = direction * speed;
-        break;
-    case EmitShape::CUSTOM:
-        if (customShapeFunc)
-            customShapeFunc();
-        break;
+        case EmitShape::NONE:
+            particle.velocity = direction * speed;
+            break;
+        case EmitShape::CIRCLE:
+            particle.velocity = GetCircularDirection() * speed;
+            break;
+        case EmitShape::LINE:
+            particle.velocity = GetCircularDirection() * speed;
+            particle.velocity += direction * speed;
+            break;
+        case EmitShape::CUSTOM:
+            if (customShapeFunc) customShapeFunc();
+            break;
     }
 
     m_CurrentIndex = (--m_CurrentIndex + m_ParticlePool.size()) % m_ParticlePool.size();

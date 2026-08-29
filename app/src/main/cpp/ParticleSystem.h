@@ -68,6 +68,9 @@ public:
     ///Used when shape NONE
     Vector3 direction = Vector3Zero();
 
+    ///Used when shape LINE
+    Vector3 endPoint = Vector3Zero();
+    float endPointForce = 0.1f;
 
     // std::shared_ptr<Model> model;
     Model model;

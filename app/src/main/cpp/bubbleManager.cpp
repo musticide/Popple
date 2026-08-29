@@ -35,9 +35,9 @@ BubbleManager::BubbleManager(Scene* parentScene, LevelParams levelParams)
         *ResourceManager::GetShader("shaders/bubbleBasic.vert", "shaders/bubbleBasic.frag");
 
 
-    burstParticles                                    = parentScene->CreateEntity<ParticleSystem>(true, 25);
-    burstParticles->particleProperties.lifetime       = 0.25f;
-    burstParticles->particleProperties.startSize      = 0.04f;
+    burstParticles                                    = parentScene->CreateEntity<ParticleSystem>(true, 100);
+    burstParticles->particleProperties.lifetime       = 0.45f;
+    burstParticles->particleProperties.startSize      = 0.025f;
     burstParticles->particleProperties.endSize        = 0.005f;
     burstParticles->particleProperties.sizeVariation  = 0.05f;
     burstParticles->emitType                          = EmitType::BURST;
@@ -47,6 +47,9 @@ BubbleManager::BubbleManager(Scene* parentScene, LevelParams levelParams)
     burstParticles->particleProperties.damping        = 0.45f;
     burstParticles->particleProperties.startColor     = bubbleColors[0];
     burstParticles->particleProperties.endColor       = { 255, 255, 255, 0 };
+
+    burstParticles->endPoint = { 0, 0, 0 };
+    burstParticles->endPointForce = 0.4f;
 
     LOGI("Bubble Manager constructed");
 }
@@ -80,26 +83,27 @@ void BubbleManager::Update(float dT) {
             for (int j = 0; j < GetTouchPointCount(); j++) {
                 // LOGI("Touch Pos: %f, %f, %f", touchPos.x, touchPos.y, touchPos.z);
                 if (IsPointInBubble(bubble, Input::GetTouchPositionWS(j))) {
-                    GameManager::Get().AddScore();
-                    DecreaseSpawnInterval();
-                    GameManager::Get().AddSpecialBubbleInternal(bubble->type);
-                    GameCanvas::Get().ShowScorePop(GetWorldToScreen(bubble->position, Game::Get().mainCamera3D));
-
                     burstParticles->position                      = bubble->position;
                     burstParticles->particleProperties.startColor = bubbleColors[(int)bubble->type];
                     burstParticles->particleProperties.endColor   = bubbleColors[(int)bubble->type];
                     burstParticles->particleProperties.endColor.a = 0;
 
-                    if (bubble->type == ElementType::NONE || EffectManager::Get().IsEffectCharged(bubble->type))
-                        burstParticles->shape = EmitShape::CIRCLE;
-                    else {
-                        Vector3 vecToSlots = Vector3{ 0, 0, -27 } - bubble->position;
-                        burstParticles->direction =
-                            Vector3Normalize(vecToSlots) * std::min(Vector3Length(vecToSlots), 5.f) * .5f;
-                        burstParticles->shape = EmitShape::NONE;
+                    if (bubble->type == ElementType::NONE || EffectManager::Get().IsEffectCharged(bubble->type)) {
+                        burstParticles->shape                       = EmitShape::CIRCLE;
+                        burstParticles->particleProperties.damping  = 0.45f;
+                        burstParticles->particleProperties.lifetime = 0.45f;
+                    } else {
+                        burstParticles->shape                       = EmitShape::LINE;
+                        burstParticles->particleProperties.lifetime = 1.25f;
+                        burstParticles->particleProperties.damping  = 0.25f;
                     }
 
-                    burstParticles->Burst(20);
+                    burstParticles->Burst(50);
+
+                    GameManager::Get().AddScore();
+                    DecreaseSpawnInterval();
+                    GameManager::Get().AddSpecialBubbleInternal(bubble->type);
+                    GameCanvas::Get().ShowScorePop(GetWorldToScreen(bubble->position, Game::Get().mainCamera3D));
 
                     bubble->isActive = false;
                     break;
