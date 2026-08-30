@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "PlayerProfile.h"
 #include "Scene.h"
+#include "Transitions.h"
 #include "raymob.h"
 #include "uiCanvas.h"
 #include <memory>
@@ -13,16 +14,15 @@ HomeScene::HomeScene()
     levelMenuCanvas = CreateEntity<LevelMenuCanvas>(false);
     homeCanvas->classicModeBtn->onClick.connect([this]() {
         if (PlayerProfile.username.value.empty()) {
-            homeCanvas->usernamePopup->SetActive(true);
+            usernamePopup->SetActive(true);
         } else {
-            levelMenuCanvas->SetActive(true);
-            homeCanvas->SetActive(false);
+            Transition::SlideInCanvas(homeCanvas.get(), levelMenuCanvas.get());
         }
     });
-    levelMenuCanvas->backBtn->onClick.connect([this]() {
-        homeCanvas->SetActive(true);
-        levelMenuCanvas->SetActive(false);
-    });
+    levelMenuCanvas->backBtn->onClick.connect(
+        [this]() { Transition::FadeOutTopCanvas(levelMenuCanvas.get(), homeCanvas.get()); });
+
+    usernamePopup = CreateEntity<UsernamePopup>(false);
 }
 
 HomeScene::~HomeScene() {

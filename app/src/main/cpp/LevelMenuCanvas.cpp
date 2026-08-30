@@ -8,6 +8,8 @@
 #include "RemoteConfig.h"
 #include "Scene.h"
 #include "SceneManager.h"
+#include "Tween.h"
+#include "TweenManager.h"
 #include "raylib.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
@@ -15,6 +17,7 @@
 #include "uiText.h"
 #include <cstdlib>
 #include <string>
+#include <type_traits>
 
 
 LevelMenuCanvas::LevelMenuCanvas(Scene* parentScene)

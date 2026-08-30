@@ -1,9 +1,11 @@
 #include "uiImage.h"
 #include "ResourceManager.h"
 #include "raylib.h"
+#include <raymath.h>
 #include <raymob.h>
 
-ui::Image::Image(Scene* parentScene, Canvas* parentCanvas,const char* filepath, Rectangle rect, int fitType, bool nPatch)
+
+ui::Image::Image(Scene* parentScene, Canvas* parentCanvas, const char* filepath, Rectangle rect, int fitType, bool nPatch)
 : UIElement(parentScene, parentCanvas, rect, fitType)
 , isNPatch(nPatch) {
     m_Texture = ResourceManager::GetTexture(filepath);
@@ -20,9 +22,11 @@ ui::Image::~Image() {
 void ui::Image::Draw() const {
     if (m_Texture && m_Texture->id != 0) {
         if (isNPatch)
-            DrawTextureNPatch(*m_Texture, nPatchInfo, fRect, Vector2{ 0, 0 }, 0.0f, tint);
+            DrawTextureNPatch(
+                *m_Texture, nPatchInfo, fRect, Vector2{ 0, 0 }, 0.0f, ColorTint(tint, parentCanvas->canvasTint));
         else
-            DrawTexturePro(*m_Texture, nPatchInfo.source, fRect, Vector2{ 0, 0 }, 0.0f, tint);
+            DrawTexturePro(
+                *m_Texture, nPatchInfo.source, fRect, Vector2{ 0, 0 }, 0.0f, ColorTint(tint, parentCanvas->canvasTint));
 
     } else {
         DrawRectangleRec(fRect, PINK);

@@ -6,6 +6,7 @@
 #include "ResourceManager.h"
 #include "Scene.h"
 #include "SceneManager.h"
+#include "TweenManager.h"
 #include "firebase.h"
 #include "raylib.h"
 #include "raymath.h"
@@ -59,6 +60,7 @@ void Game::Init() {
     m_SceneManager    = std::make_unique<SceneManager>();
     m_Renderer        = std::make_unique<Renderer>(mainCamera3D, uiCamera);
     m_Scheduler       = std::make_unique<Scheduler>();
+    m_TweenManager    = std::make_unique<TweenManager>();
 
     SceneManager::Get().RegisterScene<HomeScene>(SceneType::HOME, true);
 
@@ -72,6 +74,7 @@ void Game::Run() {
         UpdateUserLoginLoop();
         SceneManager::Get().StartScenes();
         Scheduler::Get().Update(GetFrameTime());
+        TweenManager::Get().Update(GetFrameTime());
         SceneManager::Get().UpdateScenes(GetFrameTime());
 
         Renderer::Get().Render();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include "TweenManager.h"
 #include "input.h"
 #include "SceneManager.h"
 #include "ResourceManager.h"
@@ -38,5 +39,6 @@ private:
     std::unique_ptr<SceneManager> m_SceneManager;
     std::unique_ptr<Renderer> m_Renderer;
     std::unique_ptr<Scheduler> m_Scheduler;
+    std::unique_ptr<TweenManager> m_TweenManager;
 
 };

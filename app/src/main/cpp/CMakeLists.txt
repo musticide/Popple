@@ -80,6 +80,9 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/LevelButtonsArray.cpp"
     "${CMAKE_SOURCE_DIR}/UsernamePopup.cpp"
     "${CMAKE_SOURCE_DIR}/PauseGameCanvas.cpp"
+    "${CMAKE_SOURCE_DIR}/Tween.cpp"
+    "${CMAKE_SOURCE_DIR}/TweenManager.cpp"
+    "${CMAKE_SOURCE_DIR}/Transitions.cpp"
 )
 
 # Define compiler macros for the library

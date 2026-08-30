@@ -18,7 +18,6 @@ class HomeCanvas : public ui::Canvas {
     std::unique_ptr<ui::Button> endlessModeBtn   = nullptr;
     std::unique_ptr<ui::Text> usernameTxt        = nullptr;
     std::unique_ptr<ui::Text> userLvlTxt         = nullptr;
-    std::unique_ptr<UsernamePopup> usernamePopup = nullptr;
 
     void Start() override;
     void OnEnable() override;

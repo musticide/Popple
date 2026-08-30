@@ -1,6 +1,7 @@
 #pragma once
 #include "DrawableEntity.h"
 #include "Log.h"
+#include "raylib.h"
 #include <cstddef>
 #include <memory>
 #include <utility>
@@ -15,6 +16,10 @@ class Canvas : public DrawableEntity {
 
     // WARN:
     Scene* parentScene;
+
+    Vector2 canvasScale  = { 1.0f, 1.0f };
+    Vector2 canvasOffset = { 0, 0 };
+    Color canvasTint     = WHITE;
 
     template <typename T, typename... Args>
     std::unique_ptr<T> CreateElement(bool active, Args&&... args) {
@@ -37,6 +42,8 @@ class Canvas : public DrawableEntity {
     void Update(float dT = 1.0f) override;
 
     void Draw() const override;
+
+    void UpdateFinalRects();
 
   private:
     std::vector<UIElement*> m_Elements;

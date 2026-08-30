@@ -4,15 +4,15 @@
 
 using namespace ui;
 
-Canvas::Canvas(Scene* parentScene) 
-:DrawableEntity(parentScene, RenderQueue::UI), parentScene(parentScene)
-{
+Canvas::Canvas(Scene* parentScene)
+: DrawableEntity(parentScene, RenderQueue::UI)
+, parentScene(parentScene) {
 }
 
 Canvas::~Canvas() {
 }
 
-void ui::Canvas::Start(){
+void ui::Canvas::Start() {
     for (size_t i = 0; i < m_Elements.size(); i++) {
         if (m_Elements[i] && m_Elements[i]->IsActive() && !m_Elements[i]->hasStarted) {
             m_Elements[i]->Start();
@@ -39,3 +39,10 @@ void ui::Canvas::Draw() const {
     }
 }
 
+void ui::Canvas::UpdateFinalRects() {
+    for (size_t i = 0; i < m_Elements.size(); i++) {
+        if (m_Elements[i] && m_Elements[i]->IsActive()) {
+            m_Elements[i]->UpdateFinalRect();
+        }
+    }
+}

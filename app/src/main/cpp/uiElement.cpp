@@ -25,11 +25,11 @@ void ui::UIElement::UpdateFinalRect() {
     float pivotPixelX = fRect.x + (fRect.width * 0.5f);
     float pivotPixelY = fRect.y + (fRect.height * 0.5f);
 
-    fRect.x = pivotPixelX + ((fRect.x - pivotPixelX) * scale);
-    fRect.y = pivotPixelY + ((fRect.y - pivotPixelY) * scale);
+    fRect.x = pivotPixelX + ((fRect.x - pivotPixelX) * scale * parentCanvas->canvasScale.x) + parentCanvas->canvasOffset.x;
+    fRect.y = pivotPixelY + ((fRect.y - pivotPixelY) * scale * parentCanvas->canvasScale.y) + parentCanvas->canvasOffset.y;
 
-    fRect.width *= scale;
-    fRect.height *= scale;
+    fRect.width *= scale * parentCanvas->canvasScale.x;
+    fRect.height *= scale * parentCanvas->canvasScale.y;
 
     Vector2 globalScale = { Globals::uiScale.x, preserveRatio ? Globals::uiScale.x : Globals::uiScale.y };
 

@@ -81,17 +81,14 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
         SceneManager::Get().DeactivateScene(SceneType::HOME);
     });
 
-    usernamePopup = CreateElement<UsernamePopup>(true, Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_W | ui::STRETCH_H);
 }
 
 HomeCanvas::~HomeCanvas() {
 }
 void HomeCanvas::OnEnable() {
     usernameTxt->SetText(PlayerProfile.username.value);
-    LOGI("Username: %s", PlayerProfile.username.value.c_str());
     userLvlTxt->SetText(std::to_string(PlayerProfile.highestLevelCleared.value));
 }
 void HomeCanvas::Start() {
     ui::Canvas::Start();
-    usernamePopup->SetActive(false);
 }
