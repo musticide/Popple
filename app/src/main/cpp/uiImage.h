@@ -14,7 +14,6 @@ class Image : public UIElement {
     ~Image();
 
     void Draw() const override;
-    Color tint = WHITE;
     NPatchInfo nPatchInfo;
 
   private:

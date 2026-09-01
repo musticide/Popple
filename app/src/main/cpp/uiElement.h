@@ -30,6 +30,7 @@ class UIElement : public DrawableEntity {
 
     UIElement* parent = nullptr;
     std::vector<UIElement*> children;
+    Color tint = WHITE;
 
     template <typename T, typename... Args>
     std::unique_ptr<T> CreateChild(bool active, Args&&... args) {

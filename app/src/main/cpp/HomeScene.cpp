@@ -19,8 +19,9 @@ HomeScene::HomeScene()
             Transition::SlideInCanvas(homeCanvas.get(), levelMenuCanvas.get());
         }
     });
-    levelMenuCanvas->backBtn->onClick.connect(
-        [this]() { Transition::FadeOutTopCanvas(levelMenuCanvas.get(), homeCanvas.get()); });
+    levelMenuCanvas->backBtn->onClick.connect([this]() {
+        Transition::FadeOutTopCanvas(levelMenuCanvas.get(), homeCanvas.get());
+    });
 
     usernamePopup = CreateEntity<UsernamePopup>(false);
 }

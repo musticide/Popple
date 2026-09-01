@@ -24,7 +24,7 @@ class LevelMenuCanvas : public ui::Canvas {
     void OnDisable() override;
     void Refresh();
 
-  private:
     int activeLevelGroupIndex;
+  private:
     LevelParams levelParams;
 };

@@ -40,6 +40,8 @@ class LevelButton : public ui::Button {
         this->clickable   = clickable;
     }
 
+    void SetTint(const Color& tint);
+
   private:
     Rectangle ratingRects[MAX_RATING] = {
         { 5, 519, 183, 78 },

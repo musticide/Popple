@@ -2,6 +2,7 @@
 #include "LevelConfig.h"
 #include "Log.h"
 #include "RemoteConfig.h"
+#include "uiCanvas.h"
 #include "uiElement.h"
 
 #define HIGHLIGHT_BTN_SCALE 1.3f
@@ -97,3 +98,13 @@ void LevelButtonsArray::OnDisable() {
         }
     }
 }
+void LevelButtonsArray::SetTint(const Color& tint) {
+    this->tint = tint;
+    for (size_t i = 0; i < levelBtns.size(); i++) {
+        LevelButton* levelBtn = levelBtns[i].get();
+        if (levelBtn != nullptr) {
+            levelBtn->SetTint(tint);
+        }
+    }
+}
+

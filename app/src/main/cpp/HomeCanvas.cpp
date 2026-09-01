@@ -20,7 +20,7 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
         true, "textures/MainMenuBG.png", Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_W | ui::STRETCH_H);
 
     bgOverlayImg = CreateElement<ui::Image>(
-        true, "textures/MainMenuBGOverlay.png", Rectangle{ 0, 1161, 1080, 1175 }, ui::STRETCH_W | ui::FIXED_H);
+        true, "textures/MainMenuBGOverlay.png", Rectangle{ 0, 1161, 1080, 1175 }, ui::STRETCH_W | ui::STRETCH_H);
     bgOverlayImg->SetAnchor({ 0.5f, 1.0f });
 
     usernameBGImg = CreateElement<ui::Image>(

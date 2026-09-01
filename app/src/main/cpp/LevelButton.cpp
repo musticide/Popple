@@ -37,4 +37,9 @@ void LevelButton::OnDisable() {
     ratingImg->SetActive(false);
 }
 
+void LevelButton::SetTint(const Color& tint) {
+    this->tint = tint;
+    ratingImg->tint = tint;
+    text->color = tint;
+}
 

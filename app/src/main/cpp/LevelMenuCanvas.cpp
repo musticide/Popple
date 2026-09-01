@@ -8,6 +8,7 @@
 #include "RemoteConfig.h"
 #include "Scene.h"
 #include "SceneManager.h"
+#include "Transitions.h"
 #include "Tween.h"
 #include "TweenManager.h"
 #include "raylib.h"
@@ -69,6 +70,8 @@ LevelMenuCanvas::LevelMenuCanvas(Scene* parentScene)
     nextBtn->nPatchInfo.source = { 535, 5, 200, 200 };
     nextBtn->onClick.connect([this]() {
         activeLevelGroupIndex = (activeLevelGroupIndex + 1) % MAX_LEVEL_GROUPS;
+        Transition::SlideInLevelBtnsFromRight(levelButtonsArray[activeLevelGroupIndex].get());
+        Transition::SlideOutLevelBtnsToLeft(levelButtonsArray[activeLevelGroupIndex - 1].get());
         Refresh();
     });
 
@@ -77,6 +80,9 @@ LevelMenuCanvas::LevelMenuCanvas(Scene* parentScene)
     prevBtn->nPatchInfo.source = { 535, 5, -200, 200 };
     prevBtn->onClick.connect([this]() {
         activeLevelGroupIndex = (activeLevelGroupIndex - 1) % MAX_LEVEL_GROUPS;
+        Transition::SlideInLevelBtnsFromLeft(levelButtonsArray[activeLevelGroupIndex].get());
+        Transition::SlideOutLevelBtnsToRight(levelButtonsArray[activeLevelGroupIndex + 1].get());
+
         Refresh();
     });
 
@@ -90,6 +96,9 @@ LevelMenuCanvas::~LevelMenuCanvas() {
 }
 void LevelMenuCanvas::Start() {
     ui::Canvas::Start();
+    for (size_t i = 0; i < MAX_LEVEL_GROUPS; i++) {
+        levelButtonsArray[i]->SetActive(i == activeLevelGroupIndex);
+    }
     Refresh();
 }
 
@@ -103,9 +112,6 @@ void LevelMenuCanvas::OnDisable() {
 }
 
 void LevelMenuCanvas::Refresh() {
-    for (size_t i = 0; i < MAX_LEVEL_GROUPS; i++) {
-        levelButtonsArray[i]->SetActive(i == activeLevelGroupIndex);
-    }
     prevBtn->clickable = activeLevelGroupIndex != 0;
     prevBtn->tint      = activeLevelGroupIndex != 0 ? WHITE : LIGHTGRAY;
     nextBtn->clickable = activeLevelGroupIndex < MAX_LEVEL_GROUPS - 1;
