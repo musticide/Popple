@@ -1,15 +1,17 @@
 #include "Transitions.h"
 #include "LevelButtonsArray.h"
+#include "input.h"
 #include "raylib.h"
 #include "uiElement.h"
 
-void Transition::SlideInCanvas(ui::Canvas* from, ui::Canvas* to) {
+void Transition::SlideInCanvas(ui::Canvas* from, ui::Canvas* to, float time) {
     if (from == nullptr || to == nullptr) {
         LOGE("Could not transition. Invalid Canvas pointer");
         return;
     }
     to->SetActive(true);
     float val = 0.0f;
+    Input::PauseInputForTime(time);
     TweenManager::Get().To(&val, 500.f, 0.0f, 0.2f).SetEasing(Easing::CubicIn).OnUpdate([to](float x) {
         to->canvasOffset = { x, 0 };
         to->UpdateFinalRects();
@@ -22,7 +24,7 @@ void Transition::SlideInCanvas(ui::Canvas* from, ui::Canvas* to) {
         .OnCompleted([from]() { from->SetActive(false); });
 }
 
-void Transition::FadeOutTopCanvas(ui::Canvas* from, ui::Canvas* to) {
+void Transition::FadeOutTopCanvas(ui::Canvas* from, ui::Canvas* to, float time) {
     if (from == nullptr || to == nullptr) {
         LOGE("Could not transition. Invalid Canvas pointer");
         return;
@@ -30,6 +32,7 @@ void Transition::FadeOutTopCanvas(ui::Canvas* from, ui::Canvas* to) {
 
     to->SetActive(true);
     Color tint = Color{ 255, 255, 255, 0 };
+    Input::PauseInputForTime(time);
     TweenManager::Get()
         .To(&tint, WHITE, tint, 0.1f)
         .SetEasing(Easing::QuadInOut)
@@ -48,6 +51,7 @@ void Transition::SlideInLevelBtnsFromRight(LevelButtonsArray* element, float tim
     element->baseRect.x = start;
     element->SetTint(Color{ 255, 255, 255, 0 });
     element->SetActive(true);
+    Input::PauseInputForTime(time);
     TweenManager::Get().To(&val, start, end, time).SetEasing(Easing::CubicIn).OnUpdate([element](float x) {
         element->baseRect.x = x;
         element->parentCanvas->UpdateFinalRects();
@@ -70,6 +74,7 @@ void Transition::SlideInLevelBtnsFromLeft(LevelButtonsArray* element, float time
     element->SetTint(Color{ 255, 255, 255, 0 });
     element->SetActive(true);
 
+    Input::PauseInputForTime(time);
     TweenManager::Get().To(&val, start, end, time).SetEasing(Easing::CubicIn).OnUpdate([element](float x) {
         element->baseRect.x = x;
         element->parentCanvas->UpdateFinalRects();
@@ -91,6 +96,7 @@ void Transition::SlideOutLevelBtnsToLeft(LevelButtonsArray* element, float time)
     float start = element->baseRect.x;
     float end   = element->baseRect.x - 500;
 
+    Input::PauseInputForTime(time);
     TweenManager::Get().To(&val, start, end, time).SetEasing(Easing::CubicIn).OnUpdate([element](float x) {
         element->baseRect.x = x;
         element->parentCanvas->UpdateFinalRects();
@@ -118,6 +124,7 @@ void Transition::SlideOutLevelBtnsToRight(LevelButtonsArray* element, float time
     float start = element->baseRect.x;
     float end   = element->baseRect.x + 500;
 
+    Input::PauseInputForTime(time);
     TweenManager::Get().To(&val, start, end, time).SetEasing(Easing::CubicIn).OnUpdate([element](float x) {
         element->baseRect.x = x;
         element->parentCanvas->UpdateFinalRects();

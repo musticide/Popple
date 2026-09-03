@@ -77,7 +77,6 @@ void GameManager::Start() {
             LOGI("GameManager: Paused");
         }
     });
-
 }
 
 void GameManager::OnEnable() {
@@ -112,7 +111,7 @@ void GameManager::EndGame() {
     GameResults.score  = m_Score;
     GameResults.health = m_Health;
 
-    //NOTE: Obsolete can be verified and removed
+    // NOTE: Obsolete can be verified and removed
     if (PlayerProfile.highestScore.value < m_Score) {
         PlayerProfile.highestScore.value = m_Score;
     }
@@ -122,11 +121,15 @@ void GameManager::EndGame() {
     }
 
     GameResults.levelRating = static_cast<int>(std::floor((float)m_Score / levelParams.minScore));
-    PlayerProfile.levelsData.value[levelParams.levelNumber - 1] = {
-        .rating = GameResults.levelRating, .score = m_Score, .time = static_cast<int>(highestTime)
-    };
 
-    SyncLevelToFirebase(levelParams.levelNumber);
+    // Sync only if the current rating is higher than the previous rating
+    if (PlayerProfile.levelsData.value[levelParams.levelNumber - 1].rating < GameResults.levelRating) {
+        PlayerProfile.levelsData.value[levelParams.levelNumber - 1] = {
+            .rating = GameResults.levelRating, .score = m_Score, .time = static_cast<int>(highestTime)
+        };
+        SyncLevelToFirebase(levelParams.levelNumber);
+    }
+
     ResetGameValues();
 
     gameCanvas->SetActive(false);
