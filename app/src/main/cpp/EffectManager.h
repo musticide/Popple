@@ -24,10 +24,7 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
         return effectActive[(int)type];
     }
 
-    void Reset() {
-        std::fill(effectCharged.begin(), effectCharged.end(), false);
-        std::fill(effectActive.begin(), effectActive.end(), false);
-    }
+    void Reset();
 
   private:
     float m_Time;

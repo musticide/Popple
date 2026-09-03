@@ -30,6 +30,9 @@ class Input : public Singleton<Input> {
         Ray r = GetScreenToWorldRay(GetTouchPosition(index), *Get().m_Camera3D);
         return r.position;
     }
+    static Ray GetTouchRay(int index = 0) {
+        return GetScreenToWorldRay(GetTouchPosition(index), *Get().m_Camera3D);
+    }
 
     static Vector2 GetTouchPositionCS(int index = 0) {
         if (inputPaused)

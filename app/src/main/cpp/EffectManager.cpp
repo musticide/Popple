@@ -22,7 +22,7 @@ EffectManager::~EffectManager() {
 }
 
 void EffectManager::Start() {
-
+    Reset();
     LOGI("effect manager start");
 }
 
@@ -182,3 +182,8 @@ void EffectManager::ActivateCryoShield() {
 void EffectManager::DeactivateCryoShield() {
     VibrateMS(400);
 }
+void EffectManager::Reset() {
+    std::fill(effectCharged.begin(), effectCharged.end(), false);
+    std::fill(effectActive.begin(), effectActive.end(), false);
+}
+

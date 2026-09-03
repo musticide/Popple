@@ -18,8 +18,8 @@ Tower::Tower(Scene* parentScene)
         (int[1]){ MATERIAL_MAP_CUBEMAP },
         SHADER_UNIFORM_INT);
 
-    m_Model->materials[0].maps[MATERIAL_MAP_CUBEMAP].texture =
-        *ResourceManager::GetCubemap("textures/Level01_ReflectionMap.png");
+    // m_Model->materials[0].maps[MATERIAL_MAP_CUBEMAP].texture =
+    //     *ResourceManager::GetCubemap("textures/Level01_ReflectionMap.png");
 }
 
 Tower::~Tower() {

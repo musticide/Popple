@@ -9,7 +9,6 @@
 
 HomeScene::HomeScene()
 : Scene(SceneType::HOME) {
-    touchFeedback   = CreateEntity<TouchFeedback>(true);
     homeCanvas      = CreateEntity<HomeCanvas>(true);
     levelMenuCanvas = CreateEntity<LevelMenuCanvas>(false);
     homeCanvas->classicModeBtn->onClick.connect([this]() {

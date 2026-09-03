@@ -48,6 +48,7 @@ void Game::Init() {
     uiCamera.zoom     = 1.0f;
 
     mainCamera3D          = { 0 };
+    // mainCamera3D.position = (Vector3){ 0.0f, 20.0f, -20.0f }; // Camera position
     mainCamera3D.position = (Vector3){ 0.0f, 20.0f, 0.0f }; // Camera position
     mainCamera3D.target   = (Vector3){ 0.0f, 0.0f, 0.0f };  // Looking at the origin
     mainCamera3D.up       = (Vector3){ 0.0f, 0.0f, 1.0f }; // "Up" points toward +Z since we're looking down Y

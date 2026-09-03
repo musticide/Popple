@@ -66,7 +66,7 @@ void GameManager::DecreaseHealth() {
 }
 
 void GameManager::Start() {
-    ResetGameValues();
+    StartGameSystems();
     // activeElementEffectChanged(activeEffect);
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
@@ -77,6 +77,7 @@ void GameManager::Start() {
             LOGI("GameManager: Paused");
         }
     });
+
 }
 
 void GameManager::OnEnable() {
@@ -138,9 +139,6 @@ void GameManager::ResetGameValues() {
     m_Health = 100;
     ResetComboCount();
     gameStartTime = GetTime();
-
-    EffectManager::Get().Reset();
-    BubbleManager::Get().Reset();
 }
 void GameManager::PauseBubbleSpawn(bool pause) {
     if (pause) {

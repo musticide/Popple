@@ -62,7 +62,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     bool m_PauseSpawn  = false;
 
     // static void ActiveEffectChanged(ElementType type);
-    bool IsPointInBubble(Bubble* bubble, Vector3 point) const;
+    bool IsPointInBubble(Bubble* bubble, Ray point) const;
 
     /// Randomly Spawns bubbles in a circular ring based on spawn interval
     void SpawnBubbles();

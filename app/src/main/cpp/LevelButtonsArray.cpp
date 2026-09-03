@@ -1,6 +1,7 @@
 #include "LevelButtonsArray.h"
 #include "LevelConfig.h"
 #include "Log.h"
+#include "PlayerProfile.h"
 #include "RemoteConfig.h"
 #include "uiCanvas.h"
 #include "uiElement.h"
@@ -51,13 +52,14 @@ void LevelButtonsArray::OnEnable() {
 }
 
 void LevelButtonsArray::Refresh() {
-
     for (size_t i = 0; i < levelBtns.size(); i++) {
         size_t levelNumber = i + 1 + ((levelGroupNumber - 1) * MAX_LEVELS_IN_GROUP); // offset by the level group
         LevelButton* levelBtn = levelBtns[i].get();
         if (levelBtn != nullptr) {
             levelBtn->SetActive(true);
-            levelBtn->onClick.connect([this, levelNumber]() { levelParams = GetLevelParams(levelNumber); });
+
+            if (levelBtn->onClick.connectionCount() < 1)
+                levelBtn->onClick.connect([this, levelNumber]() { levelParams = GetLevelParams(levelNumber); });
 
             if (PlayerProfile.levelsData.value.size() >= levelNumber)
                 levelBtn->SetRating(PlayerProfile.levelsData.value[levelNumber - 1].rating);
@@ -69,6 +71,7 @@ void LevelButtonsArray::Refresh() {
             if (levelNumber == PlayerProfile.highestLevelCleared.value + 1) {
                 levelBtn->SetScale(1.3f);
                 levelParams = GetLevelParams(levelNumber);
+                LOGI("Refresh Button Highlighted: %zu", levelNumber);
             } else {
                 levelBtn->SetScale(1.0f);
             }
@@ -107,4 +110,3 @@ void LevelButtonsArray::SetTint(const Color& tint) {
         }
     }
 }
-

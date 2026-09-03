@@ -82,7 +82,7 @@ void BubbleManager::Update(float dT) {
             // Check if Bubble was tapped
             for (int j = 0; j < GetTouchPointCount(); j++) {
                 // LOGI("Touch Pos: %f, %f, %f", touchPos.x, touchPos.y, touchPos.z);
-                if (IsPointInBubble(bubble, Input::GetTouchPositionWS(j))) {
+                if (IsPointInBubble(bubble, Input::GetTouchRay(j))) {
                     burstParticles->position                      = bubble->position;
                     burstParticles->particleProperties.startColor = bubbleColors[(int)bubble->type];
                     burstParticles->particleProperties.endColor   = bubbleColors[(int)bubble->type];
@@ -151,8 +151,14 @@ void BubbleManager::Draw() const {
     }
 }
 
-bool BubbleManager::IsPointInBubble(Bubble* bubble, Vector3 point) const {
-    return Vector3Length((Vector3){ point.x, 0, point.z } - bubble->position) <= bubble->radius;
+// bool BubbleManager::IsPointInBubble(Bubble* bubble, Vector3 point) const {
+//     return Vector3Length((Vector3){ point.x, 0, point.z } - bubble->position) <= bubble->radius;
+// }
+
+bool BubbleManager::IsPointInBubble(Bubble* bubble, Ray ray) const {
+    RayCollision c = GetRayCollisionSphere(ray, bubble->position, bubble->radius);
+    return c.hit;
+    // return Vector3Length((Vector3){ point.x, 0, point.z } - bubble->position) <= bubble->radius;
 }
 
 /// returns position at a defined radius
@@ -230,6 +236,7 @@ void BubbleManager::Reset() {
     }
     m_SpawnTimer    = 0.f;
     m_SpawnInterval = levelParams.startSpawnInterval;
+    m_PauseSpawn = false;
 }
 void BubbleManager::AnemoPushBack(bool active) {
     if (active) {
