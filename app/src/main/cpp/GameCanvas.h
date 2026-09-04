@@ -28,23 +28,23 @@ class GameCanvas : public ui::Canvas, public Singleton<GameCanvas> {
     // Rectangle electroOffOnRect[2] = { Rectangle{ 0, 234, 130, 130 }, Rectangle{ 0, 371, 130, 130 } };
     // Rectangle anemoOffOnRect[2]   = { Rectangle{ 136, 234, 130, 130 }, Rectangle{ 136, 371, 130, 130 } };
     // OffOnRect cryoOffOnRec        = { Rectangle{ 272, 234, 130, 130 }, Rectangle{ 272, 371, 130, 130 } };
-    OffOnRect offOnRects[(int)ElementType::COUNT - 1] ={
-     { Rectangle{ 0, 234, 130, 130 }, Rectangle{ 0, 371, 130, 130 } },
-     { Rectangle{ 136, 234, 130, 130 }, Rectangle{ 136, 371, 130, 130 } },
-     { Rectangle{ 272, 234, 130, 130 }, Rectangle{ 272, 371, 130, 130 } }
-    };
+    OffOnRect offOnRects[(int)ElementType::COUNT - 1] = { { Rectangle{ 0, 234, 130, 130 }, Rectangle{ 0, 371, 130, 130 } },
+        { Rectangle{ 136, 234, 130, 130 }, Rectangle{ 136, 371, 130, 130 } },
+        { Rectangle{ 272, 234, 130, 130 }, Rectangle{ 272, 371, 130, 130 } } };
 
-    std::unique_ptr<ui::Image> healthBox                                           = nullptr;
-    std::unique_ptr<ui::Image> healthIcon                                          = nullptr;
-    std::unique_ptr<ui::Text> healthText                                           = nullptr;
-    std::unique_ptr<ui::Text> healthPopText                                        = nullptr;
-    std::unique_ptr<ui::Image> scoreBox                                            = nullptr;
-    std::unique_ptr<ui::Image> scoreIcon                                           = nullptr;
-    std::unique_ptr<ui::Text> scoreText                                            = nullptr;
-    std::unique_ptr<ui::Image> comboCircles[3]                                     = { 0 };
+    std::unique_ptr<ui::Image> healthBox                                               = nullptr;
+    std::unique_ptr<ui::Image> healthIcon                                              = nullptr;
+    std::unique_ptr<ui::Text> healthText                                               = nullptr;
+    std::unique_ptr<ui::Text> healthPopText                                            = nullptr;
+    std::unique_ptr<ui::Image> scoreBox                                                = nullptr;
+    std::unique_ptr<ui::Image> scoreIcon                                               = nullptr;
+    std::unique_ptr<ui::Text> scoreText                                                = nullptr;
+    std::unique_ptr<ui::Text> targetScoreText                                          = nullptr;
+    std::unique_ptr<ui::Image> targetScoreBase                                         = nullptr;
+    std::unique_ptr<ui::Image> comboCircles[3]                                         = { 0 };
     std::array<std::unique_ptr<ui::Button>, (int)ElementType::COUNT - 1> shieldButtons = { 0 };
-    std::array<std::unique_ptr<ui::Text>, 3> scorePopTexts                         = { 0 };
-    std::array<std::unique_ptr<ui::Text>, 3> healthPopTexts                        = { 0 };
+    std::array<std::unique_ptr<ui::Text>, 3> scorePopTexts                             = { 0 };
+    std::array<std::unique_ptr<ui::Text>, 3> healthPopTexts                            = { 0 };
 
     float scorePopTime = 0.0f, healthPopTime = 0.0f;
 
@@ -53,6 +53,8 @@ class GameCanvas : public ui::Canvas, public Singleton<GameCanvas> {
 
     void Start() override;
     void Update(float dT = 1.0f) override;
+    void OnEnable() override;
+    void Reset();
 
     void ShowScorePop(Vector2 position);
     void ShowHealthPop();

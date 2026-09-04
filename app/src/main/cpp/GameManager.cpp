@@ -1,6 +1,8 @@
 #include "GameManager.h"
 #include "EffectManager.h"
 #include "ElementType.h"
+#include "EndGameCanvas.h"
+#include "GameCanvas.h"
 #include "Globals.h"
 #include "LevelConfig.h"
 #include "Log.h"
@@ -15,7 +17,7 @@
 
 int GameData::availableElementCount = 3;
 
-GameManager::GameManager(Scene* parentScene, LevelParams config, ui::Canvas* gameCanvas, PauseGameCanvas* pauseCanvas, ui::Canvas* endGameCanvas)
+GameManager::GameManager(Scene* parentScene, LevelParams config, GameCanvas* gameCanvas, PauseGameCanvas* pauseCanvas, EndGameCanvas* endGameCanvas)
 : Entity(parentScene)
 , gameCanvas(gameCanvas)
 , pauseGameCanvas(pauseCanvas)
@@ -161,6 +163,7 @@ void GameManager::StartGameSystems() {
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
     gameStartTime = GetTime();
+    gameCanvas->targetScoreText->SetText("500");
 
     effectManager->SetActive(true);
     bubbleManager->SetActive(true);

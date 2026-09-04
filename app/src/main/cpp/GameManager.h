@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ElementType.h"
+#include "EndGameCanvas.h"
 #include "Entity.h"
 #include "LevelConfig.h"
 #include "PauseGameCanvas.h"
@@ -11,7 +13,8 @@
 #include <memory>
 #include <raymath.h>
 #include <raymob.h>
-#include "ElementType.h"
+
+class GameCanvas;
 
 class BubbleManager;
 class EffectManager;
@@ -30,7 +33,7 @@ static struct GameData {
 
 class GameManager : public Entity, public Singleton<GameManager> {
   public:
-    GameManager(Scene* parentScene, LevelParams config, ui::Canvas* gameCanvas, PauseGameCanvas* pauseCanvas, ui::Canvas* endGameCanvas);
+    GameManager(Scene* parentScene, LevelParams config, GameCanvas* gameCanvas, PauseGameCanvas* pauseCanvas, EndGameCanvas* endGameCanvas);
 
     ~GameManager();
 
@@ -71,7 +74,8 @@ class GameManager : public Entity, public Singleton<GameManager> {
     std::unique_ptr<BubbleManager> bubbleManager = nullptr;
     std::unique_ptr<SpatialGrid> spatialGrid     = nullptr;
 
-    ui::Canvas *gameCanvas, *endGameCanvas;
+    GameCanvas* gameCanvas;
+    EndGameCanvas* endGameCanvas;
     PauseGameCanvas* pauseGameCanvas;
 
     void RestartGame(LevelParams params);

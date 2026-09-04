@@ -30,6 +30,21 @@ GameCanvas::GameCanvas(Scene* parentScene, LevelParams params)
     scoreText->hAlign = ui::ALIGN_CENTER;
     scoreText->vAlign = ui::ALIGN_MIDDLE;
 
+    targetScoreBase = CreateElement<ui::Image>(
+        true, "textures/GameplayAtlas.png", Rectangle{ 35, 193, 237, 82 }, ui::FIXED_W | ui::FIXED_H, true);
+    targetScoreBase->nPatchInfo.source = { 236, 140, 82, 82 };
+    targetScoreBase->nPatchInfo.layout = NPATCH_THREE_PATCH_HORIZONTAL;
+    targetScoreBase->nPatchInfo.left   = 35;
+    targetScoreBase->nPatchInfo.right  = 35;
+    targetScoreBase->nPatchInfo.top    = 35;
+    targetScoreBase->nPatchInfo.bottom = 35;
+
+    targetScoreText =
+        CreateElement<ui::Text>(true, ui::ACE_BOLD, Rectangle{ 62, 193, 163, 76 }, ui::FIXED_H | ui::FIXED_W);
+    targetScoreText->fontSize = 64;
+    targetScoreText->color    = Color{ 140, 140, 140, 255 };
+    targetScoreText->SetText("500");
+
     for (auto& scorePopText : scorePopTexts) {
         scorePopText =
             CreateElement<ui::Text>(false, ui::ACE_BOLD, Rectangle{ 0, 0, 100, 86 }, ui::FIXED_W | ui::FIXED_H);
@@ -91,7 +106,6 @@ GameCanvas::GameCanvas(Scene* parentScene, LevelParams params)
         button->nPatchInfo.source = offOnRects[i][0];
         if (i > levelParams.availablePowerUps.size()) {
             button->tint = LIGHTGRAY;
-        
         }
     }
 }
@@ -186,4 +200,16 @@ void GameCanvas::ShowHealthPop() {
         healthPopTime = 0.5f;
         break;
     }
+}
+void GameCanvas::Reset() {
+    for (auto& scorePopText : scorePopTexts)
+        scorePopText->SetActive(false);
+
+    for (auto& healthPopText : healthPopTexts)
+        healthPopText->SetActive(false);
+}
+
+void GameCanvas::OnEnable() {
+    ui::Canvas::OnEnable();
+    Reset();
 }
