@@ -24,3 +24,9 @@
 -keep class com.raylib.raymob.NativeLoader {
     public <methods>;
 }
+# Keep Raymob JNI bridge classes from being obfuscated or removed
+-keep class **.NativeLoader { *; }
+-keep class **.DisplayManager { *; }
+-keep class **.SoftKeyboard { *; }
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.tasks.** { *; }
