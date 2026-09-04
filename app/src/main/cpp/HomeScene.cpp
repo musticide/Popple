@@ -1,5 +1,6 @@
 #include "HomeScene.h"
 #include "Globals.h"
+#include "Log.h"
 #include "PlayerProfile.h"
 #include "Scene.h"
 #include "Transitions.h"
@@ -23,7 +24,11 @@ HomeScene::HomeScene()
     });
 
     usernamePopup = CreateEntity<UsernamePopup>(false);
+    isLoaded = true;
 }
 
 HomeScene::~HomeScene() {
 }
+void HomeScene::Load() {
+}
+

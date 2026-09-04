@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Authentication.h"
 #include "Globals.h"
+#include "LoadingScene.h"
 #include "Log.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
@@ -63,6 +64,7 @@ void Game::Init() {
     m_Scheduler       = std::make_unique<Scheduler>();
     m_TweenManager    = std::make_unique<TweenManager>();
 
+    SceneManager::Get().RegisterScene<LoadingScene>(SceneType::LOADING, true);
     SceneManager::Get().RegisterScene<HomeScene>(SceneType::HOME, true);
 
     SetTargetFPS(60);
@@ -73,6 +75,7 @@ void Game::Run() {
     LOGI("Game Loop Start");
     while (!WindowShouldClose()) {
         UpdateUserLoginLoop();
+        SceneManager::Get().LoadScenes();
         SceneManager::Get().StartScenes();
         Scheduler::Get().Update(GetFrameTime());
         TweenManager::Get().Update(GetFrameTime());

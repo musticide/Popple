@@ -83,6 +83,8 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/Tween.cpp"
     "${CMAKE_SOURCE_DIR}/TweenManager.cpp"
     "${CMAKE_SOURCE_DIR}/Transitions.cpp"
+    "${CMAKE_SOURCE_DIR}/LoadingScene.cpp"
+    "${CMAKE_SOURCE_DIR}/LoadingCanvas.cpp"
 )
 
 # Define compiler macros for the library

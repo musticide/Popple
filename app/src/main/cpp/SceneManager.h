@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Log.h"
 #include "Scene.h"
 #include "Singleton.h"
 #include <cassert>
@@ -12,6 +13,8 @@
 
 class SceneManager : public Singleton<SceneManager> {
   public:
+    void LoadScenes();
+
     void StartScenes();
 
     void UpdateScenes(float dT);
@@ -31,9 +34,9 @@ class SceneManager : public Singleton<SceneManager> {
     void RegisterScene(SceneType type, bool active, Args&&... args) {
         static_assert(std::is_base_of_v<Scene, T>, "T does not derive from Scene");
 
-        auto argsTuple = std::make_tuple(std::forward<Args>(args)...);
+        auto argsTuple  = std::make_tuple(std::forward<Args>(args)...);
         auto registerOp = [this, type, active, argsTuple = std::move(argsTuple)]() {
-            RegisterSceneFromTuple<T>(type, active, std::move(argsTuple), std::index_sequence_for<Args...> {});
+            RegisterSceneFromTuple<T>(type, active, std::move(argsTuple), std::index_sequence_for<Args...>{});
         };
 
         if (m_IsUpdatingScenes) {
@@ -45,6 +48,7 @@ class SceneManager : public Singleton<SceneManager> {
     }
 
     std::vector<std::unique_ptr<Scene>> scenes;
+    float loadingProgress = 0.f;
 
     SceneManager();
     ~SceneManager();
@@ -70,15 +74,31 @@ class SceneManager : public Singleton<SceneManager> {
 
         auto scene = std::make_unique<T>(std::forward<Args>(args)...);
         scene->SetActive(active);
+        LOGI("target index: %d, size %d", target_index, scenes.size());
+
+        if (scene->showLoadingScreen) {
+            ActivateScene(SceneType::LOADING);
+        }
+
+        LOGI("target index: %d, size %d", target_index, scenes.size());
         if (target_index < scenes.size())
             scenes[target_index] = std::move(scene);
         else
             scenes.push_back(std::move(scene));
+
+
+        LOGI("target index: %d, size %d", target_index, scenes.size());
     }
 
-    void ActivateSceneInternal(SceneType type) { m_ScenesToActivate.push_back(type); }
-    void DeactivateSceneInternal(SceneType type) { m_ScenesToDeactivate.push_back(type); }
-    void DestroySceneInternal(SceneType type) { m_ScenesToDestroy.push_back(GetSceneIndex(type)); }
+    void ActivateSceneInternal(SceneType type) {
+        m_ScenesToActivate.push_back(type);
+    }
+    void DeactivateSceneInternal(SceneType type) {
+        m_ScenesToDeactivate.push_back(type);
+    }
+    void DestroySceneInternal(SceneType type) {
+        m_ScenesToDestroy.push_back(GetSceneIndex(type));
+    }
 
     // std::vector<Scene*> m_Scenes;
     std::vector<SceneType> m_ScenesToActivate;
@@ -88,4 +108,5 @@ class SceneManager : public Singleton<SceneManager> {
     /// Operations queued while UpdateScenes is running; flushed at next StartScenes
     bool m_IsUpdatingScenes = false;
     std::vector<std::function<void()>> m_PendingOperations;
+
 };

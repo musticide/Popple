@@ -10,6 +10,19 @@ SceneManager::SceneManager() {
 SceneManager::~SceneManager() {
 }
 
+//will work only if at a time a single scene is being loaded
+void SceneManager::LoadScenes() {
+    for (size_t i = 0; i < SceneManager::Get().scenes.size(); i++) {
+        Scene* scene = SceneManager::Get().scenes[i].get();
+        if (scene != nullptr) {
+            if (scene->IsActive() && !scene->isLoaded) {
+                scene->Load();
+                loadingProgress = scene->GetProgress();
+            }
+        }
+    }
+}
+
 void SceneManager::StartScenes() {
     // Flush operations deferred from the previous UpdateScenes pass first,
     // so registrations land before activation/deactivation is resolved.
@@ -30,22 +43,26 @@ void SceneManager::StartScenes() {
 
     for (auto& type : m_ScenesToActivate) {
         Scene* scene = GetScene(type);
-        if (scene != nullptr) scene->SetActive(true);
-        else LOGE("Could not activate scene: scene not found");
+        if (scene != nullptr)
+            scene->SetActive(true);
+        else
+            LOGE("Could not activate scene: scene not found");
     }
     m_ScenesToActivate.clear();
 
     for (auto& type : m_ScenesToDeactivate) {
         Scene* scene = GetScene(type);
-        if (scene != nullptr) scene->SetActive(false);
-        else LOGE("Could not deactivate scene: scene not found");
+        if (scene != nullptr)
+            scene->SetActive(false);
+        else
+            LOGE("Could not deactivate scene: scene not found");
     }
     m_ScenesToDeactivate.clear();
 
     for (size_t i = 0; i < SceneManager::Get().scenes.size(); i++) {
         Scene* scene = SceneManager::Get().scenes[i].get();
         if (scene != nullptr) {
-            if (scene->IsActive()) {
+            if (scene->IsActive() && scene->isLoaded) {
                 // LOGV("Started Scene: %s", scene->GetName());
                 scene->Start();
             }
@@ -58,7 +75,7 @@ void SceneManager::UpdateScenes(float dT) {
     for (size_t i = 0; i < SceneManager::Get().scenes.size(); i++) {
         Scene* scene = SceneManager::Get().scenes[i].get();
         if (scene != nullptr)
-            if (scene->IsActive()) {
+            if (scene->IsActive() && scene->isLoaded) {
                 // LOGV("Updating Scene: %s", scene->GetName());
                 scene->Update(dT);
             }

@@ -21,6 +21,8 @@ class GameplayScene : public Scene {
     GameplayScene(LevelParams config);
     ~GameplayScene();
 
+    void Load() override;
+
   private:
     // Entities
     // NOTE: Destruction runs in reverse declaration order. GameManager holds raw
@@ -34,4 +36,6 @@ class GameplayScene : public Scene {
     // std::unique_ptr<EffectManager> m_EffectManager;
     // std::unique_ptr<BubbleManager> m_BubbleManager;
     // std::unique_ptr<SpatialGrid> m_SpatialGrid;
+
+    LevelParams levelParams;
 };

@@ -14,6 +14,7 @@ class HomeScene : public Scene {
     std::unique_ptr<LevelMenuCanvas> levelMenuCanvas = nullptr;
     std::unique_ptr<UsernamePopup> usernamePopup = nullptr;
 
+    void Load() override;
 
   private:
 };
