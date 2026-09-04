@@ -105,6 +105,7 @@ void LevelMenuCanvas::Start() {
 void LevelMenuCanvas::OnEnable() {
     ui::Canvas::OnEnable();
     Refresh();
+    levelButtonsArray[activeLevelGroupIndex]->Refresh();
 }
 
 void LevelMenuCanvas::OnDisable() {
@@ -116,4 +117,5 @@ void LevelMenuCanvas::Refresh() {
     prevBtn->tint      = activeLevelGroupIndex != 0 ? WHITE : LIGHTGRAY;
     nextBtn->clickable = activeLevelGroupIndex < MAX_LEVEL_GROUPS - 1;
     nextBtn->tint      = activeLevelGroupIndex < MAX_LEVEL_GROUPS - 1 ? WHITE : LIGHTGRAY;
+    levelParams = GetLevelParams(PlayerProfile.highestLevelCleared.value + 1);
 }

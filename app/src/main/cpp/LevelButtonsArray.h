@@ -20,7 +20,7 @@ class LevelButtonsArray : public ui::UIElement {
     void OnDisable() override;
     void SetTint(const Color& tint);
 
+    void Refresh();
   private:
     void SetLevelButtonHighlighted(int index);
-    void Refresh();
 };
