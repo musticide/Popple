@@ -39,7 +39,9 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
     int m_AnemoTimeId;
     float anemoEffectTimer = 0.0f;
 
+    std::unique_ptr<StaticMesh> m_ShadowOverlayMesh;
     float cryoEffectTimer = 0.0f;
+    float shadowEffectTimer = 0.0f;
 
     std::array<bool, (int)ElementType::COUNT> effectCharged = { false };
     std::array<bool, (int)ElementType::COUNT> effectActive  = { false };
@@ -55,4 +57,8 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
     void InitCryoShield(Scene* parentScene);
     void ActivateCryoShield();
     void DeactivateCryoShield();
+
+    void InitShadowOverlay(Scene* parentScene);
+    void ActivateShadowOverlay();
+    void DeactivateShadowOverlay();
 };

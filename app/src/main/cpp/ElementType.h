@@ -5,5 +5,6 @@ enum class ElementType {
     ANEMO,
     CRYO,
     NONE,
+    SHADOW,
     COUNT
 };

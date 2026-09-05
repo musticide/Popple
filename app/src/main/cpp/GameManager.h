@@ -24,6 +24,7 @@ static struct GameData {
     static constexpr float ELECTRO_SHIELD_DURATION = 5.0f;
     static constexpr float CRYO_SHIELD_DURATION    = 4.0f;
     static constexpr float ANEMO_EFFECT_DURATION   = 1.0f;
+    static constexpr float SHADOW_OVERLAY_DURATION = 2.0f;
     static constexpr int MAX_COMBO_LENGTH          = 3;
     static constexpr int MAX_SCORE                 = 500;
     static constexpr int BUBBLE_POINTS             = 10;

@@ -13,6 +13,7 @@ GameplayScene::GameplayScene(LevelParams config)
 : Scene(SceneType::GAMEPLAY)
 , levelParams(config) {
     m_TotalSteps = 6;
+    m_Name = "Gameplay";
 }
 
 GameplayScene::~GameplayScene() {

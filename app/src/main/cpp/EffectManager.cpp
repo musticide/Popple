@@ -1,5 +1,6 @@
 #include "EffectManager.h"
 #include "DrawableEntity.h"
+#include "ElementType.h"
 #include "Entity.h"
 #include "GameManager.h"
 #include "Globals.h"
@@ -16,6 +17,7 @@ EffectManager::EffectManager(Scene* parentScene)
 : Entity(parentScene) {
     InitElectroShield(parentScene);
     InitAnemoShield(parentScene);
+    InitShadowOverlay(parentScene);
 }
 
 EffectManager::~EffectManager() {
@@ -80,6 +82,14 @@ void EffectManager::Update(float dT) {
             DeactivateCryoShield();
         }
     }
+    if (effectActive[(int)ElementType::SHADOW]) {
+        shadowEffectTimer += dT;
+        if (shadowEffectTimer > GameData::SHADOW_OVERLAY_DURATION) {
+            effectActive[(int)ElementType::SHADOW] = false;
+            shadowEffectTimer = 0.0f;
+            DeactivateShadowOverlay();
+        }
+    }
 }
 
 void EffectManager::InitElectroShield(Scene* parentScene) {
@@ -102,7 +112,6 @@ void EffectManager::ActivateElectroShield() {
     VibrateMS(200);
     LOGI("Electro Shield Activated");
     m_ElectroShieldMesh->SetActive(true);
-    ActivateEffect(ElementType::ELECTRO);
     m_ElectroBlink     = 0;
     electroShieldTimer = 0.0f;
 }
@@ -136,6 +145,7 @@ void EffectManager::DeactivateAnemoShield() {
         this->m_AnemoShieldMesh->SetActive(false);
     }
 }
+/// Only Activates Charged effects
 void EffectManager::ActivateEffect(ElementType type) {
     if (!effectCharged[(int)type] || effectActive[(int)type]) return;
     effectActive[(int)type]  = true;
@@ -155,6 +165,9 @@ void EffectManager::ActivateEffect(ElementType type) {
         case ElementType::CRYO:
             ActivateCryoShield();
             BubbleManager::Get().CryoFreeze(true);
+        case ElementType::SHADOW:
+            ActivateShadowOverlay();
+            break;
         default:
             break;
     }
@@ -187,3 +200,22 @@ void EffectManager::Reset() {
     std::fill(effectActive.begin(), effectActive.end(), false);
 }
 
+void EffectManager::InitShadowOverlay(Scene* parentScene) {
+    m_ShadowOverlayMesh = parentScene->CreateEntity<StaticMesh>(false, "models/Quad.glb", RenderQueue::TRANSPARENT);
+
+    m_ShadowOverlayMesh->GetModel().materials[0].shader =
+        *ResourceManager::GetShader("shaders/ShadowOverlay.vert", "shaders/ShadowOverlay.frag");
+
+    m_ShadowOverlayMesh->scale    = { 2.f, 2.f, 2.f };
+    m_ShadowOverlayMesh->position = { 0.f, 10.f, 0.f };
+}
+
+void EffectManager::ActivateShadowOverlay() {
+    VibrateMS(200);
+    if (m_ShadowOverlayMesh != nullptr) m_ShadowOverlayMesh->SetActive(true);
+    LOGI("EM: Shadow effect activated");
+}
+
+void EffectManager::DeactivateShadowOverlay() {
+    if (m_ShadowOverlayMesh != nullptr) m_ShadowOverlayMesh->SetActive(false);
+}

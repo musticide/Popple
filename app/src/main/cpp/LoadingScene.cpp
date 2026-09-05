@@ -8,7 +8,7 @@ LoadingScene::LoadingScene()
     loadingCanvas = CreateEntity<LoadingCanvas>(true);
 
     isLoaded = true;
-    LOGI("Loading Scene Constructed");
+    m_Name = "Loading";
 }
 
 LoadingScene::~LoadingScene() {

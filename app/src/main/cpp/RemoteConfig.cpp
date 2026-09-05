@@ -71,6 +71,9 @@ void FetchRemoteConfig() {
                             RemoteConfig.levelGroupConfig[index].availablePowerUps[(int)ElementType::ELECTRO] =
                                 powerUpsMap["ELECTRO"].bool_value();
                         }
+                        if (powerUpsMap.count("SHADOW")) {
+                            RemoteConfig.levelGroupConfig[index].availablePowerUps[(int)ElementType::SHADOW] = powerUpsMap["SHADOW"].bool_value();
+                        }
                         // if (powerUpsMap.count("PYRO")) {
                         //     RemoteConfig.levelGroupConfig[index].availablePowerUps[(int)ElementType::PYRO] = powerUpsMap["PYRO"].bool_value();
                         // }

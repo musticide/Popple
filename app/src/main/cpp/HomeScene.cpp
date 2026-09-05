@@ -25,6 +25,7 @@ HomeScene::HomeScene()
 
     usernamePopup = CreateEntity<UsernamePopup>(false);
     isLoaded = true;
+    m_Name = "Home";
 }
 
 HomeScene::~HomeScene() {

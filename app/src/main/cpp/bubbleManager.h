@@ -81,7 +81,8 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
         (Color){ 139, 66, 255, 255 }, // PURPLE electro
         (Color){ 66, 255, 195, 255 }, // Green anemo
         (Color){ 4, 180, 255, 255 },  // Light Blue cryo
-        WHITE,
+        WHITE,                        // Common
+        (Color){ 20, 20, 20, 255 },  // Black shadow
     };
 
     void DecreaseSpawnInterval();

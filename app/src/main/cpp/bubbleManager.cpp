@@ -1,5 +1,6 @@
 #include "bubbleManager.h"
 #include "EffectManager.h"
+#include "ElementType.h"
 #include "Game.h"
 #include "GameCanvas.h"
 #include "GameManager.h"
@@ -48,7 +49,7 @@ BubbleManager::BubbleManager(Scene* parentScene, LevelParams levelParams)
     burstParticles->particleProperties.startColor     = bubbleColors[0];
     burstParticles->particleProperties.endColor       = { 255, 255, 255, 0 };
 
-    burstParticles->endPoint = { 0, 0, 0 };
+    burstParticles->endPoint      = { 0, 0, 0 };
     burstParticles->endPointForce = 0.4f;
 
     LOGI("Bubble Manager constructed");
@@ -100,10 +101,12 @@ void BubbleManager::Update(float dT) {
 
                     burstParticles->Burst(50);
 
-                    GameManager::Get().AddScore();
                     DecreaseSpawnInterval();
                     GameManager::Get().AddSpecialBubbleInternal(bubble->type);
-                    GameCanvas::Get().ShowScorePop(GetWorldToScreen(bubble->position, Game::Get().mainCamera3D));
+                    if (bubble->type == ElementType::NONE) {
+                        GameManager::Get().AddScore();
+                        GameCanvas::Get().ShowScorePop(GetWorldToScreen(bubble->position, Game::Get().mainCamera3D));
+                    }
 
                     bubble->isActive = false;
                     break;
@@ -236,7 +239,7 @@ void BubbleManager::Reset() {
     }
     m_SpawnTimer    = 0.f;
     m_SpawnInterval = levelParams.startSpawnInterval;
-    m_PauseSpawn = false;
+    m_PauseSpawn    = false;
 }
 void BubbleManager::AnemoPushBack(bool active) {
     if (active) {

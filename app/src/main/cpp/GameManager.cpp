@@ -32,20 +32,31 @@ GameManager::~GameManager() {
 }
 
 void GameManager::AddSpecialBubbleInternal(ElementType type) {
-    if (type != ElementType::NONE) {
-        for (int i = 0; i < (int)ElementType::COUNT - 1; i++) {
-            if (i == (int)type && !EffectManager::Get().IsEffectCharged(type)) {
-                m_ComboCount[i]++;
-            } else
-                m_ComboCount[i] = 0;
+    switch (type) {
 
-            LOGI("Combo Count %d = %d", i, m_ComboCount[i]);
-        }
+        case ElementType::ELECTRO:
+        case ElementType::ANEMO:
+        case ElementType::CRYO:
+            if (!EffectManager::Get().IsEffectCharged(type)) {
+                m_ComboCount[(int)type]++;
+            } else {
+                m_ComboCount[(int)type] = 0;
+            }
+            if (m_ComboCount[(int)type] >= GameData::MAX_COMBO_LENGTH) {
+                m_ComboCount[(int)type] = 0;
+                EffectManager::Get().ChargeEffect(type);
+            }
+            break;
 
-        if (m_ComboCount[(int)type] >= GameData::MAX_COMBO_LENGTH) {
-            m_ComboCount[(int)type] = 0;
-            EffectManager::Get().ChargeEffect(type);
-        }
+        case ElementType::SHADOW:
+            EffectManager::Get().ChargeEffect(ElementType::SHADOW);
+            EffectManager::Get().ActivateEffect(ElementType::SHADOW);
+            break;
+        case ElementType::NONE:
+            break;
+        case ElementType::COUNT:
+        default:
+            break;
     }
 }
 
