@@ -35,8 +35,8 @@ class LevelButton : public ui::Button {
 
     std::unique_ptr<ui::Image> ratingImg = nullptr;
 
-    void SetClickable(bool clickable) {
-        nPatchInfo.source = buttonImageRect[clickable];
+    void SetClickable(bool clickable, int levelGroupIndex) {
+        nPatchInfo.source = clickable ? buttonImageRect[levelGroupIndex] : buttonLockedRect;
         this->clickable   = clickable;
     }
 
@@ -49,8 +49,17 @@ class LevelButton : public ui::Button {
         { 5, 353, 183, 78 },
         { 5, 270, 183, 78 },
     };
-    Rectangle buttonImageRect[2] = {
-        { 270, 5, 260, 260 },
-        { 5, 5, 260, 260 },
-    };
+
+    Rectangle buttonLockedRect    = { 266, 0, 260, 256 };
+
+    Rectangle buttonImageRect[10] = { { 234, 256, 260, 256 },
+        { 498, 256, 260, 256 },
+        { 762, 256, 260, 256 },
+        { 234, 512, 260, 256 },
+        { 498, 512, 260, 256 },
+        { 762, 512, 260, 256 },
+        { 234, 768, 260, 256 },
+        { 498, 768, 260, 256 },
+        { 762, 768, 260, 256 },
+        { 1, 1, 260, 256 } };
 };

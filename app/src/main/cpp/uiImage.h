@@ -15,6 +15,8 @@ class Image : public UIElement {
 
     void Draw() const override;
     NPatchInfo nPatchInfo;
+    bool isTiled = false;
+    int tileAmount = 1;
 
   private:
     bool isNPatch = false;

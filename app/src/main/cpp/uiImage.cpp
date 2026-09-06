@@ -21,10 +21,24 @@ ui::Image::~Image() {
 
 void ui::Image::Draw() const {
     if (m_Texture && m_Texture->id != 0) {
+        Color drawColor = ColorTint(tint, parentCanvas->canvasTint);
         if (isNPatch)
             DrawTextureNPatch(
                 *m_Texture, nPatchInfo, fRect, Vector2{ 0, 0 }, 0.0f, ColorTint(tint, parentCanvas->canvasTint));
-        else
+        else if (isTiled) {
+
+            float destTileWidth = fRect.width / (float)tileAmount;
+
+            for (int i = 0; i < tileAmount; i++) {
+                Rectangle destStrip = { fRect.x + (i * destTileWidth), // Shift the X position for each tile
+                    fRect.y,
+                    destTileWidth,
+                    fRect.height };
+
+                DrawTexturePro(
+                    *m_Texture, nPatchInfo.source, destStrip, Vector2{ 0, 0 }, 0.0f, ColorTint(tint, parentCanvas->canvasTint));
+            }
+        } else
             DrawTexturePro(
                 *m_Texture, nPatchInfo.source, fRect, Vector2{ 0, 0 }, 0.0f, ColorTint(tint, parentCanvas->canvasTint));
 

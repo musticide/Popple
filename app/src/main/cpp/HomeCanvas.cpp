@@ -24,7 +24,7 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
     bgOverlayImg->SetAnchor({ 0.5f, 1.0f });
 
     usernameBGImg = CreateElement<ui::Image>(
-        true, "textures/LevelsMenuAtlas.png", Rectangle{ 36, 41, 994, 157 }, ui::FIXED_H | ui::STRETCH_W, true);
+        true, "textures/HomeScreenAtlas.png", Rectangle{ 36, 41, 994, 157 }, ui::FIXED_H | ui::STRETCH_W, true);
     usernameBGImg->nPatchInfo.source = { 222, 286, 350, 157 };
     usernameBGImg->nPatchInfo.layout = NPATCH_THREE_PATCH_HORIZONTAL;
     usernameBGImg->nPatchInfo.left   = 230;
@@ -45,7 +45,7 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
     userLvlTxt->SetText(std::to_string(PlayerProfile.highestLevelCleared.value));
 
     classicModeBtn                    = CreateElement<ui::Button>(true,
-        "textures/LevelsMenuAtlas.png",
+        "textures/HomeScreenAtlas.png",
         Rectangle{ 176, 891, 727, 326 },
         "Classic",
         ui::ACE_BOLD_ITALIC,
@@ -59,9 +59,11 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
     classicModeBtn->nPatchInfo.bottom = 170;
     classicModeBtn->fontOffset.y      = 62;
     classicModeBtn->fontSize          = 115;
+    classicModeBtn->text->hAlign = ui::ALIGN_CENTER;
+    classicModeBtn->text->vAlign = ui::ALIGN_MIDDLE;
 
     endlessModeBtn                    = CreateElement<ui::Button>(true,
-        "textures/LevelsMenuAtlas.png",
+        "textures/HomeScreenAtlas.png",
         Rectangle{ 176, 1187, 727, 326 },
         "Endless",
         ui::ACE_BOLD_ITALIC,
@@ -80,6 +82,8 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
         SceneManager::Get().ActivateScene(SceneType::GAMEPLAY);
         SceneManager::Get().DeactivateScene(SceneType::HOME);
     });
+    endlessModeBtn->text->hAlign = ui::ALIGN_CENTER;
+    endlessModeBtn->text->vAlign = ui::ALIGN_MIDDLE;
 
 }
 

@@ -28,7 +28,7 @@ LevelButtonsArray::LevelButtonsArray(Scene* parentScene, ui::Canvas* parentCanva
             SetLevelButtonHighlighted(i);
         });
         levelBtns[i]->SetLevelNumber(levelNumber);
-        levelBtns[i]->SetClickable(PlayerProfile.highestLevelCleared.value + 1 >= levelNumber);
+        levelBtns[i]->SetClickable(PlayerProfile.highestLevelCleared.value + 1 >= levelNumber, levelGroupNumber - 1);
         levelBtns[i]->SetScale((levelNumber == PlayerProfile.highestLevelCleared.value + 1) ? HIGHLIGHT_BTN_SCALE : 1.0f);
         levelBtns[i]->fontOffset.y = 90;
         levelBtns[i]->fontSize     = 90;
@@ -67,7 +67,7 @@ void LevelButtonsArray::Refresh() {
                 levelBtn->SetRating(0);
 
             levelBtn->SetLevelNumber(levelNumber);
-            levelBtn->SetClickable(PlayerProfile.highestLevelCleared.value + 1 >= levelNumber);
+            levelBtn->SetClickable(PlayerProfile.highestLevelCleared.value + 1 >= levelNumber, levelGroupNumber - 1);
             if (levelNumber == PlayerProfile.highestLevelCleared.value + 1) {
                 levelBtn->SetScale(1.3f);
                 levelParams = GetLevelParams(levelNumber);

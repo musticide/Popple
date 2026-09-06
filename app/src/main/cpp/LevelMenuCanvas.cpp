@@ -1,5 +1,4 @@
 #include "LevelMenuCanvas.h"
-#include "GameManager.h"
 #include "GameplayScene.h"
 #include "Globals.h"
 #include "LevelConfig.h"
@@ -9,22 +8,21 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Transitions.h"
-#include "Tween.h"
-#include "TweenManager.h"
 #include "raylib.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
 #include "uiElement.h"
 #include "uiText.h"
 #include <cstdlib>
-#include <string>
-#include <type_traits>
 
 
 LevelMenuCanvas::LevelMenuCanvas(Scene* parentScene)
 : ui::Canvas(parentScene) {
     bgImage = CreateElement<ui::Image>(
-        true, "textures/MainMenuBG.png", Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_W | ui::STRETCH_H);
+        true, "textures/LevelMenuBG.png", Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_W | ui::STRETCH_H);
+    bgImage->nPatchInfo.source = { 0, 0, 108, 2340 };
+    bgImage->isTiled           = true;
+    bgImage->tileAmount        = 10;
 
 
     // Assign the highest Level config + 1
@@ -42,7 +40,7 @@ LevelMenuCanvas::LevelMenuCanvas(Scene* parentScene)
     levelButtonsArray[activeLevelGroupIndex]->SetActive(true);
 
     playBtn                    = CreateElement<ui::Button>(true,
-        "textures/LevelsMenuAtlas.png",
+        "textures/HomeScreenAtlas.png",
         Rectangle{ 191, 1732, 697, 350 },
         "PLAY",
         ui::ACE_BOLD_ITALIC,
@@ -113,9 +111,10 @@ void LevelMenuCanvas::OnDisable() {
 }
 
 void LevelMenuCanvas::Refresh() {
-    prevBtn->clickable = activeLevelGroupIndex != 0;
-    prevBtn->tint      = activeLevelGroupIndex != 0 ? WHITE : LIGHTGRAY;
-    nextBtn->clickable = activeLevelGroupIndex < MAX_LEVEL_GROUPS - 1;
-    nextBtn->tint      = activeLevelGroupIndex < MAX_LEVEL_GROUPS - 1 ? WHITE : LIGHTGRAY;
-    levelParams = GetLevelParams(PlayerProfile.highestLevelCleared.value + 1);
+    prevBtn->clickable         = activeLevelGroupIndex != 0;
+    prevBtn->tint              = activeLevelGroupIndex != 0 ? WHITE : LIGHTGRAY;
+    nextBtn->clickable         = activeLevelGroupIndex < MAX_LEVEL_GROUPS - 1;
+    nextBtn->tint              = activeLevelGroupIndex < MAX_LEVEL_GROUPS - 1 ? WHITE : LIGHTGRAY;
+    levelParams                = GetLevelParams(PlayerProfile.highestLevelCleared.value + 1);
+    bgImage->nPatchInfo.source = { 108.f * activeLevelGroupIndex, 0, 108, 2340 };
 }
