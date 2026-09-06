@@ -24,6 +24,7 @@ class EndGameCanvas : public ui::Canvas {
 
     void Start() override;
     void OnEnable() override;
+    void OnDisable() override;
 
     LevelParams levelParams;
 

@@ -17,15 +17,70 @@ int Globals::GameResults::health;
 int Globals::GameResults::levelPlayed;
 int Globals::GameResults::levelRating;
 
-bool Globals::gamePaused = false;
-Signal<bool> Globals::gameStateChanged;
+int Globals::state = 0;
+Signal<int> Globals::gameStateChanged;
 
 Callback Globals::onPauseCallBack = []() {
-    Globals::gamePaused = true;
+    if (!IsStateValid(APP_PAUSED)) {
+        EnableState(APP_PAUSED);
+    }
     LOGW("PAUSED");
-    gameStateChanged.emit(Globals::gamePaused);
 };
 
 Callback Globals::onResumeCallBack = []() {
+    if (IsStateValid(APP_PAUSED)) DisableState(APP_PAUSED);
     LOGW("RESUMED");
 };
+
+void Globals::EnableState(int state) {
+    if (!IsStateValid(state)) {
+        Globals::state |= state;
+        LOGW("Game State Enabled: %s, Current States: %s",
+            GetStateNames(state).c_str(),
+            GetStateNames(Globals::state).c_str());
+        gameStateChanged.emit(Globals::state);
+    }
+}
+
+void Globals::DisableState(int state) {
+    if (IsStateValid(state)) {
+        Globals::state &= ~state;
+        LOGW("Game State Disabled: %s, Current States: %s",
+            GetStateNames(state).c_str(),
+            GetStateNames(Globals::state).c_str());
+        gameStateChanged.emit(Globals::state);
+    }
+}
+
+bool Globals::IsStateValid(int state) {
+    return (Globals::state & state) != 0;
+}
+
+std::string Globals::GetStateNames(int state) {
+    std::string result = "";
+
+    if ((state & MAIN_MENU) != 0) {
+        result += "MAIN_MENU | ";
+    }
+    if ((state & APP_PAUSED) != 0) {
+        result += "APP_PAUSED | ";
+    }
+    if ((state & GAMEPLAY_PAUSED) != 0) {
+        result += "GAMEPLAY_PAUSED | ";
+    }
+    if ((state & GAMEPLAY_RUNNING) != 0) {
+        result += "GAMEPLAY_RUNNING | ";
+    }
+    if ((state & GAMEPLAY_ENDED) != 0) {
+        result += "GAMEPLAY_ENDED | ";
+    }
+
+    // If result isn't empty, remove the trailing " | "
+    if (!result.empty()) {
+        result.erase(result.length() - 3);
+    } else {
+        result = "NONE"; // Fallback if no valid bits were set
+    }
+
+    return result;
+}

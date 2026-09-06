@@ -84,8 +84,8 @@ void GameManager::Start() {
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
     pauseGameCanvas->resumeBtn->onClick.connect([this]() { ResumeGame(); });
-    Globals::gameStateChanged.connect([this](bool paused) {
-        if (paused) {
+    Globals::gameStateChanged.connect([this](int state) {
+        if (Globals::IsStateValid(Globals::APP_PAUSED)) {
             PauseGame();
             LOGI("GameManager: Paused");
         }
@@ -147,6 +147,8 @@ void GameManager::EndGame() {
 
     gameCanvas->SetActive(false);
     endGameCanvas->SetActive(true);
+
+    DisableState(GAMEPLAY_RUNNING);
 }
 
 
@@ -185,6 +187,7 @@ void GameManager::StartGameSystems() {
     LOGI("Start Spawn Interval: %f", levelParams.startSpawnInterval);
     LOGI("Min Spawn Interval: %f", levelParams.minSpawnInterval);
     LOGI("Power Up Spawn Chance: %d", levelParams.powerUpSpawnChance);
+    Globals::EnableState(Globals::GAMEPLAY_RUNNING);
 }
 void GameManager::RestartGame(LevelParams config) {
     LOGI("Game Restarted");
@@ -194,10 +197,16 @@ void GameManager::RestartGame(LevelParams config) {
     endGameCanvas->SetActive(false);
 }
 void GameManager::PauseGame() {
-    pauseGameCanvas->SetActive(true);
+    using namespace Globals;
+    if (IsStateValid(GAMEPLAY_RUNNING)) {
+        EnableState(GAMEPLAY_PAUSED);
+        DisableState(GAMEPLAY_RUNNING);
+        pauseGameCanvas->SetActive(true);
+    }
 }
 
 void GameManager::ResumeGame() {
-    Globals::gamePaused = false;
+    Globals::DisableState(Globals::GAMEPLAY_PAUSED);
+    Globals::EnableState(Globals::GAMEPLAY_RUNNING);
     pauseGameCanvas->SetActive(false);
 }

@@ -26,6 +26,7 @@ HomeScene::HomeScene()
     usernamePopup = CreateEntity<UsernamePopup>(false);
     isLoaded = true;
     m_Name = "Home";
+    Globals::EnableState(Globals::MAIN_MENU);
 }
 
 HomeScene::~HomeScene() {

@@ -68,7 +68,7 @@ void BubbleManager::OnEnable() {
 }
 
 void BubbleManager::Update(float dT) {
-    if (Globals::gamePaused) return;
+    if (Globals::IsStateValid(Globals::GAMEPLAY_PAUSED)) return;
 
     SpatialGrid::Clear();
     SpawnBubbles();

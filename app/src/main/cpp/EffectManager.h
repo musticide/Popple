@@ -16,6 +16,7 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
     bool IsEffectCharged(ElementType type);
 
     void Start() override;
+    void OnEnable() override;
 
     void Update(float dT = 1.0f) override;
 

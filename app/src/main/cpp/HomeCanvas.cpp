@@ -1,7 +1,7 @@
 #include "HomeCanvas.h"
-#include "GameplayScene.h"
+#include "SceneManager.h"
 #include "Globals.h"
-#include "LevelConfig.h"
+#include "GameplayScene.h"
 #include "Log.h"
 #include "PlayerProfile.h"
 #include "RemoteConfig.h"
@@ -81,6 +81,7 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
         SceneManager::Get().RegisterScene<GameplayScene>(SceneType::GAMEPLAY, false, GetLevelParams(-1));
         SceneManager::Get().ActivateScene(SceneType::GAMEPLAY);
         SceneManager::Get().DeactivateScene(SceneType::HOME);
+        Globals::DisableState(Globals::MAIN_MENU);
     });
     endlessModeBtn->text->hAlign = ui::ALIGN_CENTER;
     endlessModeBtn->text->vAlign = ui::ALIGN_MIDDLE;
@@ -90,6 +91,7 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
 HomeCanvas::~HomeCanvas() {
 }
 void HomeCanvas::OnEnable() {
+    Globals::EnableState(Globals::MAIN_MENU);
     usernameTxt->SetText(PlayerProfile.username.value);
     userLvlTxt->SetText(std::to_string(PlayerProfile.highestLevelCleared.value));
 }

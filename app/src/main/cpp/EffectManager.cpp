@@ -29,7 +29,7 @@ void EffectManager::Start() {
 }
 
 void EffectManager::Update(float dT) {
-    if (Globals::gamePaused) return;
+    if (Globals::IsStateValid(Globals::GAMEPLAY_PAUSED)) return;
     if (effectActive[(int)ElementType::ELECTRO]) {
         electroShieldTimer += dT;
 
@@ -86,7 +86,7 @@ void EffectManager::Update(float dT) {
         shadowEffectTimer += dT;
         if (shadowEffectTimer > GameData::SHADOW_OVERLAY_DURATION) {
             effectActive[(int)ElementType::SHADOW] = false;
-            shadowEffectTimer = 0.0f;
+            shadowEffectTimer                      = 0.0f;
             DeactivateShadowOverlay();
         }
     }
@@ -196,6 +196,7 @@ void EffectManager::DeactivateCryoShield() {
     VibrateMS(400);
 }
 void EffectManager::Reset() {
+    LOGI("EM: Reset");
     std::fill(effectCharged.begin(), effectCharged.end(), false);
     std::fill(effectActive.begin(), effectActive.end(), false);
 }
@@ -218,4 +219,8 @@ void EffectManager::ActivateShadowOverlay() {
 
 void EffectManager::DeactivateShadowOverlay() {
     if (m_ShadowOverlayMesh != nullptr) m_ShadowOverlayMesh->SetActive(false);
+}
+void EffectManager::OnEnable() {
+    Entity::OnEnable();
+    Reset();
 }

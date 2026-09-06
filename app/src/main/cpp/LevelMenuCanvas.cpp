@@ -61,6 +61,7 @@ LevelMenuCanvas::LevelMenuCanvas(Scene* parentScene)
         SceneManager::Get().RegisterScene<GameplayScene>(SceneType::GAMEPLAY, false, levelParams);
         SceneManager::Get().ActivateScene(SceneType::GAMEPLAY);
         SceneManager::Get().DeactivateScene(SceneType::HOME);
+        Globals::DisableState(Globals::MAIN_MENU);
     });
 
     nextBtn = CreateElement<ui::Button>(
@@ -111,6 +112,7 @@ void LevelMenuCanvas::OnDisable() {
 }
 
 void LevelMenuCanvas::Refresh() {
+    Globals::EnableState(Globals::MAIN_MENU);
     prevBtn->clickable         = activeLevelGroupIndex != 0;
     prevBtn->tint              = activeLevelGroupIndex != 0 ? WHITE : LIGHTGRAY;
     nextBtn->clickable         = activeLevelGroupIndex < MAX_LEVEL_GROUPS - 1;

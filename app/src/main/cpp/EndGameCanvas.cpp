@@ -95,6 +95,7 @@ EndGameCanvas::EndGameCanvas(Scene* parentScene, LevelParams params)
         SceneManager::Get().ActivateScene(SceneType::HOME);
         SceneManager::Get().DestroyScene(SceneType::GAMEPLAY);
         // SceneManager::Get().DeactivateScene(SceneType::GAMEPLAY);
+        Globals::DisableState(Globals::GAMEPLAY_ENDED);
     });
 
     resultText = CreateElement<ui::Text>(
@@ -124,6 +125,7 @@ void EndGameCanvas::OnEnable() {
 void EndGameCanvas::Initialise() {
     LOGI("End Game Canvas Enabled");
     using namespace Globals;
+    EnableState(GAMEPLAY_ENDED);
     ui::Canvas::OnEnable();
 
     scoreText->SetText("Score: " + std::to_string(GameResults.score));
@@ -182,5 +184,11 @@ void EndGameCanvas::Initialise() {
         LOGI("Retrying Level %d", GameResults.levelPlayed);
         LevelParams params = GetLevelParams(GameResults.levelPlayed);
         GameManager::Get().RestartGame(params);
+        DisableState(GAMEPLAY_ENDED);
     });
 }
+void EndGameCanvas::OnDisable() {
+    ui::Canvas::OnDisable();
+    Globals::DisableState(Globals::GAMEPLAY_ENDED);
+}
+
