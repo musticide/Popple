@@ -14,6 +14,18 @@ enum FitType {
     STRETCH_H = (1 << 3)
 };
 
+#define ANCHOR_TOP_LEFT      {0.f, 0.f}
+#define ANCHOR_TOP_CENTER    {.5f, 0.f}
+#define ANCHOR_TOP_RIGHT     {1.f, 0.f}
+
+#define ANCHOR_MIDDLE_LEFT   {0.f, .5f}
+#define ANCHOR_CENTER        {.5f, .5f}
+#define ANCHOR_MIDDLE_RIGHT  {1.f, .5f}
+
+#define ANCHOR_BOTTOM_LEFT   {0.f, 1.f}
+#define ANCHOR_BOTTOM_CENTER {.5f, 1.f}
+#define ANCHOR_BOTTOM_RIGHT  {1.f, 1.f}
+
 class UIElement : public DrawableEntity {
   public:
     UIElement(Scene* parentScene, Canvas* parentCanvas, Rectangle rect, int fitType = STRETCH_W | STRETCH_H);

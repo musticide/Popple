@@ -36,7 +36,7 @@ void SceneManager::StartScenes() {
         if (index >= 0 && static_cast<size_t>(index) < scenes.size()) {
             scenes[index].reset();
         } else {
-            LOGE("Invalid scene destroy index: %d", index);
+            LOGE("SceneManager: Invalid scene destroy index: %d", index);
         }
     }
     m_ScenesToDestroy.clear();
@@ -46,7 +46,7 @@ void SceneManager::StartScenes() {
         if (scene != nullptr)
             scene->SetActive(true);
         else
-            LOGE("Could not activate scene: scene not found");
+            LOGE("SceneManager: Could not activate scene: scene not found");
     }
     m_ScenesToActivate.clear();
 
@@ -55,7 +55,7 @@ void SceneManager::StartScenes() {
         if (scene != nullptr)
             scene->SetActive(false);
         else
-            LOGE("Could not deactivate scene: scene not found");
+            LOGE("SceneManager: Could not deactivate scene: scene not found");
     }
     m_ScenesToDeactivate.clear();
 
@@ -90,7 +90,7 @@ int SceneManager::GetSceneIndex(SceneType type) {
         if (scene != nullptr) {
             if (scene->GetType() == type) result = i;
         } else {
-            LOGE("Could not find scene");
+            LOGE("SceneManager: Could not find scene");
         }
     }
     return result;
@@ -104,7 +104,7 @@ Scene* SceneManager::GetScene(SceneType type) {
         if (scene != nullptr) {
             if (scene->GetType() == type) result = scene;
         } else {
-            LOGE("Could not find scene");
+            LOGE("SceneManager: Could not find scene");
         }
     }
     return result;

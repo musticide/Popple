@@ -3,6 +3,7 @@
 #include "GameManager.h"
 #include "LevelConfig.h"
 #include "Log.h"
+#include "PlayerProfile.h"
 #include "raylib.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
@@ -20,30 +21,37 @@ GameCanvas::GameCanvas(Scene* parentScene, LevelParams params)
     scoreBox = CreateElement<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 35, 65, 350, 128 }, ui::FIXED_W | ui::FIXED_H);
     scoreBox->nPatchInfo.source = { 0, 0, 350, 128 };
+    scoreBox->SetAnchor({ 0.f, 0.f });
 
     scoreIcon = scoreBox->CreateChild<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 29, 19, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
     scoreIcon->nPatchInfo.source = { 112, 136, 90, 90 };
+    scoreIcon->SetAnchor({ .5f, 0.f });
 
     scoreText = scoreBox->CreateChild<ui::Text>(
         true, ui::ACE_BOLD, Rectangle{ 138, 21, 184, 86 }, ui::FIXED_W | ui::FIXED_H);
     scoreText->hAlign = ui::ALIGN_CENTER;
     scoreText->vAlign = ui::ALIGN_MIDDLE;
+    scoreText->SetAnchor(ANCHOR_MIDDLE_RIGHT);
 
-    targetScoreBase = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 35, 193, 237, 82 }, ui::FIXED_W | ui::FIXED_H, true);
+    targetScoreBase = scoreBox->CreateChild<ui::Image>(
+        true, "textures/GameplayAtlas.png", Rectangle{ 0, 128, 237, 82 }, ui::FIXED_W | ui::FIXED_H, true);
     targetScoreBase->nPatchInfo.source = { 236, 140, 82, 82 };
     targetScoreBase->nPatchInfo.layout = NPATCH_THREE_PATCH_HORIZONTAL;
     targetScoreBase->nPatchInfo.left   = 35;
     targetScoreBase->nPatchInfo.right  = 35;
     targetScoreBase->nPatchInfo.top    = 35;
     targetScoreBase->nPatchInfo.bottom = 35;
+    targetScoreBase->SetAnchor(ANCHOR_MIDDLE_LEFT);
 
-    targetScoreText =
-        CreateElement<ui::Text>(true, ui::ACE_BOLD, Rectangle{ 62, 193, 163, 76 }, ui::FIXED_H | ui::FIXED_W);
+    targetScoreText = targetScoreBase->CreateChild<ui::Text>(
+        true, ui::ACE_BOLD, Rectangle{ 10, 10, 163, 76 }, ui::FIXED_H | ui::FIXED_W);
     targetScoreText->fontSize = 64;
     targetScoreText->color    = Color{ 140, 140, 140, 255 };
-    targetScoreText->SetText("500");
+    targetScoreText->SetText("");
+    targetScoreText->hAlign = ui::ALIGN_LEFT;
+    targetScoreText->vAlign = ui::ALIGN_TOP;
+    targetScoreText->SetAnchor(ANCHOR_CENTER);
 
     for (auto& scorePopText : scorePopTexts) {
         scorePopText =
@@ -63,15 +71,18 @@ GameCanvas::GameCanvas(Scene* parentScene, LevelParams params)
     healthBox = CreateElement<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 688, 65, 350, 128 }, ui::FIXED_W | ui::FIXED_H);
     healthBox->nPatchInfo.source = { 0, 0, -350, 128 };
+    healthBox->SetAnchor(ANCHOR_TOP_RIGHT);
 
     healthIcon = healthBox->CreateChild<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 231, 19, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
     healthIcon->nPatchInfo.source = { 0, 136, 90, 90 };
+    healthIcon->SetAnchor(ANCHOR_MIDDLE_RIGHT);
 
     healthText = healthBox->CreateChild<ui::Text>(
         true, ui::ACE_BOLD, Rectangle{ 17, 21, 184, 86 }, ui::FIXED_W | ui::FIXED_H);
     healthText->hAlign = ui::ALIGN_CENTER;
     healthText->vAlign = ui::ALIGN_MIDDLE;
+    healthText->SetAnchor(ANCHOR_MIDDLE_LEFT);
 
     comboCircles[0] = CreateElement<ui::Image>(
         true, "textures/GameplayAtlas.png", Rectangle{ 376, 1980, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
@@ -104,7 +115,7 @@ GameCanvas::GameCanvas(Scene* parentScene, LevelParams params)
         button = CreateElement<ui::Button>(true, "textures/GameplayAtlas.png", transform, ui::FIXED_W | ui::FIXED_H);
         button->onClick.connect([i]() { EffectManager::Get().ActivateEffect((ElementType)i); });
         button->nPatchInfo.source = offOnRects[i][0];
-        if (i > levelParams.availablePowerUps.size()) {
+        if (i >= levelParams.availablePowerUps.size()) {
             button->tint = LIGHTGRAY;
         }
     }

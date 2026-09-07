@@ -12,13 +12,7 @@ ParticleSystem::ParticleSystem(Scene* parentScene, int maxParticles)
 : DrawableEntity(parentScene, RenderQueue::TRANSPARENT)
 , maxParticles(maxParticles) {
     m_CurrentIndex = maxParticles - 1;
-}
-ParticleSystem::~ParticleSystem() {
-}
-void ParticleSystem::Start() {
-    // if (model == nullptr)
-    // model = LoadModel("models/Quad.glb");
-    model = LoadModelFromMesh(ResourceManager::GetModel("models/Quad.glb")->meshes[0]);
+    model          = LoadModelFromMesh(ResourceManager::GetModel("models/Quad.glb")->meshes[0]);
     model.materials[0].shader = *ResourceManager::GetShader("shaders/basicShader.vert", "shaders/basicShader.frag");
     model.materials[0].maps[0].texture = *ResourceManager::GetTexture("textures/GlowTight.png");
 
@@ -27,6 +21,12 @@ void ParticleSystem::Start() {
         m_ParticlePool.emplace_back();
     }
     LOGI("particle pool size: %zu", m_ParticlePool.size());
+}
+ParticleSystem::~ParticleSystem() {
+}
+void ParticleSystem::Start() {
+    // if (model == nullptr)
+    // model = LoadModel("models/Quad.glb");
 }
 
 void ParticleSystem::Update(float dT) {
@@ -51,12 +51,12 @@ void ParticleSystem::Update(float dT) {
 
         if (!particle.isActive) continue;
 
-        // activeParticleCount++;
+        activeParticleCount++;
         particle.age += dT;
 
         if (particle.age >= particle.lifetime) {
             particle.isActive = false;
-            // activeParticleCount--;
+            activeParticleCount--;
             continue;
         }
         float life      = particle.age / particle.lifetime;
@@ -65,15 +65,15 @@ void ParticleSystem::Update(float dT) {
         particle.size   = Lerp(particleProperties.startSize, particleProperties.endSize, cubicLife);
 
         if (shape == EmitShape::LINE)
-            particle.velocity += Vector3Normalize(endPoint - particle.position) * endPointForce * (1.f - particleProperties.damping);
+            particle.velocity += Vector3Normalize(endPoint - particle.position) * endPointForce *
+                (1.f - particleProperties.damping);
 
         particle.velocity *= 1.f - particleProperties.damping;
         particle.position += particle.velocity;
 
         // TODO: Transform paricles for local space emission
     }
-    // if (activeParticleCount != 0)
-    //     LOGI("Active Particle Count: %d", activeParticleCount);
+    isSimulating = activeParticleCount > 0;
 }
 
 void ParticleSystem::Draw() const {

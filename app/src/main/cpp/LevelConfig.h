@@ -3,6 +3,8 @@
 #include "PlayerProfile.h"
 #include <vector>
 
+#define MAX_ELEMENTS_PER_LEVEL 3
+
 struct LevelParams {
     bool isCleared;
     int levelNumber;

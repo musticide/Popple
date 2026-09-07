@@ -74,20 +74,16 @@ class SceneManager : public Singleton<SceneManager> {
 
         auto scene = std::make_unique<T>(std::forward<Args>(args)...);
         scene->SetActive(active);
-        LOGI("target index: %d, size %d", target_index, scenes.size());
 
         if (scene->showLoadingScreen) {
             ActivateScene(SceneType::LOADING);
         }
 
-        LOGI("target index: %d, size %d", target_index, scenes.size());
+        LOGI("SceneManager: Scene Registered: %s", scene->GetName());
         if (target_index < scenes.size())
             scenes[target_index] = std::move(scene);
         else
             scenes.push_back(std::move(scene));
-
-
-        LOGI("target index: %d, size %d", target_index, scenes.size());
     }
 
     void ActivateSceneInternal(SceneType type) {

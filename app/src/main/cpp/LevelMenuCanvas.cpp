@@ -95,6 +95,8 @@ LevelMenuCanvas::~LevelMenuCanvas() {
 }
 void LevelMenuCanvas::Start() {
     ui::Canvas::Start();
+    levelParams = GetLevelParams(PlayerProfile.highestLevelCleared.value + 1);
+    activeLevelGroupIndex = std::floor((float)levelParams.levelNumber / MAX_LEVEL_GROUPS);
     for (size_t i = 0; i < MAX_LEVEL_GROUPS; i++) {
         levelButtonsArray[i]->SetActive(i == activeLevelGroupIndex);
     }
@@ -103,6 +105,10 @@ void LevelMenuCanvas::Start() {
 
 void LevelMenuCanvas::OnEnable() {
     ui::Canvas::OnEnable();
+    activeLevelGroupIndex = std::floor((float)levelParams.levelNumber / MAX_LEVEL_GROUPS);
+    for (size_t i = 0; i < MAX_LEVEL_GROUPS; i++) {
+        levelButtonsArray[i]->SetActive(i == activeLevelGroupIndex);
+    }
     Refresh();
     levelButtonsArray[activeLevelGroupIndex]->Refresh();
 }

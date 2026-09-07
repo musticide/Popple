@@ -176,8 +176,8 @@ void GameManager::StartGameSystems() {
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
     gameStartTime = GetTime();
-    gameCanvas->targetScoreText->SetText("500");
-
+    gameCanvas->targetScoreText->SetText(
+        levelParams.endlessMode ? std::to_string(PlayerProfile.levelsData.value[-1].score) : "500");
     effectManager->SetActive(true);
     bubbleManager->SetActive(true);
     spatialGrid->SetActive(true);

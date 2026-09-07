@@ -1,29 +1,8 @@
 #include "Authentication.h"
-#include "Android.h"
-#include "Log.h"
-#include "PlayerProfile.h"
-#include "RemoteConfig.h"
-#include "firebase.h"
-#include "raymob.h"
-#include <firebase/database/common.h>
-#include <firebase/database/data_snapshot.h>
-#include <firebase/database/database_reference.h>
-#include <firebase/database/query.h>
-#include <firebase/future.h>
-#include <string>
 
-#define firedb firebase::database
-
-enum LoginState {
-    IDLE,
-    CHECKING_USER_ID,   // State 1: Trying direct ID lookup
-    CHECKING_DEVICE_ID, // State 2: Trying fallback device ID query
-    SUCCESS,
-    FAILED
-};
-
-LoginState g_LoginState = IDLE;
+namespace Auth {
 firebase::Future<firedb::DataSnapshot> g_LookupFuture;
+LoginState g_LoginState = LOGIN_IDLE;
 
 void LoadProfileFromSnapshot(const firedb::DataSnapshot& userNode) {
     g_UserId = userNode.key();
@@ -57,9 +36,11 @@ void StartUserLoginFlow(const std::string& currentDeviceId) {
         g_LookupFuture = g_firebaseDB->GetReference("users").Child(g_UserId).GetValue();
     } else {
         LOGI("AUTH: No stored User ID. Searching by Device ID...");
-        g_LoginState = CHECKING_DEVICE_ID;
-        g_LookupFuture =
-            g_firebaseDB->GetReference("users").OrderByChild("device_id").EqualTo(PlayerProfile.deviceId.value).GetValue();
+        g_LoginState   = CHECKING_DEVICE_ID;
+        g_LookupFuture = g_firebaseDB->GetReference("users")
+                             .OrderByChild("device_id")
+                             .EqualTo(PlayerProfile.deviceId.value)
+                             .GetValue();
     }
 }
 
@@ -72,7 +53,7 @@ void UpdateUserLoginLoop() {
 
     if (g_LookupFuture.error() != firedb::kErrorNone) {
         LOGE("AUTH: Database search failed. Error: %s", g_LookupFuture.error_message());
-        g_LoginState = FAILED;
+        g_LoginState = LOGIN_FAILED;
         return;
     }
 
@@ -84,13 +65,15 @@ void UpdateUserLoginLoop() {
             LOGI("AUTH: Existing User ID validated. Loading profile...");
             // Because we queried a specific child, the snapshot IS the user node
             LoadProfileFromSnapshot(snapshot);
-            g_LoginState = SUCCESS;
+            g_LoginState = LOGIN_SUCCESS;
         } else {
             // User ID was stored locally, but deleted from DB. Fallback to Device ID.
             LOGI("AUTH: Stored User ID not found in DB. Falling back to Device ID query...");
-            g_LoginState = CHECKING_DEVICE_ID;
-            g_LookupFuture =
-                g_firebaseDB->GetReference("users").OrderByChild("device_id").EqualTo(PlayerProfile.deviceId.value).GetValue();
+            g_LoginState   = CHECKING_DEVICE_ID;
+            g_LookupFuture = g_firebaseDB->GetReference("users")
+                                 .OrderByChild("device_id")
+                                 .EqualTo(PlayerProfile.deviceId.value)
+                                 .GetValue();
         }
     }
 
@@ -103,7 +86,7 @@ void UpdateUserLoginLoop() {
             firedb::DataSnapshot userNode = children[0];
 
             LoadProfileFromSnapshot(userNode);
-            g_LoginState = SUCCESS;
+            g_LoginState = LOGIN_SUCCESS;
         } else {
             LOGI("AUTH: Device ID not found. Creating new user...");
 
@@ -114,7 +97,7 @@ void UpdateUserLoginLoop() {
 
             LOGI("AUTH: New User created with userId: %s", g_UserId.c_str());
             WriteToAppStorage("user_id.dat", &g_UserId, g_UserId.size());
-            g_LoginState = SUCCESS;
+            g_LoginState = LOGIN_SUCCESS;
         }
     }
 }
@@ -136,3 +119,5 @@ void GetLocalUserId() {
     }
     free(data);
 }
+
+} // namespace Auth

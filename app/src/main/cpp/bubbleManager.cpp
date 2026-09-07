@@ -36,21 +36,24 @@ BubbleManager::BubbleManager(Scene* parentScene, LevelParams levelParams)
         *ResourceManager::GetShader("shaders/bubbleBasic.vert", "shaders/bubbleBasic.frag");
 
 
-    burstParticles                                    = parentScene->CreateEntity<ParticleSystem>(true, 100);
-    burstParticles->particleProperties.lifetime       = 0.45f;
-    burstParticles->particleProperties.startSize      = 0.025f;
-    burstParticles->particleProperties.endSize        = 0.005f;
-    burstParticles->particleProperties.sizeVariation  = 0.05f;
-    burstParticles->emitType                          = EmitType::BURST;
-    burstParticles->shape                             = EmitShape::CIRCLE;
-    burstParticles->particleProperties.initialSpeed   = 2.0f;
-    burstParticles->particleProperties.speedVariation = 0.3f;
-    burstParticles->particleProperties.damping        = 0.45f;
-    burstParticles->particleProperties.startColor     = bubbleColors[0];
-    burstParticles->particleProperties.endColor       = { 255, 255, 255, 0 };
+    for (size_t i = 0; i < burstParticlesPool.size(); i++) {
+        auto& burstParticles                         = burstParticlesPool[i];
+        burstParticles                               = parentScene->CreateEntity<ParticleSystem>(true, 50);
+        burstParticles->particleProperties.lifetime  = 0.45f;
+        burstParticles->particleProperties.startSize = 0.025f;
+        burstParticles->particleProperties.endSize   = 0.005f;
+        burstParticles->particleProperties.sizeVariation  = 0.05f;
+        burstParticles->emitType                          = EmitType::BURST;
+        burstParticles->shape                             = EmitShape::CIRCLE;
+        burstParticles->particleProperties.initialSpeed   = 2.0f;
+        burstParticles->particleProperties.speedVariation = 0.3f;
+        burstParticles->particleProperties.damping        = 0.45f;
+        burstParticles->particleProperties.startColor     = bubbleColors[0];
+        burstParticles->particleProperties.endColor       = { 255, 255, 255, 0 };
 
-    burstParticles->endPoint      = { 0, 0, 0 };
-    burstParticles->endPointForce = 0.4f;
+        burstParticles->endPoint      = { 0, 0, 0 };
+        burstParticles->endPointForce = 0.4f;
+    }
 
     LOGI("Bubble Manager constructed");
 }
@@ -84,23 +87,7 @@ void BubbleManager::Update(float dT) {
             for (int j = 0; j < GetTouchPointCount(); j++) {
                 // LOGI("Touch Pos: %f, %f, %f", touchPos.x, touchPos.y, touchPos.z);
                 if (IsPointInBubble(bubble, Input::GetTouchRay(j))) {
-                    burstParticles->position                      = bubble->position;
-                    burstParticles->particleProperties.startColor = bubbleColors[(int)bubble->type];
-                    burstParticles->particleProperties.endColor   = bubbleColors[(int)bubble->type];
-                    burstParticles->particleProperties.endColor.a = 0;
-
-                    if (bubble->type == ElementType::NONE || EffectManager::Get().IsEffectCharged(bubble->type)) {
-                        burstParticles->shape                       = EmitShape::CIRCLE;
-                        burstParticles->particleProperties.damping  = 0.45f;
-                        burstParticles->particleProperties.lifetime = 0.45f;
-                    } else {
-                        burstParticles->shape                       = EmitShape::LINE;
-                        burstParticles->particleProperties.lifetime = 1.25f;
-                        burstParticles->particleProperties.damping  = 0.25f;
-                    }
-
-                    burstParticles->Burst(50);
-
+                    BurstParticles(bubble);
                     DecreaseSpawnInterval();
                     GameManager::Get().AddSpecialBubbleInternal(bubble->type);
                     if (bubble->type == ElementType::NONE) {
@@ -266,4 +253,34 @@ void BubbleManager::CryoFreeze(bool active) {
 void BubbleManager::DecreaseSpawnInterval() {
     m_SpawnInterval -= levelParams.spawnDecrementAmount;
     m_SpawnInterval = std::max(m_SpawnInterval, levelParams.minSpawnInterval);
+}
+void BubbleManager::BurstParticles(Bubble* bubble) {
+    int particleSystemIndex = 0;
+    for (size_t i = 0; i < burstParticlesPool.size(); i++) {
+        if (!burstParticlesPool[i]->isSimulating) {
+            particleSystemIndex = i;
+            break;
+        }
+    }
+    LOGI("BM: Using paricle system %d", particleSystemIndex);
+
+
+    auto& burstParticles = burstParticlesPool[particleSystemIndex];
+
+    burstParticles->position                      = bubble->position;
+    burstParticles->particleProperties.startColor = bubbleColors[(int)bubble->type];
+    burstParticles->particleProperties.endColor   = bubbleColors[(int)bubble->type];
+    burstParticles->particleProperties.endColor.a = 0;
+
+    if (bubble->type == ElementType::NONE || EffectManager::Get().IsEffectCharged(bubble->type)) {
+        burstParticles->shape                       = EmitShape::CIRCLE;
+        burstParticles->particleProperties.damping  = 0.45f;
+        burstParticles->particleProperties.lifetime = 0.45f;
+    } else {
+        burstParticles->shape                       = EmitShape::LINE;
+        burstParticles->particleProperties.lifetime = 1.25f;
+        burstParticles->particleProperties.damping  = 0.25f;
+    }
+
+    burstParticles->Burst(50);
 }

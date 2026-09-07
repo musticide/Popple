@@ -1,10 +1,10 @@
 #include "HomeCanvas.h"
-#include "SceneManager.h"
-#include "Globals.h"
 #include "GameplayScene.h"
+#include "Globals.h"
 #include "Log.h"
 #include "PlayerProfile.h"
 #include "RemoteConfig.h"
+#include "SceneManager.h"
 #include "raylib.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
@@ -59,8 +59,8 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
     classicModeBtn->nPatchInfo.bottom = 170;
     classicModeBtn->fontOffset.y      = 62;
     classicModeBtn->fontSize          = 115;
-    classicModeBtn->text->hAlign = ui::ALIGN_CENTER;
-    classicModeBtn->text->vAlign = ui::ALIGN_MIDDLE;
+    classicModeBtn->text->hAlign      = ui::ALIGN_CENTER;
+    classicModeBtn->text->vAlign      = ui::ALIGN_MIDDLE;
 
     endlessModeBtn                    = CreateElement<ui::Button>(true,
         "textures/HomeScreenAtlas.png",
@@ -78,14 +78,13 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
     endlessModeBtn->fontOffset.y      = 62;
     endlessModeBtn->fontSize          = 115;
     endlessModeBtn->onClick.connect([]() {
-        SceneManager::Get().RegisterScene<GameplayScene>(SceneType::GAMEPLAY, false, GetLevelParams(-1));
+        SceneManager::Get().RegisterScene<GameplayScene>(SceneType::GAMEPLAY, false, GetLevelParams(0));
         SceneManager::Get().ActivateScene(SceneType::GAMEPLAY);
         SceneManager::Get().DeactivateScene(SceneType::HOME);
         Globals::DisableState(Globals::MAIN_MENU);
     });
     endlessModeBtn->text->hAlign = ui::ALIGN_CENTER;
     endlessModeBtn->text->vAlign = ui::ALIGN_MIDDLE;
-
 }
 
 HomeCanvas::~HomeCanvas() {
@@ -97,4 +96,16 @@ void HomeCanvas::OnEnable() {
 }
 void HomeCanvas::Start() {
     ui::Canvas::Start();
+    usernameTxt->SetText(PlayerProfile.username.value);
+    userLvlTxt->SetText(std::to_string(PlayerProfile.highestLevelCleared.value));
+}
+void HomeCanvas::Update(float dT) {
+    ui::Canvas::Update(dT);
+    if (!userDataFetched) {
+        if (usernameTxt != nullptr && Auth::g_LoginState == Auth::LOGIN_SUCCESS) {
+            userDataFetched = true;
+            usernameTxt->SetText(PlayerProfile.username.value);
+            userLvlTxt->SetText(std::to_string(PlayerProfile.highestLevelCleared.value));
+        }
+    }
 }

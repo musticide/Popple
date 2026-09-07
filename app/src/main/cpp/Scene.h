@@ -36,11 +36,11 @@ class Scene {
         // entity->parentScene = this;
         entity->SetActive(active);
 
-        LOGV("Entity added to %s", m_Name);
+        // LOGV("Entity added to %s", m_Name);
         m_SceneEntities.push_back(entity.get());
 
         if (DrawableEntity* d = entity->asDrawable()) {
-            LOGV("Entity is Drawable");
+            // LOGV("Entity is Drawable");
             switch (d->GetRenderQueue()) {
                 case RenderQueue::SKY:
                     m_Buckets.sky.push_back(d);
@@ -64,6 +64,10 @@ class Scene {
 
     SceneType GetType() const {
         return m_Type;
+    }
+
+    const char* const GetName() const{
+        return m_Name;
     }
 
     bool IsActive() const {

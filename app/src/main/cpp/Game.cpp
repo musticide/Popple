@@ -29,8 +29,8 @@ void Game::Init() {
     // SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(0, 0, "Popple");
     InitializeFirebaseCore();
-    GetLocalUserId();
-    RunGameBootAuthentication();
+    Auth::GetLocalUserId();
+    Auth::RunGameBootAuthentication();
 
     SetOnPauseCallBack(Globals::onPauseCallBack);
     SetOnResumeCallBack(Globals::onResumeCallBack);
@@ -74,7 +74,7 @@ void Game::Init() {
 void Game::Run() {
     LOGI("Game Loop Start");
     while (!WindowShouldClose()) {
-        UpdateUserLoginLoop();
+        Auth::UpdateUserLoginLoop();
         SceneManager::Get().LoadScenes();
         SceneManager::Get().StartScenes();
         Scheduler::Get().Update(GetFrameTime());

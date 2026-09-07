@@ -85,6 +85,8 @@ public:
 
     std::function<Vector3()> customShapeFunc;
 
+    bool isSimulating = false;
+
 private:
     std::vector<Particle> m_ParticlePool;
     int m_CurrentIndex;

@@ -25,7 +25,7 @@ ui::Button::Button(Scene* parentScene,
     this->textContent = textContent;
     if (!textContent.empty()) {
         this->text = this->CreateChild<ui::Text>(
-            true, font, Rectangle{ fontOffset.x, fontOffset.y, baseRect.width, baseRect.height}, fitType);
+            true, font, Rectangle{ 0, 0, baseRect.width, baseRect.height}, fitType);
     }
 }
 
@@ -34,7 +34,8 @@ Button::~Button() {
 
 void ui::Button::Start() {
     if (text != nullptr){
-        text->baseRect = { fontOffset.x, fontOffset.y, baseRect.width, baseRect.height};
+        text->baseRect = { 0, 0, baseRect.width, baseRect.height};
+        text->SetPositionOffset(fontOffset);
         text->hAlign   = ALIGN_CENTER;
         text->vAlign   = ALIGN_TOP;
         text->fontSize = fontSize;

@@ -56,7 +56,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     const int MIN_SPAWN_DIST = 35, MAX_SPAWN_DIST = 40;
     std::vector<std::unique_ptr<Bubble>> m_Bubbles;
 
-    std::unique_ptr<ParticleSystem> burstParticles = nullptr;
+    std::array<std::unique_ptr<ParticleSystem>, 5> burstParticlesPool = { 0 };
 
     float m_SpawnTimer = 0.0f;
     bool m_PauseSpawn  = false;
@@ -82,10 +82,11 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
         (Color){ 66, 255, 195, 255 }, // Green anemo
         (Color){ 4, 180, 255, 255 },  // Light Blue cryo
         WHITE,                        // Common
-        (Color){ 20, 20, 20, 255 },  // Black shadow
+        (Color){ 20, 20, 20, 255 },   // Black shadow
     };
 
     void DecreaseSpawnInterval();
+    void BurstParticles(Bubble* bubble);
 
   public:
     BubbleManager(Scene* parentScene, LevelParams levelParams);

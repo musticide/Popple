@@ -1,6 +1,7 @@
 #include "LevelConfig.h"
 #include "ElementType.h"
 #include "GameManager.h"
+#include "PlayerProfile.h"
 #include "RemoteConfig.h"
 #include <cmath>
 
@@ -34,16 +35,16 @@ LevelParams GetLevelParams(int levelNumber) {
 
         result.endlessMode = false;
     } else {
-        int levelGroupIndex = (levelNumber - 1) / MAX_LEVELS_IN_GROUP;
+        int levelGroupIndex = (PlayerProfile.highestLevelCleared.value - 1) / MAX_LEVELS_IN_GROUP;
 
         RemoteConfig::LevelGroupConfig& currentGroupConfig = RemoteConfig.levelGroupConfig[levelGroupIndex];
         result.isCleared                                   = true;
-        result.levelNumber                                 = -1;
+        result.levelNumber                                 = 0;
         result.minScore                                    = 0;
         result.startSpawnInterval                          = 1.2f;
         result.minSpawnInterval                            = 0.1f;
-        result.spawnDecrementAmount                        = 0.05f;
-        result.powerUpSpawnChance                          = 30;
+        result.spawnDecrementAmount                        = 0.01f;
+        result.powerUpSpawnChance                          = 20;
 
         for (size_t i = 0; i < (int)ElementType::COUNT; i++) {
             if (currentGroupConfig.availablePowerUps[i]) {
