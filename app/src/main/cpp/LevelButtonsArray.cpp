@@ -62,7 +62,7 @@ void LevelButtonsArray::Refresh() {
                 levelBtn->onClick.connect([this, levelNumber]() { levelParams = GetLevelParams(levelNumber); });
 
             if (PlayerProfile.levelsData.value.size() >= levelNumber)
-                levelBtn->SetRating(PlayerProfile.levelsData.value[levelNumber - 1].rating);
+                levelBtn->SetRating(PlayerProfile.levelsData.value[levelNumber].rating);
             else
                 levelBtn->SetRating(0);
 

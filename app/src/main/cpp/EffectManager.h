@@ -1,4 +1,5 @@
 #pragma once
+#include "ElementType.h"
 #include "Entity.h"
 #include "GameManager.h"
 #include "Singleton.h"
@@ -12,8 +13,8 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
     ~EffectManager();
 
     void ChargeEffect(ElementType type);
-    void DischargeEffect(ElementType type);
     bool IsEffectCharged(ElementType type);
+    void DeactivateEffect(ElementType type);
 
     void Start() override;
     void OnEnable() override;
@@ -40,9 +41,11 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
     int m_AnemoTimeId;
     float anemoEffectTimer = 0.0f;
 
-    std::unique_ptr<StaticMesh> m_ShadowOverlayMesh;
     float cryoEffectTimer = 0.0f;
+    std::unique_ptr<StaticMesh> m_ShadowOverlayMesh;
     float shadowEffectTimer = 0.0f;
+
+    int pyroEffectCharges = 0;
 
     std::array<bool, (int)ElementType::COUNT> effectCharged = { false };
     std::array<bool, (int)ElementType::COUNT> effectActive  = { false };
@@ -62,4 +65,8 @@ class EffectManager : public Entity, public Singleton<EffectManager> {
     void InitShadowOverlay(Scene* parentScene);
     void ActivateShadowOverlay();
     void DeactivateShadowOverlay();
+
+    void InitPyroEffect(Scene* parentScene);
+    void ActivatePyroEffect();
+    void DeactivatePyroEffect();
 };

@@ -37,10 +37,14 @@ void GameManager::AddSpecialBubbleInternal(ElementType type) {
         case ElementType::ELECTRO:
         case ElementType::ANEMO:
         case ElementType::CRYO:
-            if (!EffectManager::Get().IsEffectCharged(type)) {
-                m_ComboCount[(int)type]++;
-            } else {
-                m_ComboCount[(int)type] = 0;
+        case ElementType::PYRO:
+            for (int i = 0; i < (int)ElementType::COUNT - 1; i++) {
+                if (i == (int)type && !EffectManager::Get().IsEffectCharged(type)) {
+                    m_ComboCount[i]++;
+                } else
+                    m_ComboCount[i] = 0;
+
+                LOGI("Combo Count %s = %d", GetElementName((ElementType)i), m_ComboCount[i]);
             }
             if (m_ComboCount[(int)type] >= GameData::MAX_COMBO_LENGTH) {
                 m_ComboCount[(int)type] = 0;
@@ -136,8 +140,8 @@ void GameManager::EndGame() {
     GameResults.levelRating = static_cast<int>(std::floor((float)m_Score / levelParams.minScore));
 
     // Sync only if the current rating is higher than the previous rating
-    if (PlayerProfile.levelsData.value[levelParams.levelNumber - 1].rating < GameResults.levelRating) {
-        PlayerProfile.levelsData.value[levelParams.levelNumber - 1] = {
+    if (PlayerProfile.levelsData.value[levelParams.levelNumber].score < GameResults.score) {
+        PlayerProfile.levelsData.value[levelParams.levelNumber] = {
             .rating = GameResults.levelRating, .score = m_Score, .time = static_cast<int>(highestTime)
         };
         SyncLevelToFirebase(levelParams.levelNumber);
@@ -177,7 +181,7 @@ void GameManager::StartGameSystems() {
     healthChanged(m_Health, 0);
     gameStartTime = GetTime();
     gameCanvas->targetScoreText->SetText(
-        levelParams.endlessMode ? std::to_string(PlayerProfile.levelsData.value[-1].score) : "500");
+        levelParams.endlessMode ? std::to_string(PlayerProfile.levelsData.value[0].score) : "500");
     effectManager->SetActive(true);
     bubbleManager->SetActive(true);
     spatialGrid->SetActive(true);

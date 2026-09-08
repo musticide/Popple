@@ -18,6 +18,7 @@ EffectManager::EffectManager(Scene* parentScene)
     InitElectroShield(parentScene);
     InitAnemoShield(parentScene);
     InitShadowOverlay(parentScene);
+    InitPyroEffect(parentScene);
 }
 
 EffectManager::~EffectManager() {
@@ -34,7 +35,7 @@ void EffectManager::Update(float dT) {
         electroShieldTimer += dT;
 
         if (electroShieldTimer > GameData::ELECTRO_SHIELD_DURATION) {
-            effectActive[(int)ElementType::ELECTRO] = false;
+            DeactivateEffect(ElementType::ELECTRO);
             electroShieldTimer                      = 0.0f;
             m_ElectroBlink                          = 0;
             DeactivateElectroShield();
@@ -60,11 +61,10 @@ void EffectManager::Update(float dT) {
     if (effectActive[(int)ElementType::ANEMO]) {
         anemoEffectTimer += dT;
         if (anemoEffectTimer > GameData::ANEMO_EFFECT_DURATION) {
-            effectActive[(int)ElementType::ANEMO] = false;
+            DeactivateEffect(ElementType::ANEMO);
             BubbleManager::Get().AnemoPushBack(false);
             EffectManager::Get().DeactivateAnemoShield();
             anemoEffectTimer = 0.0f;
-            LOGI("Anemo Deactivated");
         }
         if (m_AnemoShieldMesh && m_AnemoShieldMesh->IsActive()) {
             m_AnemoShieldMesh->scale *= 1.0f + (6.5 * dT);
@@ -76,7 +76,7 @@ void EffectManager::Update(float dT) {
     if (effectActive[(int)ElementType::CRYO]) {
         cryoEffectTimer += dT;
         if (cryoEffectTimer > GameData::CRYO_SHIELD_DURATION) {
-            effectActive[(int)ElementType::CRYO] = false;
+            DeactivateEffect(ElementType::CRYO);
             BubbleManager::Get().CryoFreeze(false);
             cryoEffectTimer = 0.0f;
             DeactivateCryoShield();
@@ -85,7 +85,7 @@ void EffectManager::Update(float dT) {
     if (effectActive[(int)ElementType::SHADOW]) {
         shadowEffectTimer += dT;
         if (shadowEffectTimer > GameData::SHADOW_OVERLAY_DURATION) {
-            effectActive[(int)ElementType::SHADOW] = false;
+            DeactivateEffect(ElementType::SHADOW);
             shadowEffectTimer                      = 0.0f;
             DeactivateShadowOverlay();
         }
@@ -168,6 +168,10 @@ void EffectManager::ActivateEffect(ElementType type) {
         case ElementType::SHADOW:
             ActivateShadowOverlay();
             break;
+        case ElementType::PYRO:
+            ActivatePyroEffect();
+            BubbleManager::Get().PyroBurstActive(true);
+            break;
         default:
             break;
     }
@@ -175,10 +179,6 @@ void EffectManager::ActivateEffect(ElementType type) {
 void EffectManager::ChargeEffect(ElementType type) {
     VibrateMS(200);
     effectCharged[(int)type] = true;
-}
-
-void EffectManager::DischargeEffect(ElementType type) {
-    effectCharged[(int)type] = false;
 }
 
 bool EffectManager::IsEffectCharged(ElementType type) {
@@ -224,3 +224,16 @@ void EffectManager::OnEnable() {
     Entity::OnEnable();
     Reset();
 }
+void EffectManager::InitPyroEffect(Scene* parentScene) {
+}
+
+void EffectManager::ActivatePyroEffect() {
+}
+
+void EffectManager::DeactivatePyroEffect() {
+}
+void EffectManager::DeactivateEffect(ElementType type) {
+    effectActive[(int)type] = false;
+    LOGI("Effect Deactivated: %s", GetElementName(type));
+}
+

@@ -18,6 +18,7 @@ struct Bubble {
     Vector3 position = { 0 };
     Vector3 velocity = { 0 };
     float radius     = 0;
+    int activeIndex  = -1;
 
     constexpr static float maxMoveSpeed = 15;
     constexpr static float moveSpeed    = 1.0;
@@ -50,11 +51,14 @@ struct Bubble {
     }
 };
 
+#define INITIAL_POOL_SIZE 50
+
 class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
   private:
-    const int INITIAL_POOL_SIZE = 50;
     const int MIN_SPAWN_DIST = 35, MAX_SPAWN_DIST = 40;
     std::vector<std::unique_ptr<Bubble>> m_Bubbles;
+    std::array<Bubble*, INITIAL_POOL_SIZE> activeBubbles;
+    int activeBubbleCount = 0;
 
     std::array<std::unique_ptr<ParticleSystem>, 5> burstParticlesPool = { 0 };
 
@@ -70,17 +74,20 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     void SpawnBubble(Bubble* bubble);
     Vector3 GetRandomSpawnPos();
 
+    void PopBubble(int index);
     void UpdateBubble(Bubble* bubble);
 
     // static ElementType s_ActiveEffect;
     float m_SpawnInterval;
     float electroShieldRadius;
+    int pyroBurstCharges = 0;
 
     std::shared_ptr<Model> m_BubbleBaseModel;
     std::array<Color, (size_t)ElementType::COUNT> bubbleColors = {
         (Color){ 139, 66, 255, 255 }, // PURPLE electro
         (Color){ 66, 255, 195, 255 }, // Green anemo
         (Color){ 4, 180, 255, 255 },  // Light Blue cryo
+        (Color){ 255, 131, 0, 255 },  // Orange Pyro
         WHITE,                        // Common
         (Color){ 20, 20, 20, 255 },   // Black shadow
     };
@@ -105,4 +112,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     void ContinueSpawn();
     void AnemoPushBack(bool active);
     void CryoFreeze(bool active);
+    void PyroBurstActive(bool active) {
+        pyroBurstCharges = 2;
+    }
 };

@@ -1,9 +1,9 @@
 #include "GameCanvas.h"
 #include "EffectManager.h"
+#include "ElementType.h"
 #include "GameManager.h"
 #include "LevelConfig.h"
 #include "Log.h"
-#include "PlayerProfile.h"
 #include "raylib.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
@@ -115,8 +115,14 @@ GameCanvas::GameCanvas(Scene* parentScene, LevelParams params)
         button = CreateElement<ui::Button>(true, "textures/GameplayAtlas.png", transform, ui::FIXED_W | ui::FIXED_H);
         button->onClick.connect([i]() { EffectManager::Get().ActivateEffect((ElementType)i); });
         button->nPatchInfo.source = offOnRects[i][0];
-        if (i >= levelParams.availablePowerUps.size()) {
-            button->tint = LIGHTGRAY;
+        button->tint      = LIGHTGRAY;
+        button->clickable = false;
+        for (size_t j = 0; j < levelParams.availablePowerUps.size(); j++) {
+            if (levelParams.availablePowerUps[j] == (ElementType)i) {
+                button->tint      = WHITE;
+                button->clickable = true;
+                break;
+            }
         }
     }
 }

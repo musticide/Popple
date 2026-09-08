@@ -21,15 +21,16 @@ class GameCanvas : public ui::Canvas, public Singleton<GameCanvas> {
         Rectangle{ 408, 316, 90, 90 }, // ELECTRO
         Rectangle{ 408, 218, 90, 90 }, // ANEMO
         Rectangle{ 408, 120, 90, 90 }, // CRY0
+        Rectangle{ 408, 19, 90, 90 },  // PYRO
         Rectangle{ 408, 411, 90, 90 }, // NONE
     };
 
-    // Rectangle electroOffOnRect[2] = { Rectangle{ 0, 234, 130, 130 }, Rectangle{ 0, 371, 130, 130 } };
-    // Rectangle anemoOffOnRect[2]   = { Rectangle{ 136, 234, 130, 130 }, Rectangle{ 136, 371, 130, 130 } };
-    // OffOnRect cryoOffOnRec        = { Rectangle{ 272, 234, 130, 130 }, Rectangle{ 272, 371, 130, 130 } };
-    OffOnRect offOnRects[(int)ElementType::COUNT - 1] = { { Rectangle{ 0, 234, 130, 130 }, Rectangle{ 0, 371, 130, 130 } },
-        { Rectangle{ 136, 234, 130, 130 }, Rectangle{ 136, 371, 130, 130 } },
-        { Rectangle{ 272, 234, 130, 130 }, Rectangle{ 272, 371, 130, 130 } } };
+    OffOnRect offOnRects[(int)ElementType::COUNT - 1] = {
+        { Rectangle{ 0, 234, 130, 130 }, Rectangle{ 0, 371, 130, 130 } },     // Electro
+        { Rectangle{ 136, 234, 130, 130 }, Rectangle{ 136, 371, 130, 130 } }, // ANEMO
+        { Rectangle{ 272, 234, 130, 130 }, Rectangle{ 272, 371, 130, 130 } }, // CRYO
+        { Rectangle{ 0, 508, 130, 130 }, Rectangle{ 136, 508, 130, 130 } }    // Pyro
+    };
 
     std::unique_ptr<ui::Image> healthBox                                          = nullptr;
     std::unique_ptr<ui::Image> healthIcon                                         = nullptr;

@@ -20,6 +20,8 @@
 #include <raymob.h>
 #include <sys/types.h>
 
+#define PYRO_BURST_RADIUS 20.f
+
 float Bubble::speedMultiplier = 1.f;
 
 BubbleManager::BubbleManager(Scene* parentScene, LevelParams levelParams)
@@ -41,7 +43,7 @@ BubbleManager::BubbleManager(Scene* parentScene, LevelParams levelParams)
         burstParticles                               = parentScene->CreateEntity<ParticleSystem>(true, 50);
         burstParticles->particleProperties.lifetime  = 0.45f;
         burstParticles->particleProperties.startSize = 0.025f;
-        burstParticles->particleProperties.endSize   = 0.005f;
+        burstParticles->particleProperties.endSize   = 0.0f;
         burstParticles->particleProperties.sizeVariation  = 0.05f;
         burstParticles->emitType                          = EmitType::BURST;
         burstParticles->shape                             = EmitShape::CIRCLE;
@@ -52,7 +54,7 @@ BubbleManager::BubbleManager(Scene* parentScene, LevelParams levelParams)
         burstParticles->particleProperties.endColor       = { 255, 255, 255, 0 };
 
         burstParticles->endPoint      = { 0, 0, 0 };
-        burstParticles->endPointForce = 0.4f;
+        burstParticles->endPointForce = 0.7f;
     }
 
     LOGI("Bubble Manager constructed");
@@ -76,13 +78,28 @@ void BubbleManager::Update(float dT) {
     SpatialGrid::Clear();
     SpawnBubbles();
 
-    // Process Bubbles
-    for (int i = 0; i < m_Bubbles.size(); i++) {
-        if (m_Bubbles[i] != nullptr && m_Bubbles[i]->isActive) {
-            Bubble* bubble = m_Bubbles[i].get();
-            // Physics and Collisions
-            UpdateBubble(bubble);
+    for (int i = 0; i < activeBubbleCount; i++) {
+        if (activeBubbles[i] != nullptr) {
+            // Update positions
+            UpdateBubble(activeBubbles[i]);
+        }
+        // if (m_Bubbles[i] != nullptr && m_Bubbles[i]->isActive) {
+        //     Bubble* bubble = m_Bubbles[i].get();
+        // }
+    }
 
+    // Process Bubbles
+    for (int i = 0; i < activeBubbleCount; i++) {
+        if (activeBubbles[i] != nullptr) {
+            Bubble* bubble     = activeBubbles[i];
+            auto nearbyBubbles = SpatialGrid::GetNearbyEntities(bubble->position);
+
+            for (int k = 0; k < nearbyBubbles.size(); k++) {
+                Bubble* nearby = nearbyBubbles[k];
+                if (CheckCollisionSpheres(bubble->position, bubble->radius, nearby->position, nearby->radius)) {
+                    bubble->ResolveCollision(nearby);
+                }
+            }
             // Check if Bubble was tapped
             for (int j = 0; j < GetTouchPointCount(); j++) {
                 // LOGI("Touch Pos: %f, %f, %f", touchPos.x, touchPos.y, touchPos.z);
@@ -94,33 +111,49 @@ void BubbleManager::Update(float dT) {
                         GameManager::Get().AddScore();
                         GameCanvas::Get().ShowScorePop(GetWorldToScreen(bubble->position, Game::Get().mainCamera3D));
                     }
+                    if (pyroBurstCharges > 0) {
+                        int nearbyBubbleCount = 0;
+                        for (int k = 0; k < nearbyBubbles.size(); k++) {
+                            Bubble* nearby = nearbyBubbles[k];
+                            if (Vector3Length(bubble->position - nearby->position) < PYRO_BURST_RADIUS) {
+                                BurstParticles(nearby);
+                                PopBubble(nearby->activeIndex);
+                                nearbyBubbleCount++;
+                            }
+                        }
+                        LOGI("BM: Nearby Bubbles found %d", nearbyBubbleCount);
+                        if (--pyroBurstCharges <= 0) {
+                            EffectManager::Get().DeactivateEffect(ElementType::PYRO);
+                        }
+                    }
 
-                    bubble->isActive = false;
+                    PopBubble(i);
                     break;
                 }
             }
+            float distFromCenter = Vector3Length(bubble->position);
 
             if (EffectManager::Get().IsEffectActive(ElementType::ELECTRO)) {
-                if (Vector3Length(bubble->position) <= bubble->radius + electroShieldRadius) {
-                    bubble->isActive = false;
+                if (distFromCenter <= bubble->radius + electroShieldRadius) {
+                    PopBubble(i);
                 }
             }
 
             // Check if bubble has reached center or strayed away
             if (bubble->isActive) {
                 // If bubbles have gone too far away
-                if (Vector3Length(bubble->position) > MAX_SPAWN_DIST + 5.f) {
-                    bubble->isActive = false;
+                if (distFromCenter > MAX_SPAWN_DIST + 5.f) {
+                    PopBubble(i);
                     continue;
                 }
 
                 // If bubbles have reached the center
-                if (Vector3Length(bubble->position) <= bubble->radius + 2) {
+                if (distFromCenter <= bubble->radius + 2) {
                     if (bubble->type == ElementType::NONE) {
                         GameManager::Get().DecreaseHealth();
                         GameCanvas::Get().ShowHealthPop();
                     }
-                    bubble->isActive = false;
+                    PopBubble(i);
                     continue;
                 }
             }
@@ -179,35 +212,31 @@ void BubbleManager::UpdateBubble(Bubble* bubble) {
     bubble->velocity += Vector3Scale(Vector3Normalize(Vector3Zero() - bubble->position), bubble->CENTER_FORCE);
     bubble->ApplyForces();
     SpatialGrid::AddEntity(bubble);
-    for (Bubble* nearby : SpatialGrid::GetNearbyEntities(bubble->position)) {
-        if (CheckCollisionSpheres(bubble->position, bubble->radius, nearby->position, nearby->radius)) {
-            bubble->ResolveCollision(nearby);
-        }
-    }
 }
 void BubbleManager::SpawnBubbles() {
     if (m_PauseSpawn) return;
     m_SpawnTimer += GetFrameTime();
 
-    bool hasSpawned      = false;
-    size_t activeBubbles = 0;
+    bool hasSpawned = false;
+    // size_t activeBubbles = 0;
 
     if (m_SpawnTimer > m_SpawnInterval) {
         for (int i = 0; i < m_Bubbles.size(); i++) {
             if (!m_Bubbles[i]->isActive) {
                 LOGV("Bubble Spawned at time: %f", GetTime());
-                m_Bubbles[i]->isActive = true;
+                m_Bubbles[i]->isActive           = true;
+                activeBubbles[activeBubbleCount] = m_Bubbles[i].get();
+                activeBubbles[i]->activeIndex    = i;
+                activeBubbleCount++;
                 // m_Bubbles[i]->Spawn();
                 SpawnBubble(m_Bubbles[i].get());
                 m_SpawnTimer = 0.0f;
                 hasSpawned   = true;
                 break;
-            } else {
-                activeBubbles++;
             }
         }
         if (!hasSpawned) {
-            LOGE("Bubble Pool Exhausted, Active Bubbles: %zu", activeBubbles);
+            LOGE("Bubble Pool Exhausted, Active Bubbles: %d", activeBubbleCount);
         }
     }
 }
@@ -224,9 +253,12 @@ void BubbleManager::Reset() {
     for (int i = 0; i < m_Bubbles.size(); i++) {
         m_Bubbles[i]->isActive = false;
     }
-    m_SpawnTimer    = 0.f;
-    m_SpawnInterval = levelParams.startSpawnInterval;
-    m_PauseSpawn    = false;
+    std::fill(activeBubbles.begin(), activeBubbles.end(), nullptr);
+    activeBubbleCount = 0;
+    pyroBurstCharges  = 0;
+    m_SpawnTimer      = 0.f;
+    m_SpawnInterval   = levelParams.startSpawnInterval;
+    m_PauseSpawn      = false;
 }
 void BubbleManager::AnemoPushBack(bool active) {
     if (active) {
@@ -262,8 +294,7 @@ void BubbleManager::BurstParticles(Bubble* bubble) {
             break;
         }
     }
-    LOGI("BM: Using paricle system %d", particleSystemIndex);
-
+    // LOGI("BM: Using paricle system %d", particleSystemIndex);
 
     auto& burstParticles = burstParticlesPool[particleSystemIndex];
 
@@ -283,4 +314,9 @@ void BubbleManager::BurstParticles(Bubble* bubble) {
     }
 
     burstParticles->Burst(50);
+}
+void BubbleManager::PopBubble(int index) {
+    activeBubbles[index]->isActive = false;
+    activeBubbles[index]           = activeBubbles[activeBubbleCount - 1];
+    activeBubbleCount--;
 }

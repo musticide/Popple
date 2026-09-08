@@ -23,7 +23,7 @@ firebase::Variant GetFormattedPlayerProfile() {
 
 void SyncLevelToFirebase(int levelNumber) {
     using namespace firebase;
-    const LevelStats& stats = PlayerProfile.levelsData.value[levelNumber - 1];
+    const LevelStats& stats = PlayerProfile.levelsData.value[levelNumber];
     if (g_firebaseDB == nullptr) {
         LOGE("Level Sync Failed. Could not find fireDB");
         return;
@@ -102,7 +102,7 @@ void LoadLevelsFromFirebase() {
                     if (statsMap.count("time")) stats.time = statsMap["time"].int64_value();
 
                     // Insert into the local sparse map
-                    PlayerProfile.levelsData.value[levelNumber - 1] = stats;
+                    PlayerProfile.levelsData.value[levelNumber] = stats;
                 }
 
                 LOGI("Loaded %d level records from Firebase.", (int)PlayerProfile.levelsData.value.size());
@@ -124,7 +124,7 @@ void LoadLevelsFromFirebase() {
                     if (statsMap.count("score")) stats.score = statsMap["score"].int64_value();
                     if (statsMap.count("time")) stats.time = statsMap["time"].int64_value();
 
-                    PlayerProfile.levelsData.value[levelNumber - 1] = stats;
+                    PlayerProfile.levelsData.value[levelNumber] = stats;
                 }
                 LOGI("Loaded %d level records from Firebase (Vector).", (int)PlayerProfile.levelsData.value.size());
             } else {
