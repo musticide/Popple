@@ -76,6 +76,7 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
 
     void PopBubble(int index);
     void UpdateBubble(Bubble* bubble);
+    void CleanUpActiveBubbles();
 
     // static ElementType s_ActiveEffect;
     float m_SpawnInterval;

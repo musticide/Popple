@@ -54,7 +54,7 @@ BubbleManager::BubbleManager(Scene* parentScene, LevelParams levelParams)
         burstParticles->particleProperties.endColor       = { 255, 255, 255, 0 };
 
         burstParticles->endPoint      = { 0, 0, 0 };
-        burstParticles->endPointForce = 0.7f;
+        burstParticles->endPointForce = 1.0f;
     }
 
     LOGI("Bubble Manager constructed");
@@ -96,8 +96,10 @@ void BubbleManager::Update(float dT) {
 
             for (int k = 0; k < nearbyBubbles.size(); k++) {
                 Bubble* nearby = nearbyBubbles[k];
-                if (CheckCollisionSpheres(bubble->position, bubble->radius, nearby->position, nearby->radius)) {
-                    bubble->ResolveCollision(nearby);
+                if (nearby != bubble) {
+                    if (CheckCollisionSpheres(bubble->position, bubble->radius, nearby->position, nearby->radius)) {
+                        bubble->ResolveCollision(nearby);
+                    }
                 }
             }
             // Check if Bubble was tapped
@@ -115,10 +117,12 @@ void BubbleManager::Update(float dT) {
                         int nearbyBubbleCount = 0;
                         for (int k = 0; k < nearbyBubbles.size(); k++) {
                             Bubble* nearby = nearbyBubbles[k];
-                            if (Vector3Length(bubble->position - nearby->position) < PYRO_BURST_RADIUS) {
-                                BurstParticles(nearby);
-                                PopBubble(nearby->activeIndex);
-                                nearbyBubbleCount++;
+                            if (nearby != bubble) {
+                                if (Vector3Length(bubble->position - nearby->position) < PYRO_BURST_RADIUS) {
+                                    BurstParticles(nearby);
+                                    PopBubble(nearby->activeIndex);
+                                    nearbyBubbleCount++;
+                                }
                             }
                         }
                         LOGI("BM: Nearby Bubbles found %d", nearbyBubbleCount);
@@ -126,21 +130,21 @@ void BubbleManager::Update(float dT) {
                             EffectManager::Get().DeactivateEffect(ElementType::PYRO);
                         }
                     }
-
                     PopBubble(i);
                     break;
                 }
             }
-            float distFromCenter = Vector3Length(bubble->position);
-
-            if (EffectManager::Get().IsEffectActive(ElementType::ELECTRO)) {
-                if (distFromCenter <= bubble->radius + electroShieldRadius) {
-                    PopBubble(i);
-                }
-            }
-
-            // Check if bubble has reached center or strayed away
             if (bubble->isActive) {
+                float distFromCenter = Vector3Length(bubble->position);
+
+                if (EffectManager::Get().IsEffectActive(ElementType::ELECTRO)) {
+                    if (distFromCenter <= bubble->radius + electroShieldRadius) {
+                        PopBubble(i);
+                        continue;
+                    }
+                }
+
+                // Check if bubble has reached center or strayed away
                 // If bubbles have gone too far away
                 if (distFromCenter > MAX_SPAWN_DIST + 5.f) {
                     PopBubble(i);
@@ -159,29 +163,23 @@ void BubbleManager::Update(float dT) {
             }
         }
     }
+    CleanUpActiveBubbles();
 }
 
 void BubbleManager::Draw() const {
     Color tint;
-    for (size_t i = 0; i < m_Bubbles.size(); i++) {
-        if (m_Bubbles[i] != nullptr && m_Bubbles[i]->isActive) {
+    for (int i = 0; i < activeBubbleCount; i++) {
+        if (activeBubbles[i] != nullptr) {
+            Bubble* bubble = activeBubbles[i];
 
-            DrawModel(*m_BubbleBaseModel,
-                m_Bubbles[i]->position,
-                m_Bubbles[i]->radius,
-                bubbleColors[(int)m_Bubbles[i]->type]);
+            DrawModel(*m_BubbleBaseModel, bubble->position, bubble->radius, bubbleColors[(int)bubble->type]);
         }
     }
 }
 
-// bool BubbleManager::IsPointInBubble(Bubble* bubble, Vector3 point) const {
-//     return Vector3Length((Vector3){ point.x, 0, point.z } - bubble->position) <= bubble->radius;
-// }
-
 bool BubbleManager::IsPointInBubble(Bubble* bubble, Ray ray) const {
     RayCollision c = GetRayCollisionSphere(ray, bubble->position, bubble->radius);
     return c.hit;
-    // return Vector3Length((Vector3){ point.x, 0, point.z } - bubble->position) <= bubble->radius;
 }
 
 /// returns position at a defined radius
@@ -225,11 +223,11 @@ void BubbleManager::SpawnBubbles() {
             if (!m_Bubbles[i]->isActive) {
                 LOGV("Bubble Spawned at time: %f", GetTime());
                 m_Bubbles[i]->isActive           = true;
-                activeBubbles[activeBubbleCount] = m_Bubbles[i].get();
-                activeBubbles[i]->activeIndex    = i;
+                Bubble* spawned                  = m_Bubbles[i].get();
+                activeBubbles[activeBubbleCount] = spawned;
+                spawned->activeIndex             = activeBubbleCount;
                 activeBubbleCount++;
-                // m_Bubbles[i]->Spawn();
-                SpawnBubble(m_Bubbles[i].get());
+                SpawnBubble(spawned);
                 m_SpawnTimer = 0.0f;
                 hasSpawned   = true;
                 break;
@@ -309,14 +307,24 @@ void BubbleManager::BurstParticles(Bubble* bubble) {
         burstParticles->particleProperties.lifetime = 0.45f;
     } else {
         burstParticles->shape                       = EmitShape::LINE;
-        burstParticles->particleProperties.lifetime = 1.25f;
-        burstParticles->particleProperties.damping  = 0.25f;
+        burstParticles->particleProperties.lifetime = 0.5f;
+        burstParticles->particleProperties.damping  = 0.35f;
     }
 
     burstParticles->Burst(50);
 }
 void BubbleManager::PopBubble(int index) {
     activeBubbles[index]->isActive = false;
-    activeBubbles[index]           = activeBubbles[activeBubbleCount - 1];
-    activeBubbleCount--;
+}
+void BubbleManager::CleanUpActiveBubbles() {
+    int newActiveBubbleCount = activeBubbleCount;
+    for (int i = 0; i < newActiveBubbleCount; i++) { // loop bound shrinks too
+        if (activeBubbles[i] != nullptr && !activeBubbles[i]->isActive) {
+            newActiveBubbleCount--;
+            activeBubbles[i]              = activeBubbles[newActiveBubbleCount];
+            activeBubbles[i]->activeIndex = i; // update the bubble that's now actually at slot i
+            i--;
+        }
+    }
+    activeBubbleCount = newActiveBubbleCount;
 }

@@ -1,4 +1,5 @@
 #include "PauseGameCanvas.h"
+#include "Globals.h"
 #include "SceneManager.h"
 #include "raylib.h"
 #include "uiElement.h"
@@ -46,6 +47,7 @@ PauseGameCanvas::PauseGameCanvas(Scene* parentScene)
     exitBtn->onClick.connect([]() {
         SceneManager::Get().ActivateScene(SceneType::HOME);
         SceneManager::Get().DestroyScene(SceneType::GAMEPLAY);
+        Globals::DisableState(Globals::GAMEPLAY_PAUSED);
     });
 }
 
