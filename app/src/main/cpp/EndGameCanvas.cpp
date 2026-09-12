@@ -5,12 +5,16 @@
 #include "Log.h"
 #include "Scene.h"
 #include "SceneManager.h"
+#include "Tween.h"
+#include "TweenManager.h"
 #include "raylib.h"
+#include "raymath.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
 #include "uiElement.h"
 #include "uiImage.h"
 #include "uiText.h"
+#include "utils.h"
 #include <string>
 
 EndGameCanvas::EndGameCanvas(Scene* parentScene, LevelParams params)
@@ -28,6 +32,7 @@ EndGameCanvas::EndGameCanvas(Scene* parentScene, LevelParams params)
     starBgGradient->nPatchInfo.right  = 128;
     starBgGradient->nPatchInfo.top    = 148;
     starBgGradient->nPatchInfo.bottom = 463;
+    starBgGradient->SetPivot(ANCHOR_BOTTOM_CENTER);
 
     starImages[0] = CreateElement<ui::Image>(
         true, "textures/EndGameAtlas.png", Rectangle{ 289, 783, 168, 168 }, ui::FIXED_W | ui::FIXED_H);
@@ -192,3 +197,53 @@ void EndGameCanvas::OnDisable() {
     Globals::DisableState(Globals::GAMEPLAY_ENDED);
 }
 
+void EndGameCanvas::ShowEndScreen() {
+    using namespace Globals;
+    for (size_t i = 0; i < 3; i++) {
+        float offset     = 0.3f * i;
+        float tweenStart = 0 - offset;
+        float val        = 0.f;
+        float endY       = starImages[i]->baseRect.y;
+        float startY     = starImages[i]->baseRect.y + 300.f;
+
+        TweenManager::Get().To(&val, tweenStart, 1.0f, 0.3f + offset).SetEasing(Easing::CubicIn).OnUpdate([this, i, startY, endY](float x) {
+            if (i < GameResults.levelRating) {
+                starImages[i]->baseRect.y = Lerp(startY, endY, x);
+                starImages[i]->SetRotation(Lerp(180.f, 0.f, x));
+            } else {
+                starImages[i]->SetScale(Lerp(0.0f, 1.25f, x));
+            }
+            starImages[i]->tint = ColorLerp(TRANSPARENT_COLOR, WHITE, x);
+        });
+    }
+    float colorlerp = 0.0f;
+    exitToMainButton->SetTint(TRANSPARENT_COLOR);
+    nextLevelButton->SetTint(TRANSPARENT_COLOR);
+    retryLevelButton->SetTint(TRANSPARENT_COLOR);
+    TweenManager::Get()
+        .To(&colorlerp, 0.0f, 1.f, .5f)
+        .OnUpdate([this](float x) { starBgGradient->tint = ColorLerp(TRANSPARENT_COLOR, WHITE, x); })
+        .OnCompleted([this]() {
+            for (size_t i = 0; i < 3; i++) {
+                float offset     = 0.2f * i;
+                float tweenStart = 0.3f - offset;
+                float val        = 0.f;
+                TweenManager::Get().To(&val, tweenStart, 1.f, .2f + offset).SetEasing(Easing::CubicIn).OnUpdate([this, i](float x) {
+                    switch (i) {
+                        case 0:
+                            nextLevelButton->SetScale(x);
+                            nextLevelButton->SetTint(Lerp(TRANSPARENT_COLOR, WHITE, x));
+                            break;
+                        case 1:
+                            retryLevelButton->SetScale(x);
+                            retryLevelButton->SetTint(Lerp(TRANSPARENT_COLOR, WHITE, x));
+                            break;
+                        case 2:
+                            exitToMainButton->SetScale(x);
+                            exitToMainButton->SetTint(Lerp(TRANSPARENT_COLOR, WHITE, x));
+                            break;
+                    }
+                });
+            }
+        });
+}

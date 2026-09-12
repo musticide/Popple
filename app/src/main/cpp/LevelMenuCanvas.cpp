@@ -59,6 +59,7 @@ LevelMenuCanvas::LevelMenuCanvas(Scene* parentScene)
         // Or register scene will create a scene inside the scenemanager
         // always only 1 scene of a type will exist
         SceneManager::Get().RegisterScene<GameplayScene>(SceneType::GAMEPLAY, false, levelParams);
+        SceneManager::Get().ActivateScene(SceneType::LOADING);
         SceneManager::Get().ActivateScene(SceneType::GAMEPLAY);
         SceneManager::Get().DeactivateScene(SceneType::HOME);
         Globals::DisableState(Globals::MAIN_MENU);

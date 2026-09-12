@@ -1,4 +1,5 @@
 #include "LoadingCanvas.h"
+#include "Scene.h"
 #include "SceneManager.h"
 #include "raylib.h"
 #include "uiCanvas.h"
@@ -24,3 +25,8 @@ void LoadingCanvas::Update(float dT) {
     loadingPercentTxt->SetText(
         "Loading " + std::to_string(static_cast<int>(SceneManager::Get().loadingProgress * 100)) + "%");
 }
+void LoadingCanvas::Start() {
+    ui::Canvas::Start();
+    SceneManager::Get().DeactivateScene(SceneType::LOADING);
+}
+

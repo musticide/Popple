@@ -31,6 +31,8 @@ void EffectManager::Start() {
 
 void EffectManager::Update(float dT) {
     if (Globals::IsStateValid(Globals::GAMEPLAY_PAUSED)) return;
+    if (Globals::IsStateValid(Globals::GAMEPLAY_ENDED)) return;
+
     if (effectActive[(int)ElementType::ELECTRO]) {
         electroShieldTimer += dT;
 

@@ -115,6 +115,7 @@ void GameManager::ResetComboCount(ElementType type) {
 void GameManager::EndGame() {
     using namespace Globals;
 
+    //TODO: Address these for end game
     StopGameSystems();
     Input::Get().PauseInputForTime(1.0f);
 
@@ -151,6 +152,7 @@ void GameManager::EndGame() {
 
     gameCanvas->SetActive(false);
     endGameCanvas->SetActive(true);
+    endGameCanvas->ShowEndScreen();
 
     DisableState(GAMEPLAY_RUNNING);
 }

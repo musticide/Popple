@@ -11,6 +11,7 @@ class LoadingCanvas : public ui::Canvas {
     std::unique_ptr<ui::Image> bgImage          = nullptr;
     std::unique_ptr<ui::Text> loadingPercentTxt = nullptr;
 
+    void Start() override;
     void Update(float dT = 1.0f) override;
     // float loadingProgress = 0.f;
   private:
