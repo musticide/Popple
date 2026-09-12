@@ -9,6 +9,7 @@
 namespace ui {
 
 class Image : public UIElement {
+    friend UIElement;
   public:
     Image(Scene* parentScene,Canvas* parentCanvas, const char* filepath, Rectangle rect, int fitType, bool nPatch = false);
     ~Image();

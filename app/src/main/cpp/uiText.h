@@ -54,6 +54,13 @@ class Text : public UIElement {
     Vector2 textPos = { 0, 0 }, textPosOffset = { 0, 0 };
 
     void UpdateTextPos();
+
+    // How much this element's rect has actually been scaled from its authored
+    // (base) size -- captures this element's own scale/aniScale, every
+    // ancestor's scale, Globals::uiScale, and canvas zoom all at once, since
+    // fRect already reflects all of them. Used in place of re-deriving just
+    // the parent's scale, which missed everything else.
+    Vector2 GetEffectiveScale() const;
 };
 
 } // namespace ui

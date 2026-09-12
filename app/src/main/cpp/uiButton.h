@@ -23,24 +23,32 @@ class Button : public ui::Image {
     Signal<> onClick;
 
     void Update(float dT = 1.0f) override;
-    /// TODO: Set raycast rect scaling
-    Rectangle raycastRect;
     bool clickable = true;
 
-  private:
-    bool wasPressed = false;
-
-  public:
     std::unique_ptr<ui::Text> text = nullptr;
 
     void Start() override;
     void OnEnable() override;
     void OnDisable() override;
 
-    int fontSize = 72;
+    int fontSize       = 72;
     Vector2 fontOffset = { 0, 0 };
+    void SetTint(const Color& tint){
+        this->tint = tint;
+        if(text != nullptr)
+        text->color = tint;
+
+    }
 
   private:
+    bool wasPressed = false;
+    enum class PressState {
+        None,
+        PressedInside,
+        PressedOutside
+    };
+    PressState state   = PressState::None;
+    float pressedScale = 0.92f;
     FontName font;
     std::string textContent;
 };

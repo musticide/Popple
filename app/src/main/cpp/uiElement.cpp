@@ -18,54 +18,79 @@ UIElement::~UIElement() {
 }
 
 
-void ui::UIElement::UpdateFinalRect() {
-    fRect = baseRect;
+Rectangle ui::UIElement::ComputeRect(Vector2 aniScaleOverride) const {
+    Rectangle rect = baseRect;
 
-    // Convert to pixel space
-    float pivotPixelX = fRect.x + (fRect.width * 0.5f);
-    float pivotPixelY = fRect.y + (fRect.height * 0.5f);
+    // Convert to pixel space, scaling around the configured pivot rather than
+    // always assuming dead-center. NOTE: canvas pan/zoom is deliberately NOT
+    // touched anywhere in this function -- it's applied once, uniformly, in
+    // ApplyCanvasTransform, so it can't compound with nesting depth.
+    float pivotPixelX = rect.x + (rect.width * pivot.x);
+    float pivotPixelY = rect.y + (rect.height * pivot.y);
 
-    fRect.x = pivotPixelX + ((fRect.x - pivotPixelX) * scale * parentCanvas->canvasScale.x) +
-        parentCanvas->canvasOffset.x;
-    fRect.y = pivotPixelY + ((fRect.y - pivotPixelY) * scale * parentCanvas->canvasScale.y) +
-        parentCanvas->canvasOffset.y;
+    Vector2 localScale = this->scale * aniScaleOverride;
 
-    fRect.width *= scale * parentCanvas->canvasScale.x;
-    fRect.height *= scale * parentCanvas->canvasScale.y;
+    rect.x = pivotPixelX + ((rect.x - pivotPixelX) * localScale.x);
+    rect.y = pivotPixelY + ((rect.y - pivotPixelY) * localScale.y);
+
+    rect.width *= localScale.x;
+    rect.height *= localScale.y;
 
     Vector2 globalScale = { Globals::uiScale.x, preserveRatio ? Globals::uiScale.x : Globals::uiScale.y };
 
     if (parent != nullptr) {
-        fRect.x = (anchor.x * parent->fRect.width) +
-            ((fRect.x - parent->baseRect.width * anchor.x) * globalScale.x * parent->scale);
-        fRect.y = (anchor.y * parent->fRect.height) +
-            ((fRect.y - parent->baseRect.height * anchor.y) * globalScale.y * parent->scale);
+        // Use the parent's pure layout rect (pre-canvas-transform), not its
+        // final fRect, so canvas pan/zoom doesn't get folded in here and then
+        // folded in again by ApplyCanvasTransform on this element's own result.
+        rect.x = (anchor.x * parent->m_LayoutRect.width) +
+            ((rect.x - parent->baseRect.width * anchor.x) * globalScale.x * parent->scale.x *
+                parent->aniScale.x);
+        rect.y = (anchor.y * parent->m_LayoutRect.height) +
+            ((rect.y - parent->baseRect.height * anchor.y) * globalScale.y * parent->scale.y *
+                parent->aniScale.y);
 
-        fRect.width *= parent->scale;
-        fRect.height *= parent->scale;
+        rect.width *= parent->scale.x * parent->aniScale.x;
+        rect.height *= parent->scale.y * parent->aniScale.y;
 
-        fRect.x += parent->fRect.x;
-        fRect.y += parent->fRect.y;
+        // Same trick as the root branch: x/y above are computed in screen
+        // units, so width/height must be too, otherwise FIXED children stay in
+        // design units and drift out of alignment when globalScale != 1.
+        rect.width *= globalScale.x;
+        rect.height *= globalScale.y;
+
+        rect.x += parent->m_LayoutRect.x;
+        rect.y += parent->m_LayoutRect.y;
 
 
         if ((fitType & STRETCH_W) != 0) {
-            // Preserve the right margin defined in the reference layout.
-            const float rightMargin = parent->baseRect.width - (baseRect.x + baseRect.width);
+            // Preserve the left/right margins defined in the reference layout,
+            // scaled by the same factor as everything else.
+            const float leftMargin  = baseRect.x * globalScale.x;
+            const float rightMargin = (parent->baseRect.width - (baseRect.x + baseRect.width)) * globalScale.x;
 
-            fRect.width = parent->fRect.width - baseRect.x - rightMargin;
+            rect.width = parent->m_LayoutRect.width - leftMargin - rightMargin;
         }
 
         if ((fitType & STRETCH_H) != 0) {
-            // Preserve the bottom margin defined in the reference layout.
-            const float bottomMargin = parent->baseRect.height - (baseRect.y + baseRect.height);
+            // Preserve the top/bottom margins defined in the reference layout,
+            // scaled by the same factor as everything else.
+            const float topMargin    = baseRect.y * globalScale.y;
+            const float bottomMargin = (parent->baseRect.height - (baseRect.y + baseRect.height)) * globalScale.y;
 
-            fRect.height = parent->fRect.height - baseRect.y - bottomMargin;
+            rect.height = parent->m_LayoutRect.height - topMargin - bottomMargin;
         }
     } else {
-        fRect.x =
-            (anchor.x * Globals::screenWidth) + (fRect.x - Globals::baseScreenWidth * anchor.x) * globalScale.x;
-        fRect.y = (anchor.y * Globals::screenHeight) +
-            (fRect.y - Globals::baseScreenHeight * anchor.y) * globalScale.y;
+        rect.x =
+            (anchor.x * Globals::screenWidth) + (rect.x - Globals::baseScreenWidth * anchor.x) * globalScale.x;
+        rect.y = (anchor.y * Globals::screenHeight) +
+            (rect.y - Globals::baseScreenHeight * anchor.y) * globalScale.y;
+        // Keep FIXED sizes in the same (screen) coordinate space as the x/y
+        // above -- without this, FIXED_W/FIXED_H leaves width/height in design
+        // units while position is anchored to the real screen, which mixes
+        // coordinate spaces and shifts parent/child rects out of alignment on
+        // any window that isn't exactly the design resolution.
+        rect.width *= globalScale.x;
+        rect.height *= globalScale.y;
         // Root elements use the actual drawable screen dimensions.
         if ((fitType & STRETCH_W) != 0) {
             const float widthScale =
@@ -75,8 +100,8 @@ void ui::UIElement::UpdateFinalRect() {
 
             const float rightMargin = (Globals::baseScreenWidth - (baseRect.x + baseRect.width)) * widthScale;
 
-            fRect.x     = leftMargin;
-            fRect.width = static_cast<float>(Globals::screenWidth) - leftMargin - rightMargin;
+            rect.x     = leftMargin;
+            rect.width = static_cast<float>(Globals::screenWidth) - leftMargin - rightMargin;
         }
 
         if ((fitType & STRETCH_H) != 0) {
@@ -87,10 +112,38 @@ void ui::UIElement::UpdateFinalRect() {
 
             const float bottomMargin = (Globals::baseScreenHeight - (baseRect.y + baseRect.height)) * heightScale;
 
-            fRect.y      = topMargin;
-            fRect.height = static_cast<float>(Globals::screenHeight) - topMargin - bottomMargin;
+            rect.y      = topMargin;
+            rect.height = static_cast<float>(Globals::screenHeight) - topMargin - bottomMargin;
         }
     }
+
+    return rect;
+}
+
+Rectangle ui::UIElement::ApplyCanvasTransform(Rectangle rect) const {
+    // A single, flat pan/zoom over the whole canvas, applied independently
+    // and identically to every element's own pure layout rect. Because it's
+    // an affine transform applied uniformly to every element in the same
+    // coordinate space, nesting/containment is preserved automatically --
+    // there's no need (and no correct way) to re-derive it per ancestor.
+    rect.x = rect.x * parentCanvas->canvasScale.x + parentCanvas->canvasOffset.x;
+    rect.y = rect.y * parentCanvas->canvasScale.y + parentCanvas->canvasOffset.y;
+    rect.width *= parentCanvas->canvasScale.x;
+    rect.height *= parentCanvas->canvasScale.y;
+    return rect;
+}
+
+void ui::UIElement::UpdateFinalRect() {
+    // Pure layout, no canvas transform -- children compute their own layout
+    // from this, so canvas pan/zoom never compounds with nesting depth.
+    m_LayoutRect = ComputeRect(this->aniScale);
+    fRect        = ApplyCanvasTransform(m_LayoutRect);
+
+    // Same rect, but with this element's own aniScale forced to identity, so a
+    // press/pop animation never shrinks or grows the hit-test region under a
+    // finger that hasn't actually moved.
+    raycastRect = ApplyCanvasTransform(ComputeRect(Vector2{ 1.0f, 1.0f }));
+
     for (size_t i = 0; i < children.size(); i++) {
         if (children[i] != nullptr) {
             children[i]->UpdateFinalRect();
