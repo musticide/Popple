@@ -4,6 +4,7 @@
 #include "Singleton.h"
 #include "raylib.h"
 #include "uiCanvas.h"
+#include "uiElement.h"
 #include "uiImage.h"
 #include "uiText.h"
 #include <array>
@@ -32,15 +33,17 @@ class GameCanvas : public ui::Canvas, public Singleton<GameCanvas> {
         { Rectangle{ 0, 508, 130, 130 }, Rectangle{ 136, 508, 130, 130 } }    // Pyro
     };
 
-    std::unique_ptr<ui::Image> healthBox                                          = nullptr;
-    std::unique_ptr<ui::Image> healthIcon                                         = nullptr;
-    std::unique_ptr<ui::Text> healthText                                          = nullptr;
-    std::unique_ptr<ui::Text> healthPopText                                       = nullptr;
-    std::unique_ptr<ui::Image> scoreBox                                           = nullptr;
-    std::unique_ptr<ui::Image> scoreIcon                                          = nullptr;
-    std::unique_ptr<ui::Text> scoreText                                           = nullptr;
-    std::unique_ptr<ui::Text> targetScoreText                                     = nullptr;
-    std::unique_ptr<ui::Image> targetScoreBase                                    = nullptr;
+    std::unique_ptr<ui::Image> topPanel        = nullptr;
+    std::unique_ptr<ui::Image> healthBar       = nullptr;
+    std::unique_ptr<ui::Image> healthBarBorder = nullptr;
+    std::unique_ptr<ui::Image> scoreBar        = nullptr;
+    std::unique_ptr<ui::Image> scoreBarBorder  = nullptr;
+    std::unique_ptr<ui::Text> levelTxt         = nullptr;
+    std::unique_ptr<ui::Text> healthPopText    = nullptr;
+    std::unique_ptr<ui::UIElement> bottomPanel = nullptr;
+    std::unique_ptr<ui::Image> buttonsBgImg    = nullptr;
+    std::unique_ptr<ui::Image> buttonsBgImg2   = nullptr;
+
     std::unique_ptr<ui::Image> comboCircles[3]                                    = { 0 };
     std::array<std::unique_ptr<ui::Button>, MAX_ELEMENTS_PER_LEVEL> shieldButtons = { 0 };
     std::array<std::unique_ptr<ui::Text>, 3> scorePopTexts                        = { 0 };

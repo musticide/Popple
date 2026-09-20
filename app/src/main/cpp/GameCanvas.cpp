@@ -4,6 +4,7 @@
 #include "GameManager.h"
 #include "LevelConfig.h"
 #include "Log.h"
+#include "PlayerProfile.h"
 #include "raylib.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
@@ -18,78 +19,111 @@ GameCanvas::GameCanvas(Scene* parentScene, LevelParams params)
 : ui::Canvas(parentScene)
 , levelParams(params) {
     LOGI("Game Canvas Constructor");
-    scoreBox = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 35, 65, 350, 128 }, ui::FIXED_W | ui::FIXED_H);
-    scoreBox->nPatchInfo.source = { 0, 0, 350, 128 };
-    scoreBox->SetAnchor({ 0.f, 0.f });
+    topPanel = CreateElement<ui::Image>(
+        true, "textures/GameplayAtlas.png", Rectangle{ 0, 0, 1080, 256 }, ui::FIXED_W | ui::FIXED_H, true);
+    topPanel->SetAnchor(ANCHOR_TOP_CENTER);
+    topPanel->nPatchInfo.source = { 662, 1, 50, 50 };
+    topPanel->nPatchInfo.layout = NPATCH_NINE_PATCH;
+    topPanel->nPatchInfo.top    = 20;
+    topPanel->nPatchInfo.bottom = 20;
+    topPanel->nPatchInfo.left   = 20;
+    topPanel->nPatchInfo.right  = 20;
 
-    scoreIcon = scoreBox->CreateChild<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 29, 19, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
-    scoreIcon->nPatchInfo.source = { 112, 136, 90, 90 };
-    scoreIcon->SetAnchor({ .5f, 0.f });
+    healthBar = topPanel->CreateChild<ui::Image>(
+        true, "textures/GameplayAtlas.png", Rectangle{ 652, 172, 400, 50 }, ui::FIXED_W | ui::FIXED_H, true);
+    healthBar->SetAnchor(ANCHOR_TOP_RIGHT);
+    healthBar->SetPivot(ANCHOR_MIDDLE_RIGHT);
+    healthBar->nPatchInfo.source = { 560, 1, 50, 50 };
+    healthBar->nPatchInfo.layout = NPATCH_NINE_PATCH;
+    healthBar->nPatchInfo.top    = 20;
+    healthBar->nPatchInfo.bottom = 20;
+    healthBar->nPatchInfo.left   = 20;
+    healthBar->nPatchInfo.right  = 20;
 
-    scoreText = scoreBox->CreateChild<ui::Text>(
-        true, ui::ACE_BOLD, Rectangle{ 138, 21, 184, 86 }, ui::FIXED_W | ui::FIXED_H);
-    scoreText->hAlign = ui::ALIGN_CENTER;
-    scoreText->vAlign = ui::ALIGN_MIDDLE;
-    scoreText->SetAnchor(ANCHOR_MIDDLE_RIGHT);
+    healthBarBorder = topPanel->CreateChild<ui::Image>(
+        true, "textures/GameplayAtlas.png", Rectangle{ 652, 172, 400, 50 }, ui::FIXED_W | ui::FIXED_H, true);
+    healthBarBorder->SetAnchor(ANCHOR_TOP_RIGHT);
+    healthBarBorder->nPatchInfo.source = { 611, 1, 50, 50 };
+    healthBarBorder->nPatchInfo.layout = NPATCH_NINE_PATCH;
+    healthBarBorder->nPatchInfo.top    = 20;
+    healthBarBorder->nPatchInfo.bottom = 20;
+    healthBarBorder->nPatchInfo.left   = 20;
+    healthBarBorder->nPatchInfo.right  = 20;
 
-    targetScoreBase = scoreBox->CreateChild<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 0, 128, 237, 82 }, ui::FIXED_W | ui::FIXED_H, true);
-    targetScoreBase->nPatchInfo.source = { 236, 140, 82, 82 };
-    targetScoreBase->nPatchInfo.layout = NPATCH_THREE_PATCH_HORIZONTAL;
-    targetScoreBase->nPatchInfo.left   = 35;
-    targetScoreBase->nPatchInfo.right  = 35;
-    targetScoreBase->nPatchInfo.top    = 35;
-    targetScoreBase->nPatchInfo.bottom = 35;
-    targetScoreBase->SetAnchor(ANCHOR_MIDDLE_LEFT);
+    scoreBar = topPanel->CreateChild<ui::Image>(
+        !params.endlessMode, "textures/GameplayAtlas.png", Rectangle{ 20, 172, 400, 50 }, ui::FIXED_W | ui::FIXED_H, true);
+    scoreBar->SetAnchor(ANCHOR_TOP_LEFT);
+    scoreBar->SetPivot(ANCHOR_MIDDLE_LEFT);
+    scoreBar->nPatchInfo.source = { 509, 1, 50, 50 };
+    scoreBar->nPatchInfo.layout = NPATCH_NINE_PATCH;
+    scoreBar->nPatchInfo.top    = 20;
+    scoreBar->nPatchInfo.bottom = 20;
+    scoreBar->nPatchInfo.left   = 20;
+    scoreBar->nPatchInfo.right  = 20;
 
-    targetScoreText = targetScoreBase->CreateChild<ui::Text>(
-        true, ui::ACE_BOLD, Rectangle{ 10, 10, 163, 76 }, ui::FIXED_H | ui::FIXED_W);
-    targetScoreText->fontSize = 64;
-    targetScoreText->color    = Color{ 140, 140, 140, 255 };
-    targetScoreText->SetText("");
-    targetScoreText->hAlign = ui::ALIGN_LEFT;
-    targetScoreText->vAlign = ui::ALIGN_TOP;
-    targetScoreText->SetAnchor(ANCHOR_CENTER);
+    scoreBarBorder = topPanel->CreateChild<ui::Image>(
+        !params.endlessMode, "textures/GameplayAtlas.png", Rectangle{ 20, 172, 400, 50 }, ui::FIXED_W | ui::FIXED_H, true);
+    scoreBarBorder->SetAnchor(ANCHOR_TOP_LEFT);
+    scoreBarBorder->nPatchInfo.source = { 611, 1, 50, 50 };
+    scoreBarBorder->nPatchInfo.layout = NPATCH_NINE_PATCH;
+    scoreBarBorder->nPatchInfo.top    = 20;
+    scoreBarBorder->nPatchInfo.bottom = 20;
+    scoreBarBorder->nPatchInfo.left   = 20;
+    scoreBarBorder->nPatchInfo.right  = 20;
 
+    levelTxt = topPanel->CreateChild<ui::Text>(
+        true, ui::ACE_BOLD, Rectangle{ params.endlessMode ? 20.f : 0.f, 120, 1080, 100 }, ui::FIXED_W | ui::FIXED_H);
+    levelTxt->hAlign   = ui::ALIGN_CENTER;
+    levelTxt->vAlign   = ui::ALIGN_BOTTOM;
+    levelTxt->fontSize = 100;
+    levelTxt->SetText(std::to_string(params.levelNumber));
+    if (params.endlessMode) {
+        levelTxt->hAlign   = ui::ALIGN_LEFT;
+        levelTxt->vAlign   = ui::ALIGN_BOTTOM;
+        levelTxt->fontSize = 72;
+        levelTxt->SetText(std::to_string(params.levelNumber));
+    }
     for (auto& scorePopText : scorePopTexts) {
         scorePopText =
             CreateElement<ui::Text>(false, ui::ACE_BOLD, Rectangle{ 0, 0, 100, 86 }, ui::FIXED_W | ui::FIXED_H);
-        scoreText->hAlign    = ui::ALIGN_LEFT;
+        scorePopText->hAlign = ui::ALIGN_LEFT;
         scorePopText->vAlign = ui::ALIGN_TOP;
     }
 
     for (auto& healthPopText : healthPopTexts) {
         healthPopText =
             CreateElement<ui::Text>(false, ui::ACE_BOLD, Rectangle{ 530, 1170, 100, 86 }, ui::FIXED_W | ui::FIXED_H);
-        scoreText->hAlign     = ui::ALIGN_LEFT;
+        healthPopText->hAlign = ui::ALIGN_LEFT;
         healthPopText->vAlign = ui::ALIGN_TOP;
     }
 
+    bottomPanel = CreateElement<ui::UIElement>(true, Rectangle{ 0, 1952, 1080, 430 }, ui::FIXED_W | ui::FIXED_H);
+    buttonsBgImg = bottomPanel->CreateChild<ui::Image>(
+        true, "textures/GameplayAtlas.png", Rectangle{ 0, 0, 540, 430 }, ui::FIXED_W | ui::FIXED_H, true);
+    buttonsBgImg->SetAnchor(ANCHOR_BOTTOM_CENTER);
+    buttonsBgImg->nPatchInfo.source = { 1, 855, 256, 168 };
+    buttonsBgImg->nPatchInfo.layout = NPATCH_NINE_PATCH;
+    buttonsBgImg->nPatchInfo.top    = 128;
+    buttonsBgImg->nPatchInfo.bottom = 29;
+    buttonsBgImg->nPatchInfo.left   = 20;
+    buttonsBgImg->nPatchInfo.right  = 216;
 
-    healthBox = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 688, 65, 350, 128 }, ui::FIXED_W | ui::FIXED_H);
-    healthBox->nPatchInfo.source = { 0, 0, -350, 128 };
-    healthBox->SetAnchor(ANCHOR_TOP_RIGHT);
+    buttonsBgImg2 = bottomPanel->CreateChild<ui::Image>(
+        true, "textures/GameplayAtlas.png", Rectangle{ 540, 0, 540, 430 }, ui::FIXED_W | ui::FIXED_H, true);
+    buttonsBgImg2->SetAnchor(ANCHOR_BOTTOM_CENTER);
+    buttonsBgImg2->nPatchInfo.source = { 257, 855, 256, 168 };
+    buttonsBgImg2->nPatchInfo.layout = NPATCH_NINE_PATCH;
+    buttonsBgImg2->nPatchInfo.top    = 128;
+    buttonsBgImg2->nPatchInfo.bottom = 29;
+    buttonsBgImg2->nPatchInfo.left   = 216;
+    buttonsBgImg2->nPatchInfo.right  = 20;
 
-    healthIcon = healthBox->CreateChild<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 231, 19, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
-    healthIcon->nPatchInfo.source = { 0, 136, 90, 90 };
-    healthIcon->SetAnchor(ANCHOR_MIDDLE_RIGHT);
-
-    healthText = healthBox->CreateChild<ui::Text>(
-        true, ui::ACE_BOLD, Rectangle{ 17, 21, 184, 86 }, ui::FIXED_W | ui::FIXED_H);
-    healthText->hAlign = ui::ALIGN_CENTER;
-    healthText->vAlign = ui::ALIGN_MIDDLE;
-    healthText->SetAnchor(ANCHOR_MIDDLE_LEFT);
-
-    comboCircles[0] = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 376, 1980, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
-    comboCircles[1] = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 494, 1980, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
-    comboCircles[2] = CreateElement<ui::Image>(
-        true, "textures/GameplayAtlas.png", Rectangle{ 612, 1980, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
+    comboCircles[0] = bottomPanel->CreateChild<ui::Image>(
+        true, "textures/GameplayAtlas.png", Rectangle{ 376, 28, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
+    comboCircles[1] = bottomPanel->CreateChild<ui::Image>(
+        true, "textures/GameplayAtlas.png", Rectangle{ 494, 28, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
+    comboCircles[2] = bottomPanel->CreateChild<ui::Image>(
+        true, "textures/GameplayAtlas.png", Rectangle{ 612, 28, 90, 90 }, ui::FIXED_W | ui::FIXED_H);
 
     comboCircles[0]->nPatchInfo.source = elementRects[(int)ElementType::NONE];
     comboCircles[1]->nPatchInfo.source = elementRects[(int)ElementType::NONE];
@@ -110,13 +144,14 @@ GameCanvas::GameCanvas(Scene* parentScene, LevelParams params)
 
         float x = startX + i * (buttonSize + buttonSpacing);
 
-        Rectangle transform = Rectangle{ x, 2129, buttonSize, buttonSize };
+        Rectangle transform = Rectangle{ x, 177, buttonSize, buttonSize };
 
-        button = CreateElement<ui::Button>(true, "textures/GameplayAtlas.png", transform, ui::FIXED_W | ui::FIXED_H);
+        button = bottomPanel->CreateChild<ui::Button>(
+            true, "textures/GameplayAtlas.png", transform, ui::FIXED_W | ui::FIXED_H);
         button->onClick.connect([i]() { EffectManager::Get().ActivateEffect((ElementType)i); });
         button->nPatchInfo.source = offOnRects[i][0];
-        button->tint      = LIGHTGRAY;
-        button->clickable = false;
+        button->tint              = LIGHTGRAY;
+        button->clickable         = false;
         for (size_t j = 0; j < levelParams.availablePowerUps.size(); j++) {
             if (levelParams.availablePowerUps[j] == (ElementType)i) {
                 button->tint      = WHITE;
@@ -136,24 +171,28 @@ GameCanvas::~GameCanvas() {
     LOGI("Game Canvas Destroyed");
 }
 void GameCanvas::Start() {
-    healthText->SetText(std::to_string(GameManager::Get().GetHealth()));
-    scoreText->SetText(std::to_string(GameManager::Get().GetScore()));
     scoreConnId  = GameManager::Get().scoreChanged.connect([this](int s, int a) { ScoreChanged(s, a); });
-    healthConnId = GameManager::Get().healthChanged.connect([this](int s, int a) { HealthChanged(s, a); });
+    healthConnId = GameManager::Get().healthChanged.connect([this](int h, int a) { HealthChanged(h, a); });
+    ScoreChanged(GameManager::Get().GetScore(), 0);
+    HealthChanged(GameManager::Get().GetHealth(), 0);
 
     ui::Canvas::Start();
 }
 
 void GameCanvas::ScoreChanged(int score, int amount) {
-    scoreText->SetText(std::to_string(score));
+    if (levelParams.endlessMode) {
+        if (score > PlayerProfile.levelsData.value[0].score) {
+            levelTxt->SetText(std::to_string(score));
+        } else {
+            levelTxt->SetText(std::to_string(score) + "/" + std::to_string(PlayerProfile.levelsData.value[0].score));
+        }
+    } else {
+        scoreBar->SetScale({ score / 500.f, 1.f });
+    }
 }
 
 void GameCanvas::HealthChanged(int health, int amount) {
-    healthText->SetText(std::to_string(health));
-    if (health <= 20)
-        healthText->color = RED;
-    else
-        healthText->color = WHITE;
+    healthBar->SetScale({ health / 100.f, 1.f });
 }
 
 void GameCanvas::Update(float dT) {

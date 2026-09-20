@@ -14,6 +14,7 @@
 #include "input.h"
 #include "raylib.h"
 #include <cmath>
+#include <string>
 
 int GameData::availableElementCount = 3;
 
@@ -115,7 +116,7 @@ void GameManager::ResetComboCount(ElementType type) {
 void GameManager::EndGame() {
     using namespace Globals;
 
-    //TODO: Address these for end game
+    // TODO: Address these for end game
     StopGameSystems();
     Input::Get().PauseInputForTime(1.0f);
 
@@ -182,8 +183,8 @@ void GameManager::StartGameSystems() {
     scoreChanged(m_Score, 0);
     healthChanged(m_Health, 0);
     gameStartTime = GetTime();
-    gameCanvas->targetScoreText->SetText(
-        levelParams.endlessMode ? std::to_string(PlayerProfile.levelsData.value[0].score) : "500");
+    gameCanvas->levelTxt->SetText(levelParams.endlessMode ? std::to_string(PlayerProfile.levelsData.value[0].score) :
+                                                            std::to_string(levelParams.levelNumber));
     effectManager->SetActive(true);
     bubbleManager->SetActive(true);
     spatialGrid->SetActive(true);

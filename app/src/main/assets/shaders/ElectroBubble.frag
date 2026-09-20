@@ -44,7 +44,7 @@ void main() {
     float lines = sin(circleSDF * LINE_AMOUNT - _Time * LINE_SPEED);
 
     // fnl.rgb = (purple + vec3(0.1f)) * INTENSITY;
-    fnl.rgb = purple * INTENSITY;
+    fnl.rgb = purple * INTENSITY * circles;
     fnl.a = circles;
 
     float blink = _Blink > 0 ? 1.0f - max(sin(_Time * BLINK_SPEED), 0.f) : 1.0f;

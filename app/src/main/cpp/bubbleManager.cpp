@@ -136,7 +136,7 @@ void BubbleManager::Update(float dT) {
                             EffectManager::Get().DeactivateEffect(ElementType::PYRO);
                         }
                     }
-                     PopBubble(i);
+                      PopBubble(i);
                     break;
                 }
             }
@@ -200,7 +200,7 @@ void BubbleManager::SpawnBubble(Bubble* bubble) {
         return;
     }
     bubble->position  = GetRandomSpawnPos();
-    bubble->radius    = GetRandomValue(20, 25) / 10.f;
+    bubble->radius    = 2.2f; //GetRandomValue(20, 25) / 10.f;
     bubble->direction = Vector3Normalize(Vector3Zero() - bubble->position);
     bubble->angle     = atan2(bubble->direction.x, bubble->direction.z) * RAD2DEG;
     bubble->velocity  = Vector3Scale(bubble->direction, bubble->CENTER_FORCE);
@@ -314,6 +314,7 @@ void BubbleManager::BurstParticles(Bubble* bubble) {
     int particleSystemIndex = 0;
     for (size_t i = 0; i < burstParticlesPool.size(); i++) {
         if (!burstParticlesPool[i]->isSimulating) {
+            burstParticlesPool[i]->SetActive(true);
             particleSystemIndex = i;
             break;
         }
