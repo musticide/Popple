@@ -41,7 +41,7 @@ class Canvas : public DrawableEntity {
 
     void Update(float dT = 1.0f) override;
 
-    void Draw() const override;
+    void Draw() override;
 
     void UpdateFinalRects();
 

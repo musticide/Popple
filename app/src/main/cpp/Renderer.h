@@ -36,10 +36,10 @@ private:
     int bloomBlurDirectionId;
     Vector2 horizontal = {1.f, 0.f}, vertical = {0.f, 1.f};
 
-    void DrawSky() const;
-    void DrawOpaqueGeometry() const;
-    void DrawTransparentGeometry() const;
-    void DrawUI() const;
+    void DrawSky() ;
+    void DrawOpaqueGeometry() ;
+    void DrawTransparentGeometry() ;
+    void DrawUI() ;
 
     void DrawRTToScreen(Shader shader, RenderTexture2D from, bool clear);
     void DrawTextureToScreen(Shader shader, Texture2D texture, bool clear);

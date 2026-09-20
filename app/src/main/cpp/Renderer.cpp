@@ -55,7 +55,7 @@ Renderer::Renderer(Camera3D& mainCam, Camera2D& uiCam)
 Renderer::~Renderer() {
 }
 
-void Renderer::DrawSky() const {
+void Renderer::DrawSky() {
     for (size_t i = 0; i < SceneManager::Get().scenes.size(); i++) {
         Scene* scene = SceneManager::Get().scenes[i].get();
         if (scene != nullptr && scene->IsActive()) scene->DrawSky();
@@ -63,19 +63,19 @@ void Renderer::DrawSky() const {
     }
 }
 
-void Renderer::DrawOpaqueGeometry() const {
+void Renderer::DrawOpaqueGeometry() {
     for (size_t i = 0; i < SceneManager::Get().scenes.size(); i++) {
         Scene* scene = SceneManager::Get().scenes[i].get();
         if (scene != nullptr && scene->IsActive()) scene->DrawOpaque();
     }
 }
-void Renderer::DrawTransparentGeometry() const {
+void Renderer::DrawTransparentGeometry() {
     for (size_t i = 0; i < SceneManager::Get().scenes.size(); i++) {
         Scene* scene = SceneManager::Get().scenes[i].get();
         if (scene != nullptr && scene->IsActive()) scene->DrawTransparent();
     }
 }
-void Renderer::DrawUI() const {
+void Renderer::DrawUI() {
     for (size_t i = 0; i < SceneManager::Get().scenes.size(); i++) {
         Scene* scene = SceneManager::Get().scenes[i].get();
         if (scene != nullptr && scene->IsActive()) scene->DrawUI();
@@ -98,23 +98,25 @@ void Renderer::Render() {
     EndTextureMode(); //===================================
 
     BeginTextureMode(colorRT); //=== HDR Color ===
+
     ClearBackground(BLANK);
     BeginMode3D(mainCamera3D);
-
     // DrawSky();
     DrawOpaqueGeometry();
-
-    BeginBlendMode(BLEND_ALPHA);
-
     EndMode3D();
 
+    BeginBlendMode(BLEND_ALPHA);
     DrawRTToScreen(outlineShader, outlineRT, false);
+    EndBlendMode();
+    BeginBlendMode(BLEND_ALPHA_PREMULTIPLY);
+
 
     BeginMode3D(mainCamera3D);
     DrawTransparentGeometry();
 
-    EndBlendMode();
     EndMode3D();
+    EndBlendMode();
+
     EndTextureMode(); // === HDR Color RT End ===
 
     if (doBloom) {
@@ -152,7 +154,7 @@ void Renderer::Render() {
         EndBlendMode();
     }
 
-    BeginBlendMode(BLEND_ALPHA);
+    BeginBlendMode(BLEND_ALPHA_PREMULTIPLY);
     DrawRTToScreen(tonemapShader, colorRT, false);
     EndBlendMode();
 

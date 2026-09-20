@@ -1,10 +1,13 @@
 #include "HomeCanvas.h"
+#include "Authentication.h"
 #include "GameplayScene.h"
 #include "Globals.h"
 #include "Log.h"
 #include "PlayerProfile.h"
 #include "RemoteConfig.h"
+#include "Scene.h"
 #include "SceneManager.h"
+#include "TestScene.h"
 #include "raylib.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
@@ -85,6 +88,29 @@ HomeCanvas::HomeCanvas(Scene* parentScene)
     });
     endlessModeBtn->text->hAlign = ui::ALIGN_CENTER;
     endlessModeBtn->text->vAlign = ui::ALIGN_MIDDLE;
+
+#ifdef DEBUG_BUILD
+    testSceneBtn                    = CreateElement<ui::Button>(true,
+        "textures/HomeScreenAtlas.png",
+        Rectangle{ 176, 1483, 727, 326 },
+        "Test Scene",
+        ui::ACE_BOLD_ITALIC,
+        ui::FIXED_W | ui::FIXED_H,
+        true);
+    testSceneBtn->nPatchInfo.source = { 5, 694, 347, 325 };
+    testSceneBtn->nPatchInfo.layout = NPATCH_NINE_PATCH;
+    testSceneBtn->nPatchInfo.left   = 130;
+    testSceneBtn->nPatchInfo.right  = 130;
+    testSceneBtn->nPatchInfo.top    = 70;
+    testSceneBtn->nPatchInfo.bottom = 170;
+    testSceneBtn->fontOffset.y      = 62;
+    testSceneBtn->fontSize          = 115;
+    testSceneBtn->onClick.connect([]() {
+        SceneManager::Get().RegisterScene<TestScene>(SceneType::TEST, true);
+        SceneManager::Get().ActivateScene(SceneType::TEST);
+        SceneManager::Get().DeactivateScene(SceneType::HOME);
+    });
+#endif
 }
 
 HomeCanvas::~HomeCanvas() {

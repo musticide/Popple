@@ -18,7 +18,7 @@ public:
 
     DrawableEntity* asDrawable() override { return this; }
 
-    virtual void Draw() const;
+    virtual void Draw();
 
     RenderQueue renderQueue = RenderQueue::OPAQUE;
 private:

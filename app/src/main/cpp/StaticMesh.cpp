@@ -12,7 +12,7 @@ StaticMesh::StaticMesh(Scene* parentScene, const char* filepath, RenderQueue typ
 
 StaticMesh::~StaticMesh() {  }
 
-void StaticMesh::Draw() const
+void StaticMesh::Draw() 
 {
-    DrawModelEx(m_Model, position, Vector3Normalize(rotation), Vector3Length(rotation), scale, WHITE);
+    DrawModelEx(m_Model, position, Vector3Normalize(rotation), Vector3Length(rotation), scale, tint);
 }

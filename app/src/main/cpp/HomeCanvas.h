@@ -1,7 +1,4 @@
 #pragma once
-#include "Authentication.h"
-#include "PlayerProfile.h"
-#include "UsernamePopup.h"
 #include "uiButton.h"
 #include "uiCanvas.h"
 #include "uiImage.h"
@@ -20,6 +17,9 @@ class HomeCanvas : public ui::Canvas {
     std::unique_ptr<ui::Image> usernameBGImg   = nullptr;
     std::unique_ptr<ui::Button> classicModeBtn = nullptr;
     std::unique_ptr<ui::Button> endlessModeBtn = nullptr;
+    #ifdef  DEBUG_BUILD
+    std::unique_ptr<ui::Button> testSceneBtn = nullptr;
+    #endif
     std::unique_ptr<ui::Text> usernameTxt      = nullptr;
     std::unique_ptr<ui::Text> userLvlTxt       = nullptr;
 

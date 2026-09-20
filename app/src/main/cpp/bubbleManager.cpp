@@ -57,6 +57,11 @@ BubbleManager::BubbleManager(Scene* parentScene, LevelParams levelParams)
         burstParticles->endPointForce = 1.0f;
     }
 
+    for (size_t i = 0; i < elementBubbleParticlesPool.size(); i++) {
+        elementBubbleParticlesPool[i] = parentScene->CreateEntity<ElementBubbleParticles>(false);
+    }
+
+    bubbleTrails = parentScene->CreateEntity<BubbleTrails>(true);
     LOGI("Bubble Manager constructed");
 }
 
@@ -131,7 +136,7 @@ void BubbleManager::Update(float dT) {
                             EffectManager::Get().DeactivateEffect(ElementType::PYRO);
                         }
                     }
-                    PopBubble(i);
+                     PopBubble(i);
                     break;
                 }
             }
@@ -167,7 +172,7 @@ void BubbleManager::Update(float dT) {
     CleanUpActiveBubbles();
 }
 
-void BubbleManager::Draw() const {
+void BubbleManager::Draw() {
     Color tint;
     for (int i = 0; i < activeBubbleCount; i++) {
         if (activeBubbles[i] != nullptr) {
@@ -194,21 +199,36 @@ void BubbleManager::SpawnBubble(Bubble* bubble) {
         LOGW("Unable to spawn bubble : nullptr");
         return;
     }
-    bubble->position = GetRandomSpawnPos();
-    bubble->radius   = GetRandomValue(20, 25) / 10.f;
-    bubble->velocity = Vector3Scale(Vector3Normalize(Vector3Zero() - bubble->position), bubble->CENTER_FORCE);
+    bubble->position  = GetRandomSpawnPos();
+    bubble->radius    = GetRandomValue(20, 25) / 10.f;
+    bubble->direction = Vector3Normalize(Vector3Zero() - bubble->position);
+    bubble->angle     = atan2(bubble->direction.x, bubble->direction.z) * RAD2DEG;
+    bubble->velocity  = Vector3Scale(bubble->direction, bubble->CENTER_FORCE);
 
     // SET Bubble type
     if (RollPercentage(levelParams.powerUpSpawnChance)) {
-        // bubble->type = (ElementType)GetRandomValue(0, (int)ElementType::NONE);
         bubble->type = levelParams.availablePowerUps[GetRandomValue(0, levelParams.availablePowerUps.size() - 1)];
+        bool particleSystemFound = false;
+        for (size_t i = 0; i < elementBubbleParticlesPool.size(); i++) {
+            auto& ps = elementBubbleParticlesPool[i];
+            if (!ps->IsActive()) {
+                ps->SetActive(true);
+                ps->SetStartEndColor(ColorBrightness(bubbleColors[(int)bubble->type], 0.5f));
+                // ps->SetStartEndColor(bubbleColors[(int)bubble->type]);
+                bubble->particleSystem                = ps.get();
+                bubble->particleSystem->localPosition = &bubble->position;
+                particleSystemFound                   = true;
+                break;
+            }
+        }
+        if (!particleSystemFound) LOGW("BM: Not enough particle systems");
     } else {
         bubble->type = ElementType::NONE;
     }
 }
 /// Update Bubble posiiton and check for collisions with other bubbles
 void BubbleManager::UpdateBubble(Bubble* bubble) {
-    bubble->velocity += Vector3Scale(Vector3Normalize(Vector3Zero() - bubble->position), bubble->CENTER_FORCE);
+    bubble->velocity += Vector3Scale(bubble->direction, bubble->CENTER_FORCE);
     bubble->ApplyForces();
     SpatialGrid::AddEntity(bubble);
 }
@@ -217,7 +237,6 @@ void BubbleManager::SpawnBubbles() {
     m_SpawnTimer += GetFrameTime();
 
     bool hasSpawned = false;
-    // size_t activeBubbles = 0;
 
     if (m_SpawnTimer > m_SpawnInterval) {
         for (int i = 0; i < m_Bubbles.size(); i++) {
@@ -258,6 +277,12 @@ void BubbleManager::Reset() {
     m_SpawnTimer      = 0.f;
     m_SpawnInterval   = levelParams.startSpawnInterval;
     m_PauseSpawn      = false;
+    for (auto& ps : elementBubbleParticlesPool) {
+        ps->SetActive(false);
+    }
+    for (auto& ps : burstParticlesPool) {
+        ps->SetActive(false);
+    }
 }
 void BubbleManager::AnemoPushBack(bool active) {
     if (active) {
@@ -316,6 +341,11 @@ void BubbleManager::BurstParticles(Bubble* bubble) {
 }
 void BubbleManager::PopBubble(int index) {
     activeBubbles[index]->isActive = false;
+    if (activeBubbles[index]->particleSystem != nullptr) {
+        activeBubbles[index]->particleSystem->SetActive(false);
+        activeBubbles[index]->particleSystem->localPosition = nullptr;
+        activeBubbles[index]->particleSystem                = nullptr;
+    }
 }
 void BubbleManager::CleanUpActiveBubbles() {
     int newActiveBubbleCount = activeBubbleCount;

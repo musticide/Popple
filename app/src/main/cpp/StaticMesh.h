@@ -23,8 +23,9 @@ public:
     Vector3 position = { 0, 0, 0 };
     Vector3 rotation = { 0, 0, 0 };
     Vector3 scale = { 1, 1, 1 };
+    Color tint = WHITE;
 
     Model& GetModel() { return m_Model; }
 
-    void Draw() const override;
+    void Draw() override;
 };

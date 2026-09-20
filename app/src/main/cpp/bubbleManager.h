@@ -1,6 +1,8 @@
 #pragma once
 
+#include "BubbleTrails.h"
 #include "DrawableEntity.h"
+#include "ElementBubbleParticles.h"
 #include "GameManager.h"
 #include "LevelConfig.h"
 #include "ParticleSystem.h"
@@ -8,25 +10,30 @@
 #include "Singleton.h"
 #include "raylib.h"
 #include <array>
+#include <cmath>
 #include <cstddef>
 #include <memory>
 #include <vector>
 
 struct Bubble {
-    bool isActive    = false;
-    ElementType type = ElementType::NONE;
-    Vector3 position = { 0 };
-    Vector3 velocity = { 0 };
-    float radius     = 0;
-    int activeIndex  = -1;
+    bool isActive     = false;
+    ElementType type  = ElementType::NONE;
+    Vector3 position  = { 0 };
+    Vector3 velocity  = { 0 };
+    Vector3 direction = { 0, 0, 0 };
+    float radius      = 0;
+    int activeIndex   = -1;
+    float angle       = 0;
 
-    constexpr static float maxMoveSpeed = 15;
+    constexpr static float maxMoveSpeed = 20;
     constexpr static float moveSpeed    = 1.0;
 
     constexpr static const float DRAG = 0.1;
     /// Force multiplier  to be pulled towards center
-    constexpr static const float CENTER_FORCE = 0.01;
+    constexpr static const float CENTER_FORCE = 0.02;
     static float speedMultiplier;
+
+    ParticleSystem* particleSystem = nullptr;
 
     void ApplyForces() {
         velocity *= moveSpeed;
@@ -48,6 +55,9 @@ struct Bubble {
         Vector3 collisionNormal = Vector3Normalize(aMinusB); /// distance);
         position += Vector3Scale(collisionNormal, penetration * 0.5f);
         collider->position -= Vector3Scale(collisionNormal, penetration * 0.5f);
+
+        collider->direction = Vector3Normalize(Vector3Zero() - collider->position);
+        collider->angle     = atan2(collider->direction.x, collider->direction.z) * RAD2DEG;
     }
 };
 
@@ -57,10 +67,10 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
   private:
     const int MIN_SPAWN_DIST = 35, MAX_SPAWN_DIST = 40;
     std::vector<std::unique_ptr<Bubble>> m_Bubbles;
-    std::array<Bubble*, INITIAL_POOL_SIZE> activeBubbles;
-    int activeBubbleCount = 0;
 
-    std::array<std::unique_ptr<ParticleSystem>, 5> burstParticlesPool = { 0 };
+    std::array<std::unique_ptr<ParticleSystem>, 5> burstParticlesPool                  = { 0 };
+    std::array<std::unique_ptr<ElementBubbleParticles>, 10> elementBubbleParticlesPool = { 0 };
+    std::unique_ptr<BubbleTrails> bubbleTrails = nullptr;
 
     float m_SpawnTimer = 0.0f;
     bool m_PauseSpawn  = false;
@@ -84,14 +94,6 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
     int pyroBurstCharges = 0;
 
     std::shared_ptr<Model> m_BubbleBaseModel;
-    std::array<Color, (size_t)ElementType::COUNT> bubbleColors = {
-        (Color){ 139, 66, 255, 255 }, // PURPLE electro
-        (Color){ 66, 255, 195, 255 }, // Green anemo
-        (Color){ 4, 180, 255, 255 },  // Light Blue cryo
-        (Color){ 255, 131, 0, 255 },  // Orange Pyro
-        WHITE,                        // Common
-        (Color){ 20, 20, 20, 255 },   // Black shadow
-    };
 
     void DecreaseSpawnInterval();
     void BurstParticles(Bubble* bubble);
@@ -105,8 +107,18 @@ class BubbleManager : public DrawableEntity, public Singleton<BubbleManager> {
 
     void Update(float dT = 1.0f) override;
 
-    void Draw() const override;
+    void Draw() override;
     LevelParams levelParams;
+    std::array<Bubble*, INITIAL_POOL_SIZE> activeBubbles;
+    int activeBubbleCount = 0;
+    std::array<Color, (size_t)ElementType::COUNT> bubbleColors = {
+        (Color){ 211, 99, 255, 255 }, // PURPLE electro
+        (Color){ 85, 235, 152, 255 }, // Green anemo
+        (Color){ 51, 187, 255, 255 }, // Light Blue cryo
+        (Color){ 255, 111, 23, 255 }, // Orange Pyro
+        WHITE,                        // Common
+        (Color){ 20, 20, 20, 255 },   // Black shadow
+    };
 
     void Reset();
     void PauseSpawn();

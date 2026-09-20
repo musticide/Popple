@@ -14,7 +14,7 @@ class Image : public UIElement {
     Image(Scene* parentScene,Canvas* parentCanvas, const char* filepath, Rectangle rect, int fitType, bool nPatch = false);
     ~Image();
 
-    void Draw() const override;
+    void Draw() override;
     NPatchInfo nPatchInfo;
     bool isTiled = false;
     int tileAmount = 1;

@@ -26,7 +26,7 @@ ui::Text::Text(Scene* parentScene, Canvas* parentCanvas, FontName font, Rectangl
 ui::Text::~Text() {
 }
 
-void ui::Text::Draw() const {
+void ui::Text::Draw() {
     ui::UIElement::Draw();
     Vector2 scale = GetEffectiveScale();
     DrawTextEx(fonts[activeFont],

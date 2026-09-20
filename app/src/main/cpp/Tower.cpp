@@ -35,7 +35,7 @@ void Tower::Update(float dT) {
     rotate += 0.8f;
 }
 
-void Tower::Draw() const {
+void Tower::Draw() {
     if (m_Model.get() != nullptr)
         DrawModelEx(*m_Model, position, (Vector3){ 0.5f, 1.0f, 0.5f }, rotate, scale, color);
     else

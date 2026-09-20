@@ -38,7 +38,7 @@ class Text : public UIElement {
     TextAlignV vAlign = ALIGN_BOTTOM;
     int fontSize      = 72;
 
-    void Draw() const override;
+    void Draw() override;
 
     void SetText(std::string text);
 

@@ -31,27 +31,27 @@ void Scene::Update(float dT) {
     }
 }
 
-void Scene::DrawSky() const {
+void Scene::DrawSky() {
     for (auto d : m_Buckets.sky)
         if (d != nullptr)
             if (d->IsActive())
                 d->Draw();
 }
 
-void Scene::DrawOpaque() const {
+void Scene::DrawOpaque() {
     for (auto d : m_Buckets.opaque)
         if (d != nullptr)
             if (d->IsActive())
                 d->Draw();
 }
 
-void Scene::DrawTransparent() const {
+void Scene::DrawTransparent() {
     for (auto d : m_Buckets.transparent)
         if (d != nullptr)
             if (d->IsActive())
                 d->Draw();
 }
-void Scene::DrawUI() const {
+void Scene::DrawUI() {
     for (auto d : m_Buckets.ui)
         if (d != nullptr)
             if (d->IsActive() && d->hasStarted)

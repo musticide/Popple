@@ -19,7 +19,7 @@ ui::Image::Image(Scene* parentScene, Canvas* parentCanvas, const char* filepath,
 ui::Image::~Image() {
 }
 
-void ui::Image::Draw() const {
+void ui::Image::Draw() {
     if (m_Texture && m_Texture->id != 0) {
         Color drawColor = ColorTint(tint, parentCanvas->canvasTint);
 

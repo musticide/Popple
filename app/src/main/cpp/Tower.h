@@ -27,7 +27,7 @@ public:
 
     void Start() override;
     void Update(float dT = 1.0f) override;
-    void Draw() const override;
+    void Draw() override;
 
 private:
 

@@ -3,6 +3,7 @@
 #include "HomeCanvas.h"
 #include "LevelMenuCanvas.h"
 #include "Scene.h"
+#include "UsernamePopup.h"
 #include <memory>
 
 class HomeScene : public Scene {

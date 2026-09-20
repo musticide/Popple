@@ -31,7 +31,7 @@ void ui::Canvas::Update(float dT) {
     }
 }
 
-void ui::Canvas::Draw() const {
+void ui::Canvas::Draw() {
     for (size_t i = 0; i < m_Elements.size(); i++) {
         if (m_Elements[i] && m_Elements[i]->IsActive() && m_Elements[i]->parent == nullptr) {
             m_Elements[i]->Draw();

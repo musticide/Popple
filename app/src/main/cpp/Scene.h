@@ -3,8 +3,6 @@
 #include "DrawableEntity.h"
 #include "Entity.h"
 #include "Log.h"
-#include "ParticleSystem.h"
-#include <exception>
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -13,8 +11,23 @@
 enum class SceneType {
     HOME,
     GAMEPLAY,
-    LOADING
+    LOADING,
+    TEST
 };
+inline const char* GetSceneTypeAsString(SceneType type) {
+    switch (type) {
+        case SceneType::HOME:
+            return "HOME";
+        case SceneType::GAMEPLAY:
+            return "GAMEPLAY";
+        case SceneType::LOADING:
+            return "LOADING";
+        case SceneType::TEST:
+            return "TEST";
+        default:
+            return "INVALID TYPE";
+    }
+}
 
 class Scene {
   public:
@@ -66,7 +79,7 @@ class Scene {
         return m_Type;
     }
 
-    const char* const GetName() const{
+    const char* const GetName() const {
         return m_Name;
     }
 
@@ -99,13 +112,14 @@ class Scene {
     }
     void Start();
     void Update(float dT);
-    void DrawSky() const;
-    void DrawOpaque() const;
-    void DrawTransparent() const;
-    void DrawUI() const;
+    void DrawSky() ;
+    void DrawOpaque() ;
+    void DrawTransparent() ;
+    void DrawUI() ;
 
-    bool isLoaded = false;
+    bool isLoaded          = false;
     bool showLoadingScreen = false;
+
   protected:
     const char* m_Name = "scene";
     SceneType m_Type;

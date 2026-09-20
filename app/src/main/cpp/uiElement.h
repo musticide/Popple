@@ -113,7 +113,7 @@ class UIElement : public DrawableEntity {
 
     void OnEnable() override;
     void OnDisable() override;
-    void Draw() const override;
+    void Draw() override;
 
   private:
     // Shared math for fRect/raycastRect. aniScaleOverride lets callers ask for

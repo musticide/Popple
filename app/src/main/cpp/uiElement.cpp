@@ -166,7 +166,7 @@ void ui::UIElement::OnDisable() {
         }
     }
 }
-void ui::UIElement::Draw() const {
+void ui::UIElement::Draw() {
     for (size_t i = 0; i < children.size(); i++) {
         if (children[i] != nullptr && children[i]->IsActive()) {
             children[i]->Draw();

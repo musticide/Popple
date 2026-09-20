@@ -20,7 +20,6 @@
 EndGameCanvas::EndGameCanvas(Scene* parentScene, LevelParams params)
 : ui::Canvas(parentScene)
 , levelParams(params) {
-    LOGI("End Game canvas Contructor start");
     bgImage = CreateElement<ui::Image>(
         true, "textures/MainMenuBG.png", Rectangle{ 0, 0, 1080, 2340 }, ui::STRETCH_W | ui::STRETCH_H);
 
@@ -113,7 +112,6 @@ EndGameCanvas::EndGameCanvas(Scene* parentScene, LevelParams params)
     scoreText->fontSize = 110;
     scoreText->hAlign   = ui::ALIGN_CENTER;
     scoreText->SetText("Score:XXX");
-    LOGI("End Game canvas Contructor End");
 }
 EndGameCanvas::~EndGameCanvas() {
 }

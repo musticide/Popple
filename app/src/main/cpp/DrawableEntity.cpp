@@ -6,4 +6,4 @@ DrawableEntity::DrawableEntity(Scene* parentScene, RenderQueue type)
 
 DrawableEntity::~DrawableEntity() { }
 
-void DrawableEntity::Draw() const { }
+void DrawableEntity::Draw() { }

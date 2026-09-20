@@ -16,7 +16,7 @@ uniform int _Blink;
 #define LINE_AMOUNT 50.0f
 #define LINE_SPEED 10.0f
 #define INTENSITY 10.0f
-#define BLINK_SPEED 8.0f
+#define BLINK_SPEED 4.0f
 
 vec2 Polar(vec2 uv) {
     uv = (uv * 2.f) - 1.f;
@@ -36,14 +36,18 @@ vec2 Rotate(vec2 p, float a)
 void main() {
     const vec3 purple = vec3(.185f, .06f, 1.f);
     float circleSDF = length(uv - 0.5f);
+    float circles = circleSDF - _Time;
+    circles *= 2.f;
+    circles = fract(circles);
+    circles = pow(circles, 2.f);
 
     float lines = sin(circleSDF * LINE_AMOUNT - _Time * LINE_SPEED);
 
     // fnl.rgb = (purple + vec3(0.1f)) * INTENSITY;
     fnl.rgb = purple * INTENSITY;
-    fnl.a = lines;
+    fnl.a = circles;
 
-    float blink = _Blink > 0 ? 1.0f - (fract(_Time * BLINK_SPEED)) : 1.0f;
+    float blink = _Blink > 0 ? 1.0f - max(sin(_Time * BLINK_SPEED), 0.f) : 1.0f;
 
     fnl.a *= blink;
 

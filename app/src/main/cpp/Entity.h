@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+#include <vector>
 class Scene;
 
 class DrawableEntity;
@@ -13,8 +15,9 @@ public:
     Entity& operator=(const Entity&) = default;
     virtual ~Entity();
 
-    // Scene* parentScene;
+    Scene* parentScene;
     bool hasStarted = false;
+    Entity* parentEntity;
 
     // protected:
     virtual void Start();
@@ -31,6 +34,11 @@ public:
     bool IsActive() const { return m_IsActive; }
 
 
-private:
     bool m_IsActive;
+    template <typename T, typename... Args>
+    std::unique_ptr<T> CreateChildEntity(bool active, Args&&... args);
+
+  private:
+    std::vector<Entity*> childEntities;
 };
+

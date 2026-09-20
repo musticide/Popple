@@ -85,6 +85,10 @@ list(APPEND SOURCES
     "${CMAKE_SOURCE_DIR}/Transitions.cpp"
     "${CMAKE_SOURCE_DIR}/LoadingScene.cpp"
     "${CMAKE_SOURCE_DIR}/LoadingCanvas.cpp"
+    "${CMAKE_SOURCE_DIR}/TestScene.cpp"
+    "${CMAKE_SOURCE_DIR}/TestEntity.cpp"
+    "${CMAKE_SOURCE_DIR}/ElementBubbleParticles.cpp"
+    "${CMAKE_SOURCE_DIR}/BubbleTrails.cpp"
 )
 
 # Define compiler macros for the library

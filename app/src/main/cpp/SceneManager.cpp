@@ -10,7 +10,7 @@ SceneManager::SceneManager() {
 SceneManager::~SceneManager() {
 }
 
-//will work only if at a time a single scene is being loaded
+// will work only if at a time a single scene is being loaded
 void SceneManager::LoadScenes() {
     for (size_t i = 0; i < SceneManager::Get().scenes.size(); i++) {
         Scene* scene = SceneManager::Get().scenes[i].get();
@@ -46,7 +46,7 @@ void SceneManager::StartScenes() {
         if (scene != nullptr)
             scene->SetActive(true);
         else
-            LOGE("SceneManager: Could not activate scene: scene not found");
+            LOGE("SceneManager: Could not activate scene: %s scene not found", GetSceneTypeAsString(type));
     }
     m_ScenesToActivate.clear();
 
@@ -55,7 +55,7 @@ void SceneManager::StartScenes() {
         if (scene != nullptr)
             scene->SetActive(false);
         else
-            LOGE("SceneManager: Could not deactivate scene: scene not found");
+            LOGE("SceneManager: Could not activate scene: %s scene not found", GetSceneTypeAsString(type));
     }
     m_ScenesToDeactivate.clear();
 
@@ -90,7 +90,7 @@ int SceneManager::GetSceneIndex(SceneType type) {
         if (scene != nullptr) {
             if (scene->GetType() == type) result = i;
         } else {
-            LOGE("SceneManager: Could not find scene");
+            LOGE("SceneManager: Could not find scene %s", GetSceneTypeAsString(type));
         }
     }
     return result;
@@ -104,7 +104,7 @@ Scene* SceneManager::GetScene(SceneType type) {
         if (scene != nullptr) {
             if (scene->GetType() == type) result = scene;
         } else {
-            LOGE("SceneManager: Could not find scene");
+            LOGE("SceneManager: Could not find scene %s", GetSceneTypeAsString(type));
         }
     }
     return result;
